@@ -107,7 +107,7 @@ Les erreurs inattendues ne sont jamais avalées ni transformées en message mét
 |---|---|---|
 | Domaine | Unitaire, sans base | À côté du fichier : `status.test.ts` |
 | Schémas | Unitaire, sans base | `schemas.test.ts` |
-| Service | Intégration, base `jobflow_test` | `service.test.ts` (suite exécutée en série) |
+| Service | Intégration, base `jobflow_test` | `service.integration.test.ts` (projet `integration`, exécuté en série) |
 | Actions | Pas testées directement : minces par construction | — |
 
 Chaque test cite l'identifiant du critère d'acceptation couvert (`it("AC-001-06 refuse DRAFT → ACCEPTED", …)`).
