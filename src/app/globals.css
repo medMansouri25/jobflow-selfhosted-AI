@@ -38,6 +38,12 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-status-draft: var(--status-draft);
+  --color-status-applied: var(--status-applied);
+  --color-status-interview: var(--status-interview);
+  --color-status-accepted: var(--status-accepted);
+  --color-status-rejected: var(--status-rejected);
+  --color-status-archived: var(--status-archived);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -53,24 +59,32 @@ body {
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  /* Palette JobFlow : fond gris bleuté très clair, cartes blanches, indigo comme couleur d'action. */
+  --background: oklch(0.984 0.004 264);
+  --foreground: oklch(0.21 0.03 265);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.21 0.03 265);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --popover-foreground: oklch(0.21 0.03 265);
+  --primary: oklch(0.51 0.21 274);
+  --primary-foreground: oklch(0.985 0.01 274);
+  --secondary: oklch(0.95 0.02 274);
+  --secondary-foreground: oklch(0.36 0.14 274);
+  --muted: oklch(0.96 0.007 264);
+  --muted-foreground: oklch(0.52 0.025 264);
+  --accent: oklch(0.95 0.025 274);
+  --accent-foreground: oklch(0.36 0.14 274);
+  --destructive: oklch(0.577 0.215 27);
+  --border: oklch(0.915 0.01 264);
+  --input: oklch(0.89 0.012 264);
+  --ring: oklch(0.51 0.21 274);
+  /* Statuts de candidature (badges) */
+  --status-draft: oklch(0.5 0.03 264);
+  --status-applied: oklch(0.52 0.17 250);
+  --status-interview: oklch(0.56 0.13 65);
+  --status-accepted: oklch(0.52 0.13 155);
+  --status-rejected: oklch(0.55 0.19 25);
+  --status-archived: oklch(0.55 0.015 264);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -87,24 +101,30 @@ body {
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --background: oklch(0.17 0.02 268);
+  --foreground: oklch(0.96 0.005 264);
+  --card: oklch(0.215 0.025 268);
+  --card-foreground: oklch(0.96 0.005 264);
+  --popover: oklch(0.215 0.025 268);
+  --popover-foreground: oklch(0.96 0.005 264);
+  --primary: oklch(0.68 0.16 274);
+  --primary-foreground: oklch(0.17 0.02 268);
+  --secondary: oklch(0.28 0.04 270);
+  --secondary-foreground: oklch(0.9 0.04 274);
+  --muted: oklch(0.26 0.025 268);
+  --muted-foreground: oklch(0.72 0.02 264);
+  --accent: oklch(0.28 0.05 272);
+  --accent-foreground: oklch(0.92 0.04 274);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --ring: oklch(0.68 0.16 274);
+  --status-draft: oklch(0.75 0.03 264);
+  --status-applied: oklch(0.74 0.13 250);
+  --status-interview: oklch(0.8 0.13 75);
+  --status-accepted: oklch(0.76 0.14 155);
+  --status-rejected: oklch(0.72 0.16 25);
+  --status-archived: oklch(0.7 0.015 264);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
