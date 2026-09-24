@@ -62,6 +62,11 @@ const [state, formAction, pending] = useActionState(createApplicationAction, ini
 | Ressource introuvable | `notFound()` → page 404 |
 | Erreur inattendue | `error.tsx` de la route |
 
+## Tests de composants
+
+- Fichiers `*.test.tsx` à côté du composant, exécutés par le projet Vitest `component` (jsdom).
+- Testing Library : on cherche les éléments comme un utilisateur les perçoit (`getByRole`, `getByLabelText`), jamais par classe CSS ou structure interne.
+
 ## Style
 
 - Tailwind CSS, avec les variables de thème de shadcn/ui.

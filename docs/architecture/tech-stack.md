@@ -21,7 +21,7 @@ Monolithe modulaire : une application, un conteneur, une base (ADR `0004`).
 | Validation | Zod | installé en T0.5 | Schémas partagés, validation côté serveur |
 | ORM | Prisma | installé en T0.6 | ADR `0003` |
 | Base de données | PostgreSQL | choisie en T0.5 | Hébergement en production tranché en Phase 1.5 (Pi + SSD ou Neon UE) |
-| Tests | Vitest (+ Testing Library pour les composants) | installé en T0.4 | Rapide, compatible TypeScript / ESM sans configuration lourde |
+| Tests | Vitest, Testing Library, jsdom | Vitest 5.0, Testing Library React 16.3, jsdom 30 | Rapide, compatible TypeScript / ESM sans configuration lourde |
 | Gestionnaire de paquets | npm | 12.1 | Voir « Environnement de développement » |
 | Conteneurs | Docker, Docker Compose | — | Base de dev/test ; image de production multi-arch |
 | Reverse proxy | Caddy | — | HTTPS automatique, certificat `*.ts.net` via Tailscale |
@@ -57,12 +57,16 @@ Un seul conteneur PostgreSQL (Docker Compose) héberge deux bases :
 
 ## Stratégie de test
 
-| Niveau | Cible | Base | Exécution |
-|---|---|---|---|
-| Unitaire | Domaine pur (`modules/*/domain`), schémas Zod | aucune | En parallèle |
-| Intégration | Services (`modules/*/service.ts`) | `jobflow_test`, migrations appliquées, tables vidées avant chaque test | **En série** (une seule base partagée) |
-| Composant | Composants React critiques | aucune | En parallèle |
-| End-to-end | Parcours complets (Playwright) | — | Pas avant la fin du MVP |
+Configuration : `vitest.config.mts`. **Le nom du fichier décide du projet de test** :
+
+| Projet Vitest | Fichiers | Cible | Environnement | Exécution |
+|---|---|---|---|---|
+| `unit` | `*.test.ts` | Domaine pur (`modules/*/domain`), schémas Zod | Node | En parallèle |
+| `component` | `*.test.tsx` | Composants React et pages | jsdom | En parallèle |
+| `integration` | `*.integration.test.ts` | Services (`modules/*/service.ts`) sur `jobflow_test`, migrations appliquées, tables vidées avant chaque test | Node | **En série** (`fileParallelism: false`, une seule base partagée) |
+| End-to-end | — | Parcours complets (Playwright) | — | Pas avant la fin du MVP |
+
+Les tests sont placés à côté du fichier testé. L'alias `@/` est résolu à partir de `tsconfig.json` (`resolve.tsconfigPaths`).
 
 - Chaque test cite l'identifiant du critère d'acceptation qu'il couvre (`AC-001-06`).
 - En CI, PostgreSQL est fourni par un *service container* GitHub Actions ; même principe qu'en local.
@@ -91,5 +95,9 @@ Aucun en Phase 1. Plus tard : fournisseur d'IA (Phase 7, choix par ADR) et, selo
 | `npm run start` | Démarre le build de production |
 | `npm run lint` | ESLint (règles Next.js + TypeScript) |
 | `npm run typecheck` | Génère les types des routes (`next typegen`) puis vérifie les types (`tsc --noEmit`) |
+| `npm test` | Tous les projets de test |
+| `npm run test:unit` | Projets `unit` et `component` (sans base de données) |
+| `npm run test:integration` | Projet `integration` (nécessite PostgreSQL) |
+| `npm run test:watch` | Vitest en mode surveillance pendant le développement |
 
 npm 12 bloque par défaut les scripts d'installation des paquets : `unrs-resolver` (utilisé par ESLint) est signalé mais n'est pas nécessaire au fonctionnement actuel.
