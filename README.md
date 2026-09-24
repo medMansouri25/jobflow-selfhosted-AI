@@ -60,6 +60,7 @@ Un monolithe modulaire, volontairement simple : pas de microservices ni d'infras
 |---|---|
 | [`specs/`](specs/) | Le **quoi** : specs fonctionnelles, critères d'acceptation numérotés |
 | [`docs/adr/`](docs/adr/) | Les décisions d'architecture et leur justification |
+| [`docs/architecture/`](docs/architecture/) | Stack, conventions backend et frontend |
 | [`SpecDrivenDevelopment.md`](SpecDrivenDevelopment.md) | Cadrage complet du projet et méthode de travail |
 
 ## Méthode

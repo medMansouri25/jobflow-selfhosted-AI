@@ -508,7 +508,29 @@ Ne pas créer de microservices sans besoin réel.
 
 Ne pas ajouter FastAPI, Kubernetes, Redis, Kafka ou d'autres technologies simplement pour complexifier le projet.
 
-Si un besoin futur justifie un service Python spécialisé pour l'IA, nous pourrons alors revoir l'architecture.
+Si un besoin futur justifie un service Python spécialisé pour l'IA, nous pourrons alors revoir l'architecture (ADR `0004` : le candidat le plus probable est un conteneur « worker IA » à côté du monolithe).
+
+## Architecture applicative
+
+Décisions du 2026-09-24, détaillées dans `docs/architecture/` :
+
+| Document | Contenu |
+|---|---|
+| `docs/architecture/tech-stack.md` | Stack, environnement de développement, bases locales, stratégie de test, configuration |
+| `docs/architecture/backend-patterns.md` | Modules par fonctionnalité, couches, erreurs, utilisateur courant, base de données |
+| `docs/architecture/frontend-patterns.md` | Server Components, shadcn/ui, formulaires, affichage des contenus saisis |
+
+En résumé :
+
+```
+src/app/                         routes minces
+src/modules/<fonctionnalité>/    domain/ · schemas.ts · service.ts · actions.ts · components/
+src/components/ui/               shadcn/ui
+src/lib/                         db · env · current-user · errors
+```
+
+Écriture : formulaire → Server Action (Zod) → service (règles du domaine + transaction Prisma) → PostgreSQL.
+Lecture : Server Component → service → PostgreSQL.
 
 ---
 
@@ -825,6 +847,21 @@ Si ma demande est ambiguë, choisis l'interprétation la plus cohérente avec la
 | D17 | Suppression définitive, avec confirmation explicite, en cascade. |
 | D18 | **Entreprise** (`Company`) est une entité dès la Phase 1 ; **Contact** devient une entité en Phase 3. |
 | D19 | Relances / prochaine action et détection des doublons retirées du périmètre. |
+
+## Architecture applicative (2026-09-24)
+
+| # | Décision |
+|---|---|
+| D20 | Monolithe modulaire ; ni serverless ni microservices (ADR `0004`). |
+| D21 | Code découpé par fonctionnalité (`src/modules/<fonctionnalité>/`) : domaine pur, schémas Zod, service, Server Actions, composants. |
+| D22 | Pas de couche repository : les services utilisent Prisma directement ; écritures multiples en transaction. |
+| D23 | Lectures par les Server Components via les services ; écritures par Server Actions ; seul Route Handler : `/api/health`. |
+| D24 | Erreurs métier : exceptions typées `DomainError`, converties en message dans les Server Actions ; les erreurs inattendues remontent. |
+| D25 | `lib/current-user.ts` est le seul point d'identification de l'utilisateur ; les services reçoivent le `userId`. |
+| D26 | Tests d'intégration sur la base `jobflow_test` du conteneur de dev, en série, tables vidées avant chaque test ; PostgreSQL en *service container* en CI. |
+| D27 | Le projet reste sur `E:` (exFAT) : npm ; Next.js tourne nativement en dev, seul PostgreSQL est dans Docker. |
+| D28 | UI : shadcn/ui (sans son composant `Form`). |
+| D29 | Formulaires natifs + Server Actions + `useActionState` ; validation Zod côté serveur. |
 
 ---
 
