@@ -14,15 +14,15 @@ Monolithe modulaire : une application, un conteneur, une base (ADR `0004`).
 
 | Domaine | Choix | Version | Justification |
 |---|---|---|---|
-| Runtime | Node.js (LTS) | à renseigner | Requis par Next.js |
-| Framework | Next.js, App Router | à renseigner | Server Components + Server Actions : un seul projet pour l'UI et le serveur |
-| Langage | TypeScript (mode `strict`) | à renseigner | Type safety de la base à l'UI |
-| UI | React, Tailwind CSS, shadcn/ui (Radix UI) | à renseigner | Composants accessibles dont le code source est dans le dépôt |
-| Validation | Zod | à renseigner | Schémas partagés, validation côté serveur |
-| ORM | Prisma | à renseigner | ADR `0003` |
-| Base de données | PostgreSQL | à renseigner | Hébergement en production tranché en Phase 1.5 (Pi + SSD ou Neon UE) |
-| Tests | Vitest (+ Testing Library pour les composants) | à renseigner | Rapide, compatible TypeScript / ESM sans configuration lourde |
-| Gestionnaire de paquets | npm | à renseigner | Voir « Environnement de développement » |
+| Runtime | Node.js (LTS) | 24.15 (`.nvmrc`, `engines >=24`) | Requis par Next.js |
+| Framework | Next.js, App Router | 16.3.6 | Server Components + Server Actions : un seul projet pour l'UI et le serveur |
+| Langage | TypeScript (mode `strict`) | 5.9 | Type safety de la base à l'UI |
+| UI | React, Tailwind CSS, shadcn/ui (Radix UI) | React 19.2, Tailwind 4.3 ; shadcn/ui : T0.8 | Composants accessibles dont le code source est dans le dépôt |
+| Validation | Zod | installé en T0.5 | Schémas partagés, validation côté serveur |
+| ORM | Prisma | installé en T0.6 | ADR `0003` |
+| Base de données | PostgreSQL | choisie en T0.5 | Hébergement en production tranché en Phase 1.5 (Pi + SSD ou Neon UE) |
+| Tests | Vitest (+ Testing Library pour les composants) | installé en T0.4 | Rapide, compatible TypeScript / ESM sans configuration lourde |
+| Gestionnaire de paquets | npm | 12.1 | Voir « Environnement de développement » |
 | Conteneurs | Docker, Docker Compose | — | Base de dev/test ; image de production multi-arch |
 | Reverse proxy | Caddy | — | HTTPS automatique, certificat `*.ts.net` via Tailscale |
 | Accès réseau | Tailscale | — | ADR `0001` |
@@ -81,3 +81,15 @@ Un seul conteneur PostgreSQL (Docker Compose) héberge deux bases :
 ## Services externes
 
 Aucun en Phase 1. Plus tard : fournisseur d'IA (Phase 7, choix par ADR) et, selon la décision de la Phase 1.5, Neon.
+
+## Scripts npm
+
+| Script | Rôle |
+|---|---|
+| `npm run dev` | Serveur de développement |
+| `npm run build` | Build de production |
+| `npm run start` | Démarre le build de production |
+| `npm run lint` | ESLint (règles Next.js + TypeScript) |
+| `npm run typecheck` | Génère les types des routes (`next typegen`) puis vérifie les types (`tsc --noEmit`) |
+
+npm 12 bloque par défaut les scripts d'installation des paquets : `unrs-resolver` (utilisé par ESLint) est signalé mais n'est pas nécessaire au fonctionnement actuel.

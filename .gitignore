@@ -12,6 +12,9 @@ dist/
 coverage/
 *.tsbuildinfo
 
+# Certificats et clés
+*.pem
+
 # Variables d'environnement : seuls les modèles sont versionnés
 .env
 .env*.local
