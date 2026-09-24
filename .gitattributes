@@ -1,0 +1,12 @@
+# Fins de ligne LF dans le dépôt : l'application tourne dans des conteneurs Linux
+# (Raspberry Pi), un script shell en CRLF y casserait.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary

@@ -1,0 +1,47 @@
+# Dépendances
+node_modules/
+
+# Next.js
+.next/
+out/
+next-env.d.ts
+
+# Build / couverture
+build/
+dist/
+coverage/
+*.tsbuildinfo
+
+# Variables d'environnement : seuls les modèles sont versionnés
+.env
+.env*.local
+.env.*
+!.env.example
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Sauvegardes de base (pg_dump)
+*.dump
+backups/
+
+# Éditeurs / OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# Claude Code : réglages personnels
+.claude/settings.local.json
+
+# Outillage IA local (AB Method, skills, Claude Code) : non publié
+.ab-method/
+.agents/
+.claude/
+AGENTS.md
+CONTEXT.md
+FrontDesignProposition.md
