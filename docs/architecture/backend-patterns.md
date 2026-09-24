@@ -48,6 +48,9 @@ export function allowedTransitions(from: ApplicationStatus): ApplicationStatus[]
 - Un schéma Zod par entrée (création, modification, changement de statut, filtres de liste).
 - Les types d'entrée du service sont **dérivés** des schémas (`z.infer`), jamais redéclarés.
 - Les règles qui dépendent de plusieurs champs (salaire min ≤ max, date obligatoire en Postulée) sont exprimées dans le schéma (`superRefine`) en s'appuyant sur les fonctions du domaine.
+- Les schémas acceptent **directement les chaînes envoyées par le formulaire** : une chaîne vide devient `undefined` (`z.preprocess`), les montants sont convertis en nombres (`z.coerce`).
+- Une règle qui dépend de la date du jour reçoit cette date en paramètre (`createApplicationSchema(today)`) : le schéma reste déterministe et testable ; l'action calcule `today` dans le fuseau `Europe/Paris`.
+- Les énumérations du domaine sont des tableaux `as const` (`APPLICATION_STATUSES`…) dont on dérive les types ; leurs libellés français vivent dans `modules/<module>/labels.ts`.
 
 ### ③ Service — `modules/*/service.ts`
 

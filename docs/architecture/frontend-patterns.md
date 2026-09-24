@@ -71,5 +71,13 @@ const [state, formAction, pending] = useActionState(createApplicationAction, ini
 
 ## Style
 
-- Tailwind CSS, avec les variables de thème de shadcn/ui.
-- Style par défaut de shadcn/ui en attendant une proposition de design.
+- Tailwind CSS, avec les variables de thème de shadcn/ui définies dans `src/app/globals.css` (clair et sombre, en `oklch`).
+- **Palette** : fond gris bleuté très clair, cartes blanches, **indigo** comme couleur d'action (`--primary`, `--ring`). Choisie par défaut faute de proposition de design ; la changer = modifier les variables, pas les composants.
+- **Couleurs de statut** : `--status-draft` (gris), `--status-applied` (bleu), `--status-interview` (ambre), `--status-accepted` (vert), `--status-rejected` (rouge), `--status-archived` (gris neutre), exposées en classes Tailwind (`bg-status-applied/12`, `text-status-applied`). Seul `StatusBadge` les utilise pour les badges.
+- Mise en page : contenu centré (`max-w-5xl`, formulaires `max-w-3xl`), sections en cartes (`rounded-xl border bg-card`), en-tête collant.
+
+## Formulaire de candidature
+
+- `ApplicationForm` reçoit sa Server Action en prop (`action`) : la page lui passe `createApplicationAction`, les tests une fonction factice.
+- Découpé en sections (statut initial, poste, Annonce, rémunération, suivi) ; un composant `Field` relie libellé, aide et erreur (`aria-describedby`, `aria-invalid`).
+- Les listes (contrat, source, période) utilisent le `Select` shadcn (Radix) avec `name`, soumis nativement avec le formulaire ; un `key` dérivé de la valeur renvoyée le réinitialise après une erreur.
