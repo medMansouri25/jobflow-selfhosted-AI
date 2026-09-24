@@ -14,11 +14,13 @@ Conventions de l'interface. L'interface est en français ; le code en anglais.
 |---|---|
 | `src/components/ui/` | Composants shadcn/ui (Button, Input, Label, Select, Dialog, Badge, Command…), ajoutés au fil des besoins |
 | `src/modules/<fonctionnalité>/components/` | Composants propres à une fonctionnalité (`ApplicationForm`, `StatusBadge`, `StatusMenu`…) |
+| `src/components/` | Composants partagés de l'application (ex. `AppHeader`, en-tête et navigation principale) |
 | `src/app/**/page.tsx` | Assemblage de la page, sans logique métier |
 
 ## shadcn/ui
 
-- Les composants sont **copiés** dans `src/components/ui/` via la CLI shadcn : leur code appartient au projet et peut être modifié.
+- Les composants sont **copiés** dans `src/components/ui/` via la CLI shadcn (`npx shadcn@latest add <composant>`, configuration dans `components.json`) : leur code appartient au projet et peut être modifié.
+- Installés : Button, Input, Label, Textarea, Select, Badge, Dialog. La fusion des classes Tailwind passe par `cn` (`@/lib/utils`).
 - On n'ajoute un composant que lorsqu'une fonctionnalité en a besoin.
 - Le composant `Form` de shadcn/ui **n'est pas utilisé** (il dépend de react-hook-form) ; les formulaires utilisent Input, Label, Select, Textarea… directement.
 - Accessibilité : on s'appuie sur Radix UI (focus, clavier, ARIA) plutôt que de réécrire modales, menus et listes déroulantes.
@@ -59,8 +61,8 @@ const [state, formAction, pending] = useActionState(createApplicationAction, ini
 |---|---|
 | Chargement | `loading.tsx` de la route si l'attente est perceptible |
 | Liste vide | Message et appel à l'action (« Créer ma première candidature ») |
-| Ressource introuvable | `notFound()` → page 404 |
-| Erreur inattendue | `error.tsx` de la route |
+| Ressource introuvable | `notFound()` → `src/app/not-found.tsx` (lien de retour à l'accueil) |
+| Erreur inattendue | `src/app/error.tsx` : message générique, **jamais le détail technique**, bouton « Réessayer » qui appelle `retry()` (Next.js 16 ; anciennement `reset`) |
 
 ## Tests de composants
 

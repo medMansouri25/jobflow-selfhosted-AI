@@ -17,7 +17,7 @@ Monolithe modulaire : une application, un conteneur, une base (ADR `0004`).
 | Runtime | Node.js (LTS) | 24.15 (`.nvmrc`, `engines >=24`) | Requis par Next.js |
 | Framework | Next.js, App Router | 16.3.6 | Server Components + Server Actions : un seul projet pour l'UI et le serveur |
 | Langage | TypeScript (mode `strict`) | 5.9 | Type safety de la base à l'UI |
-| UI | React, Tailwind CSS, shadcn/ui (Radix UI) | React 19.2, Tailwind 4.3 ; shadcn/ui : T0.8 | Composants accessibles dont le code source est dans le dépôt |
+| UI | React, Tailwind CSS, shadcn/ui (Radix UI, style `new-york`, base `neutral`) | React 19.2, Tailwind 4.3, radix-ui 1.6, lucide-react 1.48, class-variance-authority 0.7, cn 0.4 | Composants accessibles dont le code source est dans le dépôt |
 | Validation | Zod | installé en T0.5 | Schémas partagés, validation côté serveur |
 | ORM | Prisma | installé en T0.6 | ADR `0003` |
 | Base de données | PostgreSQL | choisie en T0.5 | Hébergement en production tranché en Phase 1.5 (Pi + SSD ou Neon UE) |
@@ -57,7 +57,7 @@ Un seul conteneur PostgreSQL (Docker Compose) héberge deux bases :
 
 ## Stratégie de test
 
-Configuration : `vitest.config.mts`. **Le nom du fichier décide du projet de test** :
+Configuration : `vitest.config.mts` ; `vitest.setup.component.ts` vide le DOM après chaque test de composant. **Le nom du fichier décide du projet de test** :
 
 | Projet Vitest | Fichiers | Cible | Environnement | Exécution |
 |---|---|---|---|---|
