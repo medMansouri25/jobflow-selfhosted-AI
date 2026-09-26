@@ -3,12 +3,21 @@ import { describe, expect, it } from "vitest";
 
 import Home from "@/app/page";
 
-describe("page d'accueil", () => {
-  it("affiche le nom de l'application comme titre principal", () => {
+describe("tableau de bord", () => {
+  it("s'intitule Tableau de bord", () => {
     render(<Home />);
 
     expect(
-      screen.getByRole("heading", { level: 1, name: "JobFlow AI" }),
+      screen.getByRole("heading", { level: 1, name: "Tableau de bord" }),
     ).toBeDefined();
+  });
+
+  it("présente la répartition des six statuts", () => {
+    render(<Home />);
+    const distribution = screen.getByRole("region", { name: "Répartition par statut" });
+
+    for (const label of ["Brouillon", "Postulée", "Entretien", "Acceptée", "Refusée", "Classée"]) {
+      expect(distribution.textContent).toContain(label);
+    }
   });
 });
