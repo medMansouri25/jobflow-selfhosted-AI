@@ -1,48 +1,50 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-
-import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Mes candidatures · JobFlow AI",
+  title: "Candidatures · JobFlow AI",
 };
+
+const COLUMNS = ["Entreprise", "Poste", "Localisation", "Contrat", "Source", "Candidature", "Statut"];
 
 export default function ApplicationsPage() {
   return (
-    <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-8 px-6 py-10">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-3xl font-semibold tracking-tight">
-            Mes candidatures
-          </h1>
-          <p className="text-muted-foreground">
-            Candidatures actives : Brouillon, Postulée, Entretien.
-          </p>
-        </div>
-        <Button asChild>
-          <Link href="/applications/new">Nouvelle candidature</Link>
-        </Button>
+    <main className="flex flex-col gap-6 px-8 py-8">
+      <div className="flex flex-wrap items-end justify-between gap-2">
+        <h1 className="font-heading text-4xl font-extrabold tracking-tight">
+          Candidatures
+        </h1>
+        <p className="text-sm text-muted-foreground">0 affichée(s) sur 0</p>
       </div>
 
-      {/* TODO(T1.9) : liste, recherche, filtres et tri une fois la base de données branchée. */}
-      <section className="flex flex-col items-center gap-4 rounded-xl border border-dashed bg-card px-6 py-16 text-center">
-        <div
-          aria-hidden
-          className="flex size-12 items-center justify-center rounded-full bg-accent text-xl text-accent-foreground"
-        >
-          ✦
-        </div>
-        <div className="flex flex-col gap-1">
-          <h2 className="text-lg font-semibold">Aucune candidature pour l&apos;instant</h2>
-          <p className="max-w-md text-sm text-muted-foreground">
-            Commence par enregistrer une Annonce repérée ou une candidature déjà
-            envoyée.
-          </p>
-        </div>
-        <Button asChild variant="outline">
-          <Link href="/applications/new">Créer ma première candidature</Link>
-        </Button>
-      </section>
+      {/* TODO(T1.9) : filtres, tri et lignes du tableau une fois la base de données branchée. */}
+      <div className="overflow-x-auto rounded-lg border bg-card">
+        <table className="w-full text-sm">
+          <thead className="bg-muted">
+            <tr>
+              {COLUMNS.map((column) => (
+                <th
+                  key={column}
+                  scope="col"
+                  className="px-4 py-2 text-left text-[11px] font-bold tracking-wider text-foreground/60 uppercase"
+                >
+                  {column}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colSpan={COLUMNS.length} className="px-4 py-16 text-center">
+                <p className="font-heading font-bold">Aucune candidature pour l&apos;instant</p>
+                <p className="mt-1 text-muted-foreground">
+                  Clique sur « Nouvelle candidature » en haut à droite pour enregistrer
+                  une Annonce repérée ou une candidature déjà envoyée.
+                </p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </main>
   );
 }

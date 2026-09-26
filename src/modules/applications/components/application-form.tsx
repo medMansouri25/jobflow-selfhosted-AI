@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useId, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,7 @@ import { cn } from "@/lib/utils";
 import {
   APPLICATION_SOURCES,
   CONTRACT_TYPES,
-  INITIAL_STATUSES,
+  CURRENCIES,
   SALARY_PERIODS,
 } from "@/modules/applications/domain/application";
 import {
@@ -28,7 +29,6 @@ import {
   CONTRACT_TYPE_LABELS,
   SALARY_PERIOD_LABELS,
   SOURCE_LABELS,
-  STATUS_LABELS,
 } from "@/modules/applications/labels";
 
 type FormAction = (
@@ -36,12 +36,17 @@ type FormAction = (
   formData: FormData,
 ) => Promise<ApplicationFormState>;
 
-const STATUS_HINTS = {
-  DRAFT: "Je prépare ma candidature, elle n'est pas encore envoyée.",
-  APPLIED: "J'ai déjà envoyé ma candidature.",
-} as const;
+/** Marque d'un champ : `*` toujours obligatoire, `†` obligatoire pour passer en Postulée. */
+type Requirement = "required" | "applied";
 
-export function ApplicationForm({ action }: { action: FormAction }) {
+export function ApplicationForm({
+  action,
+  onCancel,
+}: {
+  action: FormAction;
+  /** Fourni par la fenêtre modale ; sinon « Annuler » ramène à la liste. */
+  onCancel?: () => void;
+}) {
   const [state, formAction, pending] = useActionState(
     action,
     initialApplicationFormState,
@@ -55,315 +60,193 @@ export function ApplicationForm({ action }: { action: FormAction }) {
       action={formAction}
       aria-label="Nouvelle candidature"
       noValidate
-      className="flex flex-col gap-6"
+      className="flex flex-col gap-5"
     >
       {state.status !== "idle" && state.message && (
         <p
           role={state.status === "error" ? "alert" : "status"}
           className={cn(
-            "rounded-lg border px-4 py-3 text-sm",
+            "rounded-md px-4 py-3 text-sm",
             state.status === "error"
-              ? "border-destructive/30 bg-destructive/5 text-destructive"
-              : "border-status-accepted/30 bg-status-accepted/10 text-status-accepted",
+              ? "bg-status-rejected-bg text-status-rejected-fg"
+              : "bg-status-accepted-bg text-status-accepted-fg",
           )}
         >
           {state.message}
         </p>
       )}
 
-      <Section
-        title="Où en es-tu ?"
-        description="Une candidature commence en Brouillon ou directement en Postulée."
-      >
-        <fieldset className="grid gap-3 sm:grid-cols-2">
-          <legend className="sr-only">Statut initial</legend>
-          {INITIAL_STATUSES.map((status) => (
-            <label
-              key={status}
-              className="flex cursor-pointer items-start gap-3 rounded-lg border bg-background p-4 transition-colors has-checked:border-primary has-checked:bg-accent"
-            >
-              <input
-                type="radio"
-                name="status"
-                value={status}
-                defaultChecked={(values.status ?? "DRAFT") === status}
-                className="mt-1 accent-primary"
-              />
-              <span className="flex flex-col gap-0.5">
-                <span className="font-medium">{STATUS_LABELS[status]}</span>
-                <span className="text-sm text-muted-foreground">
-                  {STATUS_HINTS[status]}
-                </span>
-              </span>
-            </label>
-          ))}
-        </fieldset>
-      </Section>
+      <div className="grid gap-4 sm:grid-cols-3">
+        <Field
+          label="Entreprise"
+          requirement="required"
+          hint="Choisis une entreprise existante ou saisis-en une nouvelle."
+          error={error("companyName")}
+        >
+          {(props) => (
+            <Input {...props} name="companyName" maxLength={200} defaultValue={values.companyName} />
+          )}
+        </Field>
+        <Field label="Intitulé du poste" requirement="required" error={error("jobTitle")}>
+          {(props) => (
+            <Input {...props} name="jobTitle" maxLength={200} defaultValue={values.jobTitle} />
+          )}
+        </Field>
+        <Field label="Localisation" requirement="applied" error={error("location")}>
+          {(props) => (
+            <Input {...props} name="location" maxLength={200} defaultValue={values.location} />
+          )}
+        </Field>
 
-      <Section title="Le poste" description="L'Entreprise et l'intitulé suffisent pour un Brouillon.">
-        <div className="grid gap-5 sm:grid-cols-2">
-          <Field label="Entreprise" required error={error("companyName")}>
-            {(props) => (
-              <Input
-                {...props}
-                name="companyName"
-                maxLength={200}
-                placeholder="Ex. Thales"
-                defaultValue={values.companyName}
-              />
-            )}
-          </Field>
-          <Field label="Intitulé du poste" required error={error("jobTitle")}>
-            {(props) => (
-              <Input
-                {...props}
-                name="jobTitle"
-                maxLength={200}
-                placeholder="Ex. Développeur backend"
-                defaultValue={values.jobTitle}
-              />
-            )}
-          </Field>
-          <Field label="Localisation" error={error("location")}>
-            {(props) => (
-              <Input
-                {...props}
-                name="location"
-                maxLength={200}
-                placeholder="Ex. Paris, télétravail partiel"
-                defaultValue={values.location}
-              />
-            )}
-          </Field>
-          <Field label="Type de contrat" error={error("contractType")}>
-            {(props) => (
-              <Select
-                key={`contract-${values.contractType ?? ""}`}
-                name="contractType"
-                defaultValue={values.contractType}
-              >
-                <SelectTrigger {...props} className="w-full">
-                  <SelectValue placeholder="Non précisé" />
-                </SelectTrigger>
-                <SelectContent>
-                  {CONTRACT_TYPES.map((type) => (
-                    <SelectItem key={type} value={type}>
-                      {CONTRACT_TYPE_LABELS[type]}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-          </Field>
+        <Field label="Type de contrat" requirement="applied" error={error("contractType")}>
+          {(props) => (
+            <SelectField
+              {...props}
+              name="contractType"
+              value={values.contractType}
+              options={CONTRACT_TYPES.map((v) => [v, CONTRACT_TYPE_LABELS[v]])}
+            />
+          )}
+        </Field>
+        <Field label="Source de l'annonce" requirement="applied" error={error("source")}>
+          {(props) => (
+            <SelectField
+              {...props}
+              name="source"
+              value={values.source}
+              options={APPLICATION_SOURCES.map((v) => [v, SOURCE_LABELS[v]])}
+            />
+          )}
+        </Field>
+        <Field label="Date de candidature" requirement="applied" error={error("appliedAt")}>
+          {(props) => (
+            <Input {...props} name="appliedAt" type="date" defaultValue={values.appliedAt} />
+          )}
+        </Field>
+
+        <Field
+          label="URL de l'annonce (référence uniquement — pas de récupération automatique)"
+          error={error("jobUrl")}
+          className="sm:col-span-3"
+        >
+          {(props) => (
+            <Input
+              {...props}
+              name="jobUrl"
+              type="url"
+              inputMode="url"
+              placeholder="https://"
+              defaultValue={values.jobUrl}
+            />
+          )}
+        </Field>
+        <Field
+          label="Description du poste (copier-coller)"
+          error={error("jobDescription")}
+          className="sm:col-span-3"
+        >
+          {(props) => (
+            <Textarea
+              {...props}
+              name="jobDescription"
+              rows={5}
+              maxLength={50_000}
+              defaultValue={values.jobDescription}
+            />
+          )}
+        </Field>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-4">
+        <Field label="Salaire min" error={error("salaryMin")}>
+          {(props) => (
+            <Input {...props} name="salaryMin" inputMode="numeric" defaultValue={values.salaryMin} />
+          )}
+        </Field>
+        <Field label="Salaire max" error={error("salaryMax")}>
+          {(props) => (
+            <Input {...props} name="salaryMax" inputMode="numeric" defaultValue={values.salaryMax} />
+          )}
+        </Field>
+        <Field label="Devise" error={error("salaryCurrency")}>
+          {(props) => (
+            <SelectField
+              {...props}
+              name="salaryCurrency"
+              value={values.salaryCurrency ?? "EUR"}
+              options={CURRENCIES.map((v) => [v, v])}
+            />
+          )}
+        </Field>
+        <Field label="Période" error={error("salaryPeriod")}>
+          {(props) => (
+            <SelectField
+              {...props}
+              name="salaryPeriod"
+              value={values.salaryPeriod}
+              options={SALARY_PERIODS.map((v) => [v, SALARY_PERIOD_LABELS[v]])}
+            />
+          )}
+        </Field>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="Version du CV" error={error("cvLabel")}>
+          {(props) => (
+            <Input
+              {...props}
+              name="cvLabel"
+              maxLength={200}
+              placeholder="ex. CV DevOps v3"
+              defaultValue={values.cvLabel}
+            />
+          )}
+        </Field>
+        <Field label="Lettre de motivation" error={error("coverLetter")}>
+          {(props) => (
+            <Input
+              {...props}
+              name="coverLetter"
+              maxLength={20_000}
+              placeholder="ex. Lettre OVH — sept."
+              defaultValue={values.coverLetter}
+            />
+          )}
+        </Field>
+        <Field
+          label="Notes personnelles (recruteurs, date limite de réponse…)"
+          error={error("notes")}
+          className="sm:col-span-2"
+        >
+          {(props) => (
+            <Textarea {...props} name="notes" rows={3} maxLength={20_000} defaultValue={values.notes} />
+          )}
+        </Field>
+      </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-4">
+        <p className="text-xs text-muted-foreground">
+          * requis · † requis pour passer en « Postulée »
+        </p>
+        <div className="flex flex-wrap items-center gap-2">
+          {onCancel ? (
+            <Button type="button" variant="ghost" onClick={onCancel}>
+              Annuler
+            </Button>
+          ) : (
+            <Button asChild variant="ghost">
+              <Link href="/applications">Annuler</Link>
+            </Button>
+          )}
+          <Button type="submit" name="status" value="DRAFT" variant="outline" disabled={pending}>
+            Enregistrer en brouillon
+          </Button>
+          <Button type="submit" name="status" value="APPLIED" disabled={pending}>
+            Enregistrer comme postulée
+          </Button>
         </div>
-      </Section>
-
-      <Section
-        title="L'Annonce"
-        description="Colle la description complète : tu la retrouveras même si l'annonce disparaît en ligne."
-      >
-        <div className="grid gap-5 sm:grid-cols-2">
-          <Field label="URL de l'Annonce" error={error("jobUrl")}>
-            {(props) => (
-              <Input
-                {...props}
-                name="jobUrl"
-                type="url"
-                inputMode="url"
-                placeholder="https://…"
-                defaultValue={values.jobUrl}
-              />
-            )}
-          </Field>
-          <Field label="Source" error={error("source")}>
-            {(props) => (
-              <Select
-                key={`source-${values.source ?? ""}`}
-                name="source"
-                defaultValue={values.source}
-              >
-                <SelectTrigger {...props} className="w-full">
-                  <SelectValue placeholder="Non précisée" />
-                </SelectTrigger>
-                <SelectContent>
-                  {APPLICATION_SOURCES.map((source) => (
-                    <SelectItem key={source} value={source}>
-                      {SOURCE_LABELS[source]}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-          </Field>
-          <Field
-            label="Description du poste"
-            error={error("jobDescription")}
-            className="sm:col-span-2"
-          >
-            {(props) => (
-              <Textarea
-                {...props}
-                name="jobDescription"
-                rows={8}
-                maxLength={50_000}
-                placeholder="Colle ici le texte de l'Annonce…"
-                defaultValue={values.jobDescription}
-              />
-            )}
-          </Field>
-        </div>
-      </Section>
-
-      <Section title="Rémunération" description="Facultatif — le salaire annoncé, s'il est indiqué.">
-        <div className="grid gap-5 sm:grid-cols-4">
-          <Field label="Minimum" error={error("salaryMin")}>
-            {(props) => (
-              <Input
-                {...props}
-                name="salaryMin"
-                type="number"
-                min={1}
-                step={1}
-                inputMode="numeric"
-                placeholder="40000"
-                defaultValue={values.salaryMin}
-              />
-            )}
-          </Field>
-          <Field label="Maximum" error={error("salaryMax")}>
-            {(props) => (
-              <Input
-                {...props}
-                name="salaryMax"
-                type="number"
-                min={1}
-                step={1}
-                inputMode="numeric"
-                placeholder="45000"
-                defaultValue={values.salaryMax}
-              />
-            )}
-          </Field>
-          <Field label="Devise" error={error("salaryCurrency")}>
-            {(props) => (
-              <Input
-                {...props}
-                name="salaryCurrency"
-                maxLength={3}
-                defaultValue={values.salaryCurrency ?? "EUR"}
-                className="uppercase"
-              />
-            )}
-          </Field>
-          <Field label="Période" error={error("salaryPeriod")}>
-            {(props) => (
-              <Select
-                key={`period-${values.salaryPeriod ?? ""}`}
-                name="salaryPeriod"
-                defaultValue={values.salaryPeriod}
-              >
-                <SelectTrigger {...props} className="w-full">
-                  <SelectValue placeholder="—" />
-                </SelectTrigger>
-                <SelectContent>
-                  {SALARY_PERIODS.map((period) => (
-                    <SelectItem key={period} value={period}>
-                      {SALARY_PERIOD_LABELS[period]}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-          </Field>
-        </div>
-      </Section>
-
-      <Section title="Suivi" description="Ce que tu as envoyé, et tes notes personnelles.">
-        <div className="grid gap-5 sm:grid-cols-2">
-          <Field
-            label="Date de candidature"
-            hint="Obligatoire pour une candidature Postulée."
-            error={error("appliedAt")}
-          >
-            {(props) => (
-              <Input
-                {...props}
-                name="appliedAt"
-                type="date"
-                defaultValue={values.appliedAt}
-              />
-            )}
-          </Field>
-          <Field
-            label="Version du CV envoyée"
-            error={error("cvLabel")}
-          >
-            {(props) => (
-              <Input
-                {...props}
-                name="cvLabel"
-                maxLength={200}
-                placeholder="Ex. CV_2026_backend_v3"
-                defaultValue={values.cvLabel}
-              />
-            )}
-          </Field>
-          <Field
-            label="Lettre de motivation"
-            error={error("coverLetter")}
-            className="sm:col-span-2"
-          >
-            {(props) => (
-              <Textarea
-                {...props}
-                name="coverLetter"
-                rows={5}
-                maxLength={20_000}
-                defaultValue={values.coverLetter}
-              />
-            )}
-          </Field>
-          <Field label="Notes" error={error("notes")} className="sm:col-span-2">
-            {(props) => (
-              <Textarea
-                {...props}
-                name="notes"
-                rows={4}
-                maxLength={20_000}
-                placeholder="Recruteur, échanges, date limite de réponse…"
-                defaultValue={values.notes}
-              />
-            )}
-          </Field>
-        </div>
-      </Section>
-
-      <div className="flex items-center justify-end gap-3">
-        <Button type="submit" size="lg" disabled={pending}>
-          {pending ? "Enregistrement…" : "Enregistrer la candidature"}
-        </Button>
       </div>
     </form>
-  );
-}
-
-function Section({
-  title,
-  description,
-  children,
-}: {
-  title: string;
-  description: string;
-  children: ReactNode;
-}) {
-  return (
-    <section className="rounded-xl border bg-card p-6 shadow-xs">
-      <header className="mb-5">
-        <h2 className="font-semibold">{title}</h2>
-        <p className="text-sm text-muted-foreground">{description}</p>
-      </header>
-      {children}
-    </section>
   );
 }
 
@@ -375,14 +258,14 @@ type ControlProps = {
 
 function Field({
   label,
-  required,
+  requirement,
   hint,
   error,
   className,
   children,
 }: {
   label: string;
-  required?: boolean;
+  requirement?: Requirement;
   hint?: string;
   error?: string;
   className?: string;
@@ -395,12 +278,12 @@ function Field({
     [hint && hintId, error && errorId].filter(Boolean).join(" ") || undefined;
 
   return (
-    <div className={cn("flex flex-col gap-2", className)}>
-      <Label htmlFor={id}>
+    <div className={cn("flex flex-col gap-1.5", className)}>
+      <Label htmlFor={id} className="text-xs font-medium text-foreground/80">
         {label}
-        {required && (
+        {requirement && (
           <span aria-hidden className="text-primary">
-            *
+            {requirement === "required" ? "*" : "†"}
           </span>
         )}
       </Label>
@@ -416,5 +299,32 @@ function Field({
         </p>
       )}
     </div>
+  );
+}
+
+function SelectField({
+  name,
+  value,
+  options,
+  ...triggerProps
+}: ControlProps & {
+  name: string;
+  value?: string;
+  options: [value: string, label: string][];
+}) {
+  return (
+    // `key` : remonte la liste avec la valeur renvoyée par le serveur après une erreur.
+    <Select key={`${name}-${value ?? ""}`} name={name} defaultValue={value}>
+      <SelectTrigger {...triggerProps} className="w-full">
+        <SelectValue placeholder="—" />
+      </SelectTrigger>
+      <SelectContent>
+        {options.map(([optionValue, label]) => (
+          <SelectItem key={optionValue} value={optionValue}>
+            {label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }
