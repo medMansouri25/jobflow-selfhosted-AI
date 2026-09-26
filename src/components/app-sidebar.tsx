@@ -1,0 +1,148 @@
+"use client";
+
+import {
+  Bot,
+  Briefcase,
+  Building2,
+  CalendarDays,
+  FileText,
+  LayoutDashboard,
+  MessagesSquare,
+  UserRound,
+  type LucideIcon,
+} from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+import { cn } from "@/lib/utils";
+
+type NavLink = {
+  label: string;
+  href: string;
+  icon: LucideIcon;
+  isActive: (pathname: string) => boolean;
+};
+
+type UpcomingItem = { label: string; icon: LucideIcon; phase: string };
+
+const MAIN_LINKS: NavLink[] = [
+  {
+    label: "Dashboard",
+    href: "/",
+    icon: LayoutDashboard,
+    isActive: (pathname) => pathname === "/",
+  },
+  {
+    label: "Candidatures",
+    href: "/applications",
+    icon: Briefcase,
+    isActive: (pathname) => pathname.startsWith("/applications"),
+  },
+];
+
+// Pas encore construits : visibles pour donner la direction, mais sans lien.
+const UPCOMING_MAIN: UpcomingItem[] = [
+  { label: "Entreprises", icon: Building2, phase: "P1" },
+  { label: "Entretiens", icon: MessagesSquare, phase: "P3" },
+  { label: "Agenda", icon: CalendarDays, phase: "P4" },
+];
+
+const NEXT_PHASES: UpcomingItem[] = [
+  { label: "Documents", icon: FileText, phase: "P5" },
+  { label: "Profil", icon: UserRound, phase: "P6" },
+  { label: "Assistant IA", icon: Bot, phase: "P7" },
+];
+
+export function AppSidebar() {
+  const pathname = usePathname();
+
+  return (
+    <aside className="sticky top-0 flex h-screen w-60 shrink-0 flex-col border-r bg-card">
+      <Link
+        href="/"
+        aria-label="JobFlow AI — accueil"
+        className="flex items-center gap-3 px-5 py-5"
+      >
+        <span
+          aria-hidden
+          className="flex size-9 items-center justify-center rounded-lg bg-linear-to-br from-primary to-success text-primary-foreground"
+        >
+          <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
+            <path d="M6 12.5l4 4 8-9" />
+          </svg>
+        </span>
+        <span className="flex flex-col leading-tight">
+          <span className="font-heading text-lg font-extrabold">JobFlow</span>
+          <span className="text-xs text-muted-foreground">
+            Suivi de recherche d&apos;emploi
+          </span>
+        </span>
+      </Link>
+
+      <nav aria-label="Navigation principale" className="flex flex-1 flex-col gap-6 px-3">
+        <ul className="flex flex-col gap-1">
+          {MAIN_LINKS.map(({ label, href, icon: Icon, isActive }) => {
+            const active = isActive(pathname);
+            return (
+              <li key={href}>
+                <Link
+                  href={href}
+                  aria-current={active ? "page" : undefined}
+                  className={cn(
+                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                    active
+                      ? "bg-accent font-semibold text-accent-foreground"
+                      : "text-foreground/80 hover:bg-muted hover:text-foreground",
+                  )}
+                >
+                  <Icon aria-hidden className="size-4" />
+                  {label}
+                </Link>
+              </li>
+            );
+          })}
+          {UPCOMING_MAIN.map((item) => (
+            <UpcomingEntry key={item.label} {...item} />
+          ))}
+        </ul>
+
+        <div className="flex flex-col gap-2">
+          <p className="px-3 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
+            Phases suivantes
+          </p>
+          <ul className="flex flex-col gap-1">
+            {NEXT_PHASES.map((item) => (
+              <UpcomingEntry key={item.label} {...item} />
+            ))}
+          </ul>
+        </div>
+      </nav>
+
+      <div className="flex items-center gap-3 border-t px-5 py-4">
+        <span
+          aria-hidden
+          className="flex size-8 items-center justify-center rounded-full bg-accent text-xs font-bold text-accent-foreground"
+        >
+          MM
+        </span>
+        <span className="flex flex-col leading-tight">
+          <span className="text-sm font-semibold">Mon espace</span>
+          <span className="text-xs text-muted-foreground">Privé · Tailscale</span>
+        </span>
+      </div>
+    </aside>
+  );
+}
+
+function UpcomingEntry({ label, icon: Icon, phase }: UpcomingItem) {
+  return (
+    <li
+      title="Pas encore disponible"
+      className="flex cursor-default items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground"
+    >
+      <Icon aria-hidden className="size-4" />
+      <span className="flex-1">{label}</span>
+      <span className="rounded border px-1.5 text-[10px] font-medium">{phase}</span>
+    </li>
+  );
+}
