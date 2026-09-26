@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vitest/config";
 
@@ -37,6 +39,10 @@ export default defineConfig({
           environment: "node",
           include: ["src/**/*.integration.test.ts"],
           fileParallelism: false,
+          // Les tests d'intégration visent toujours la base jobflow_test, jamais jobflow_dev.
+          env: { DATABASE_URL: process.env.TEST_DATABASE_URL ?? "" },
+          globalSetup: ["./vitest.global-setup.integration.ts"],
+          setupFiles: ["./vitest.setup.integration.ts"],
         },
       },
     ],

@@ -1,9 +1,13 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+import { getCurrentUserId } from "@/lib/current-user";
+import { domainErrorToFormState } from "@/lib/errors";
 import type { ApplicationFormState } from "@/modules/applications/form-state";
 import { createApplicationSchema } from "@/modules/applications/schemas";
+import { createApplication } from "@/modules/applications/service";
 
 /** Date du jour (AAAA-MM-JJ) dans le fuseau de l'utilisateur. */
 function todayInParis() {
@@ -29,11 +33,18 @@ export async function createApplicationAction(
     };
   }
 
-  // TODO(T1.4) : enregistrer la Candidature via le service `createApplication`
-  // une fois PostgreSQL et Prisma branchés (socle technique, missions 2 et 3).
-  const { companyName, jobTitle } = result.data;
+  const { companyName, jobTitle, status } = result.data;
+  try {
+    await createApplication(await getCurrentUserId(), result.data);
+  } catch (error) {
+    return { ...domainErrorToFormState(error), values };
+  }
+
+  revalidatePath("/", "layout");
   return {
     status: "success",
-    message: `Candidature « ${jobTitle} » chez ${companyName} validée. L'enregistrement en base sera branché avec la base de données.`,
+    message: `Candidature « ${jobTitle} » chez ${companyName} enregistrée ${
+      status === "DRAFT" ? "en brouillon" : "comme postulée"
+    }.`,
   };
 }
