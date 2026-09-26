@@ -19,6 +19,7 @@ export const CONTRACT_TYPES = [
   "CDD",
   "INTERNSHIP",
   "APPRENTICESHIP",
+  "GRADUATE_PROGRAM",
   "FREELANCE",
   "TEMPORARY",
   "OTHER",
@@ -32,11 +33,15 @@ export const APPLICATION_SOURCES = [
   "APEC",
   "FRANCE_TRAVAIL",
   "COMPANY_WEBSITE",
+  "SCHOOL",
   "REFERRAL",
   "SPONTANEOUS",
   "OTHER",
 ] as const;
 export type ApplicationSource = (typeof APPLICATION_SOURCES)[number];
+
+export const CURRENCIES = ["EUR", "CHF", "GBP", "USD"] as const;
+export type Currency = (typeof CURRENCIES)[number];
 
 export const SALARY_PERIODS = ["YEARLY", "MONTHLY"] as const;
 export type SalaryPeriod = (typeof SALARY_PERIODS)[number];

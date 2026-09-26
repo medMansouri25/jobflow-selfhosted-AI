@@ -79,7 +79,7 @@ Pouvoir **enregistrer, retrouver, faire avancer et supprimer** chaque Candidatur
 | ID | Règle |
 |---|---|
 | BR-001-01 | En **Brouillon**, seuls l'**Entreprise** et l'**intitulé du poste** sont obligatoires. |
-| BR-001-02 | Pour être **Postulée** (à la création ou par transition), une Candidature doit avoir une **date de candidature**. Si elle est absente au moment de la transition, elle est proposée par défaut à la date du jour. ⚑ Hypothèse : la description de l'Annonce reste facultative, pour couvrir les candidatures spontanées sans Annonce. |
+| BR-001-02 | Pour être **Postulée** (à la création ou par transition), une Candidature doit avoir une **localisation**, un **type de contrat**, une **source** et une **date de candidature** (champs marqués † dans le formulaire). Si la date est absente au moment d'une transition, elle est proposée par défaut à la date du jour. La description de l'Annonce reste facultative, pour couvrir les candidatures spontanées. _Modifié le 2026-09-26 d'après la maquette `JobFlow AI.html` (auparavant : seule la date était exigée)._ |
 | BR-001-03 | La date de candidature ne peut pas être dans le futur. |
 | BR-001-04 | Salaire : `salaryMin` ≤ `salaryMax` quand les deux sont saisis ; dès qu'un montant est saisi, la devise et la période sont obligatoires. Devise par défaut : EUR. |
 
@@ -158,7 +158,7 @@ Un seul enregistrement, créé par le script d'initialisation de la base (seed).
 | source | enum `ApplicationSource` | non | |
 | jobDescription | texte long | non | ≤ 50 000 caractères, stocké et affiché en **texte brut** |
 | salaryMin, salaryMax | entier positif | non | BR-001-04 |
-| salaryCurrency | code ISO 4217 | si montant | défaut `EUR` |
+| salaryCurrency | `EUR`, `CHF`, `GBP` ou `USD` | si montant | défaut `EUR` |
 | salaryPeriod | enum `YEARLY` / `MONTHLY` | si montant | |
 | appliedAt | date (sans heure) | si Postulée ou au-delà | BR-001-02, BR-001-03 |
 | cvLabel | texte | non | ≤ 200 caractères (ex. « CV_2026_backend_v3 ») |
@@ -181,8 +181,8 @@ Un seul enregistrement, créé par le script d'initialisation de la base (seed).
 | Enum | Valeurs |
 |---|---|
 | `ApplicationStatus` | `DRAFT`, `APPLIED`, `INTERVIEW`, `ACCEPTED`, `REJECTED`, `ARCHIVED` |
-| `ContractType` ⚑ | `CDI`, `CDD`, `INTERNSHIP` (stage), `APPRENTICESHIP` (alternance), `FREELANCE`, `TEMPORARY` (intérim), `OTHER` |
-| `ApplicationSource` ⚑ | `LINKEDIN`, `INDEED`, `WELCOME_TO_THE_JUNGLE`, `APEC`, `FRANCE_TRAVAIL`, `COMPANY_WEBSITE`, `REFERRAL` (cooptation), `SPONTANEOUS` (candidature spontanée), `OTHER` |
+| `ContractType` | `CDI`, `CDD`, `INTERNSHIP` (stage), `APPRENTICESHIP` (alternance), `GRADUATE_PROGRAM`, `FREELANCE`, `TEMPORARY` (intérim), `OTHER` |
+| `ApplicationSource` | `LINKEDIN`, `INDEED`, `WELCOME_TO_THE_JUNGLE`, `APEC`, `FRANCE_TRAVAIL`, `COMPANY_WEBSITE` (site carrière), `SCHOOL` (école), `REFERRAL` (réseau / cooptation), `SPONTANEOUS` (candidature spontanée), `OTHER` |
 
 Codes en anglais dans la base et le code ; libellés en français dans l'interface.
 
@@ -191,7 +191,8 @@ Codes en anglais dans la base et le code ; libellés en français dans l'interfa
 | Page | Contenu |
 |---|---|
 | `/applications` | Liste : Entreprise, poste, statut (badge), date de candidature, dernière modification. Barre de recherche, filtres, tri, pagination. Bouton « Nouvelle candidature ». État vide avec un appel à créer la première Candidature. |
-| `/applications/new` | Formulaire. Choix du statut initial (Brouillon / Postulée). Champ Entreprise avec autocomplétion et option « Créer « … » ». |
+| Fenêtre « Nouvelle candidature » | Ouverte depuis le bouton de la barre du haut, sur toutes les pages. Le statut initial est choisi par le bouton d'enregistrement : « Enregistrer en brouillon » ou « Enregistrer comme postulée ». Légende : `*` requis, `†` requis pour passer en Postulée. Champ Entreprise avec autocomplétion et option « Créer « … » ». |
+| `/applications/new` | Même formulaire en pleine page, pour un accès direct par URL. |
 | `/applications/[id]` | Détail : champs, description de l'Annonce en texte brut (retours à la ligne conservés), lien vers l'Annonce ouvert dans un nouvel onglet, historique des statuts (le plus récent en haut), actions « Changer le statut », « Modifier », « Supprimer ». |
 | `/applications/[id]/edit` | Même formulaire que la création, sans le statut. |
 
@@ -270,8 +271,8 @@ Chaque test cite l'identifiant du critère qu'il couvre (ex. `it("AC-001-06 refu
 
 | # | Hypothèse | Alternative |
 |---|---|---|
-| H1 | Description de l'Annonce facultative, même en Postulée (BR-001-02) | La rendre obligatoire hors source `SPONTANEOUS` |
+| H1 | ~~Description de l'Annonce facultative, même en Postulée~~ — tranché par la maquette : facultative | — |
 | H2 | Pas de saisie d'une date passée pour un changement de statut (BR-001-09) | Champ « date réelle » facultatif, défaut maintenant |
 | H3 | L'Entreprise reste après suppression de sa dernière Candidature (BR-001-12) | Supprimer les Entreprises orphelines |
-| H4 | Listes `ContractType` et `ApplicationSource` (§7) | Ajouter / retirer des valeurs, ou texte libre pour la source |
+| H4 | ~~Listes `ContractType` et `ApplicationSource`~~ — tranché par la maquette (ajout de Graduate Program et École) | — |
 | H5 | Pagination par 25 (FR-001-12) | Pas de pagination tant qu'il y a peu de Candidatures |

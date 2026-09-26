@@ -21,6 +21,7 @@ export const CONTRACT_TYPE_LABELS: Record<ContractType, string> = {
   CDD: "CDD",
   INTERNSHIP: "Stage",
   APPRENTICESHIP: "Alternance",
+  GRADUATE_PROGRAM: "Graduate Program",
   FREELANCE: "Freelance",
   TEMPORARY: "Intérim",
   OTHER: "Autre",
@@ -32,13 +33,14 @@ export const SOURCE_LABELS: Record<ApplicationSource, string> = {
   WELCOME_TO_THE_JUNGLE: "Welcome to the Jungle",
   APEC: "APEC",
   FRANCE_TRAVAIL: "France Travail",
-  COMPANY_WEBSITE: "Site de l'entreprise",
-  REFERRAL: "Cooptation",
+  COMPANY_WEBSITE: "Site carrière",
+  SCHOOL: "École",
+  REFERRAL: "Réseau / cooptation",
   SPONTANEOUS: "Candidature spontanée",
   OTHER: "Autre",
 };
 
 export const SALARY_PERIOD_LABELS: Record<SalaryPeriod, string> = {
-  YEARLY: "par an",
-  MONTHLY: "par mois",
+  YEARLY: "Annuel",
+  MONTHLY: "Mensuel",
 };

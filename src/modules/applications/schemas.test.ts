@@ -69,18 +69,43 @@ describe("création d'une candidature", () => {
     );
   });
 
-  it("accepte une Candidature Postulée datée d'aujourd'hui", () => {
+  const COMPLETE_APPLIED = {
+    status: "APPLIED",
+    appliedAt: "2026-09-24",
+    location: "Paris",
+    contractType: "CDI",
+    source: "LINKEDIN",
+  };
+
+  it("accepte une Candidature Postulée complète datée d'aujourd'hui", () => {
     const result = createApplicationSchema(TODAY).safeParse(
-      formInput({ status: "APPLIED", appliedAt: "2026-09-24" }),
+      formInput(COMPLETE_APPLIED),
     );
 
     expect(result.success).toBe(true);
   });
 
+  it.each(["location", "contractType", "source"])(
+    "exige « %s » pour une Candidature Postulée (BR-001-02)",
+    (field) => {
+      expect(
+        fieldErrors(formInput({ ...COMPLETE_APPLIED, [field]: "" })),
+      ).toHaveProperty(field);
+    },
+  );
+
   it("refuse une date de candidature dans le futur (BR-001-03)", () => {
     expect(
-      fieldErrors(formInput({ status: "APPLIED", appliedAt: "2026-09-25" })),
+      fieldErrors(formInput({ ...COMPLETE_APPLIED, appliedAt: "2026-09-25" })),
     ).toHaveProperty("appliedAt");
+  });
+
+  it("accepte le type de contrat Graduate Program et la source École", () => {
+    const result = createApplicationSchema(TODAY).safeParse(
+      formInput({ contractType: "GRADUATE_PROGRAM", source: "SCHOOL" }),
+    );
+
+    expect(result.success).toBe(true);
   });
 
   it("refuse un statut initial autre que Brouillon ou Postulée (FR-001-01)", () => {

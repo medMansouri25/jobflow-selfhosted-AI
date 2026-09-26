@@ -3,6 +3,7 @@ import { z } from "zod";
 import {
   APPLICATION_SOURCES,
   CONTRACT_TYPES,
+  CURRENCIES,
   INITIAL_STATUSES,
   SALARY_PERIODS,
 } from "@/modules/applications/domain/application";
@@ -37,6 +38,14 @@ const httpUrl = z.preprocess(
     .optional(),
 );
 
+/** Champs exigés pour passer en Postulée (BR-001-02), avec leur libellé d'erreur. */
+const REQUIRED_WHEN_APPLIED = [
+  ["location", "La localisation"],
+  ["contractType", "Le type de contrat"],
+  ["source", "La source de l'Annonce"],
+  ["appliedAt", "La date de candidature"],
+] as const;
+
 /**
  * Création d'une Candidature (SPEC-001). `today` (AAAA-MM-JJ) est passé en paramètre
  * pour que la règle « pas de date future » reste testable et déterministe.
@@ -66,7 +75,7 @@ export function createApplicationSchema(today: string) {
       salaryMax: optionalAmount,
       salaryCurrency: z.preprocess(
         (value) => emptyToUndefined(value) ?? "EUR",
-        z.string().regex(/^[A-Z]{3}$/, "Code devise sur 3 lettres (ex. EUR)"),
+        z.enum(CURRENCIES, { error: "Devise non prise en charge" }),
       ),
       salaryPeriod: optionalEnum(SALARY_PERIODS),
       appliedAt: z.preprocess(
@@ -78,12 +87,16 @@ export function createApplicationSchema(today: string) {
       notes: optionalText(20_000),
     })
     .superRefine((input, ctx) => {
-      if (input.status === "APPLIED" && !input.appliedAt) {
-        ctx.addIssue({
-          code: "custom",
-          path: ["appliedAt"],
-          message: "La date de candidature est obligatoire pour une candidature Postulée",
-        });
+      if (input.status === "APPLIED") {
+        for (const [field, label] of REQUIRED_WHEN_APPLIED) {
+          if (!input[field]) {
+            ctx.addIssue({
+              code: "custom",
+              path: [field],
+              message: `${label} est obligatoire pour une candidature Postulée`,
+            });
+          }
+        }
       }
       if (input.appliedAt && input.appliedAt > today) {
         ctx.addIssue({
