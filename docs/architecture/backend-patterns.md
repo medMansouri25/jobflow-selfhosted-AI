@@ -77,6 +77,12 @@ export function isDefinitive(status: ApplicationStatus): boolean  // Statut déf
 - Les pages (Server Components) appellent **directement** les fonctions de lecture du service. Pas de Server Action ni d'API interne pour lire.
 - Pas de Route Handler métier : le seul Route Handler est `/api/health`.
 
+### Services externes — `src/lib/storage.ts`
+
+- Un service externe (stockage des pièces jointes, ADR `0006`) est appelé **uniquement** à travers un adaptateur de `lib/` à interface étroite : `FileStorage` (`upload(file)`, `remove(keys)`), implémenté par `createUploadThingStorage(client)`. Ce n'est pas un repository : c'est la frontière avec un système que les tests ne doivent pas appeler.
+- Le service reçoit l'adaptateur en paramètre, avec la valeur de production par défaut (`storage = getStorage()`) ; les tests d'intégration passent `createMemoryStorage()` (`src/test/memory-storage.ts`), qui sait aussi simuler un échec d'envoi ou de suppression.
+- Ordre fichier → base : envoyer d'abord, enregistrer ensuite dans la transaction ; si l'enregistrement échoue, supprimer les fichiers envoyés, et si cette suppression échoue aussi, le dire à l'utilisateur (`DomainError`) et journaliser les clés restées chez le service.
+
 ## Erreurs
 
 ```ts

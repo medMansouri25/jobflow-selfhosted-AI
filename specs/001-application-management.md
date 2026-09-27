@@ -39,7 +39,7 @@ Pouvoir **enregistrer, retrouver, faire avancer et supprimer** chaque Candidatur
 | Entité Contact | SPEC-003 |
 | Page de gestion des Entreprises (renommer, fusionner, supprimer) | Plus tard, si le besoin apparaît |
 | Dashboard et statistiques | SPEC-002 |
-| Fichiers joints (CV, lettre en PDF) | SPEC-005 |
+| Bibliothèque de documents partagés entre Candidatures | SPEC-005 |
 | Relances, détection des doublons | Hors périmètre (décision du 2026-09-24) |
 | Import / export | Non prévu |
 
@@ -162,10 +162,26 @@ Un seul enregistrement, créé par le script d'initialisation de la base (seed).
 | salaryCurrency | `EUR`, `CHF`, `GBP` ou `USD` | si montant | défaut `EUR` |
 | salaryPeriod | enum `YEARLY` / `MONTHLY` | si montant | |
 | appliedAt | date (sans heure) | si Postulée ou au-delà | BR-001-02, BR-001-03 |
-| cvLabel | texte | non | ≤ 200 caractères (ex. « CV_2026_backend_v3 ») |
-| coverLetter | texte long | non | ≤ 20 000 caractères |
 | notes | texte long | non | ≤ 20 000 caractères |
 | createdAt, updatedAt | horodatage | oui | |
+
+### Attachment — Pièce jointe
+
+_Ajouté le 2026-09-28 (remplace les champs texte `cvLabel` et `coverLetter`) — [ADR 0006](../docs/adr/0006-pieces-jointes-sur-uploadthing.md)._
+
+| Champ | Type | Obligatoire | Contraintes |
+|---|---|---|---|
+| id | identifiant | oui | |
+| userId | → User | oui | |
+| applicationId | → Application | oui | suppression en cascade |
+| kind | enum `AttachmentKind` (`CV`, `COVER_LETTER`) | oui | au plus une par type et par Candidature |
+| fileKey | texte | oui | clé UploadThing, unique |
+| url | URL | oui | URL du fichier chez UploadThing |
+| name | texte | oui | nom d'origine du fichier |
+| size | entier | oui | octets, ≤ 4 Mo |
+| createdAt | horodatage | oui | |
+
+Le fichier lui-même n'est jamais stocké dans PostgreSQL.
 
 ### ApplicationStatusChange — Historique des statuts
 
@@ -192,7 +208,7 @@ Codes en anglais dans la base et le code ; libellés en français dans l'interfa
 | Page | Contenu |
 |---|---|
 | `/applications` | Liste : Entreprise, poste, statut (badge), date de candidature, dernière modification. Barre de recherche, filtres, tri, pagination. Bouton « Nouvelle candidature ». État vide avec un appel à créer la première Candidature. |
-| Fenêtre « Nouvelle candidature » | Ouverte depuis le bouton de la barre du haut, sur toutes les pages. Un seul bouton « Enregistrer » : la Candidature est créée Postulée, puis la fenêtre se ferme. Légende : `*` requis. Date de candidature pré-remplie avec la date du jour. Champ Entreprise avec autocomplétion et option « Créer « … » ». |
+| Fenêtre « Nouvelle candidature » | Ouverte depuis le bouton de la barre du haut, sur toutes les pages. Un seul bouton « Enregistrer » : la Candidature est créée Postulée, puis la fenêtre se ferme. Deux champs fichier facultatifs, CV et lettre de motivation (PDF, 4 Mo maximum) ; en cas d'échec d'envoi ou d'enregistrement, un message dit ce qui a été fait des fichiers (supprimés, ou restés sur UploadThing). Légende : `*` requis. Date de candidature pré-remplie avec la date du jour. Champ Entreprise avec autocomplétion et option « Créer « … » ». |
 | `/applications/new` | Même formulaire en pleine page, pour un accès direct par URL. |
 | `/applications/[id]` | Détail : champs, description de l'Annonce en texte brut (retours à la ligne conservés), lien vers l'Annonce ouvert dans un nouvel onglet, historique des statuts (le plus récent en haut), actions « Changer le statut », « Modifier », « Supprimer ». |
 | `/applications/[id]/edit` | Même formulaire que la création, sans le statut. |
@@ -245,7 +261,7 @@ Codes en anglais dans la base et le code ; libellés en français dans l'interfa
 
 - **Accès** : l'application n'est joignable que via Tailscale (ADR `0001`) ; pas d'authentification applicative en Phase 1. Toutes les requêtes sont néanmoins filtrées par `userId`.
 - **Validation** : toute entrée est validée **côté serveur** par des schémas Zod, y compris les transitions de statut. La validation côté client n'est qu'un confort.
-- **XSS** : la description, les notes et la lettre sont affichées en texte brut, jamais interprétées comme du HTML ou du Markdown.
+- **XSS** : la description et les notes sont affichées en texte brut, jamais interprétées comme du HTML ou du Markdown.
 - **URL** : seules les URL `http`/`https` sont acceptées ; les liens externes s'ouvrent avec `rel="noopener noreferrer"`.
 - **Injection SQL** : requêtes paramétrées via Prisma ; la recherche n'utilise jamais de SQL construit par concaténation.
 - **Requêtes forgées** : les Server Actions de Next.js vérifient l'origine des requêtes ; la machine à états est appliquée côté serveur (AC-001-06, AC-001-08).

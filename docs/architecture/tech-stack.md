@@ -21,6 +21,7 @@ Monolithe modulaire : une application, un conteneur, une base (ADR `0004`).
 | Validation | Zod | 4.6 | Schémas partagés, validation côté serveur |
 | ORM | Prisma | installé en T0.6 | ADR `0003` |
 | Base de données | PostgreSQL | choisie en T0.5 | Hébergement en production tranché en Phase 1.5 (Pi + SSD ou Neon UE) |
+| Stockage de fichiers | UploadThing (`UTApi`, côté serveur) | uploadthing 7.7 (`effect` forcé en 3.20.0 via `overrides`) | Pièces jointes PDF, ADR `0006` |
 | Tests | Vitest, Testing Library, jsdom | Vitest 5.0, Testing Library React 16.3, jsdom 30 | Rapide, compatible TypeScript / ESM sans configuration lourde |
 | Gestionnaire de paquets | npm | 12.1 | Voir « Environnement de développement » |
 | Conteneurs | Docker, Docker Compose | — | Base de dev/test ; image de production multi-arch |
@@ -79,12 +80,14 @@ Les tests sont placés à côté du fichier testé. L'alias `@/` est résolu à 
 ## Contraintes
 
 - Cible **ARM64** (Raspberry Pi, 4 Go de RAM) : image Docker multi-arch construite en CI ; `next build` n'est jamais exécuté sur la Pi.
-- Aucune exposition publique (ADR `0001`).
+- Aucune exposition publique de l'application (ADR `0001`) ; seules les pièces jointes sont servies hors du tailnet, par UploadThing (ADR `0006`).
 - Aucun secret dans Git.
 
 ## Services externes
 
-Aucun en Phase 1. Plus tard : fournisseur d'IA (Phase 7, choix par ADR) et, selon la décision de la Phase 1.5, Neon.
+- **UploadThing** : stockage des pièces jointes PDF (ADR `0006`), jeton `UPLOADTHING_TOKEN` (facultatif en test et en CI, où un faux le remplace), accès uniquement via `src/lib/storage.ts`.
+
+Plus tard : fournisseur d'IA (Phase 7, choix par ADR) et, selon la décision de la Phase 1.5, Neon.
 
 ## Scripts npm
 

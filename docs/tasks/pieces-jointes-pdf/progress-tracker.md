@@ -29,7 +29,7 @@ Chaque Candidature peut porter deux **Pièces jointes** PDF — son CV et sa let
 - [x] Mission 1: Backend — dépendance UploadThing, adaptateur de stockage (envoyer / supprimer) avec faux pour les tests, modèle `Attachment` + migration (retrait de `cvLabel` / `coverLetter`), `UPLOADTHING_TOKEN`
 - [x] Mission 2: Backend — création avec pièces jointes : validation PDF ≤ 4 Mo, envoi puis transaction, suppression des fichiers si échec, les quatre messages d'erreur, limite des Server Actions
 - [x] Mission 3: Frontend — formulaire à deux champs fichier (CV, lettre) à la place des champs texte ; section « Pièces jointes » de la fiche avec nom et taille, ouverture dans un nouvel onglet
-- [ ] Mission 4: Docs — ADR 0006 (UploadThing, amende ADR 0001), SPEC-001 (modèle, formulaire, « fichiers joints » retirés du hors-périmètre), SPEC-000 (005 réduit à une future bibliothèque de documents partagés), `tech-stack.md`, `backend-patterns.md` (adaptateur de stockage), suppression du handoff
+- [x] Mission 4: Docs — ADR 0006 (UploadThing, amende ADR 0001), SPEC-001 (modèle, formulaire, « fichiers joints » retirés du hors-périmètre), SPEC-000 (005 réduit à une future bibliothèque de documents partagés), `tech-stack.md`, `backend-patterns.md` (adaptateur de stockage), suppression du handoff
 
 ## Mission Summaries
 _Filled in as each mission completes. Future missions read these for context._
@@ -60,3 +60,8 @@ _Filled in as each mission completes. Future missions read these for context._
   - Via une Server Action, un champ fichier laissé vide arrive comme un `File` nommé « blob » de 0 octet (et non sans nom, comme en Node pur) : tout fichier de 0 octet vaut « pas de fichier ». Trouvé à l'essai réel, test ajouté.
   - `effect` était installé en deux versions (3.20.0 par Prisma, 3.17.7 par UploadThing) : chaque appel `UTApi` inondait les journaux d'avertissements. `overrides.effect = "3.20.0"` dans `package.json` n'en garde qu'une.
   - L'URL d'un fichier supprimé peut encore répondre un moment (cache CDN d'UploadThing).
+
+### Mission 4: Documentation
+**Status**: Completed
+- **Files**: `docs/adr/0006-pieces-jointes-sur-uploadthing.md` (nouveau), `docs/adr/0001-…` (note d'amendement), `specs/001-application-management.md`, `specs/000-product-vision.md`, `docs/architecture/tech-stack.md`, `backend-patterns.md`, `frontend-patterns.md` ; handoff `cv-lettre-pieces-jointes` supprimé
+- **Built**: ADR 0006 (UploadThing, amende 0001, conséquences : adaptateur unique, nettoyage, à revoir si confidentialité). SPEC-001 : modèle `Attachment`, `cvLabel` / `coverLetter` retirés, formulaire à champs fichier, hors-périmètre « bibliothèque de documents partagés » → SPEC-005. SPEC-000 : 005 réduit à cette bibliothèque. tech-stack : ligne « Stockage de fichiers », service externe UploadThing, contrainte d'exposition précisée. backend-patterns : section « Services externes — `src/lib/storage.ts` ». frontend-patterns : champs fichier.

@@ -93,5 +93,6 @@ const [state, formAction, pending] = useActionState(createApplicationAction, ini
 - `ApplicationForm` reçoit sa Server Action en prop (`action`) et, dans la modale, un `onCancel` ; sans `onCancel`, « Annuler » ramène à la liste.
 - **Un seul bouton « Enregistrer »**, sans statut : toute Candidature est créée Postulée côté serveur (ADR 0005). Marque de champ : `*` obligatoire (BR-001-02).
 - La date de candidature vaut par défaut la date du jour, **lue dans le navigateur** (`useSyncExternalStore`, instantané serveur `undefined`) : `/applications/new` est pré-rendue au build, une date calculée au rendu y serait figée.
+- Pièces jointes : deux `Input type="file"` (`name="cv"`, `name="coverLetter"`, `accept="application/pdf"`) dans le même formulaire, envoyés avec la Server Action. Un fichier choisi ne peut pas être ré-affiché après une erreur (le navigateur l'interdit) : seule la saisie texte est conservée.
 - `NewApplicationDialog` enveloppe l'action (`saveAndClose`) : la fenêtre se ferme quand l'action renvoie `status: "success"`, et reste ouverte avec la saisie en cas d'erreur.
 - Un composant `Field` relie libellé, aide et erreur (`aria-describedby`, `aria-invalid`) ; `SelectField` enveloppe le `Select` shadcn (Radix) avec `name`, soumis nativement, et un `key` dérivé de la valeur renvoyée pour le réinitialiser après une erreur.
