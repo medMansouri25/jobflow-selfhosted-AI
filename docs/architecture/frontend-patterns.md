@@ -17,6 +17,8 @@ Conventions de l'interface. L'interface est en français ; le code en anglais.
 | `src/components/` | Composants partagés de l'application (ex. `AppHeader`, en-tête et navigation principale) |
 | `src/app/**/page.tsx` | Assemblage de la page, sans logique métier |
 
+- Ligne de tableau cliquable : `RowLink` (`src/components/`) dans la première cellule, `<tr className="relative …">` ; son `after:absolute after:inset-0` étend la zone du lien à toute la ligne (clic, clavier, clic molette, focus visible). Jamais de `onClick` sur `<tr>`.
+
 ## shadcn/ui
 
 - Les composants sont **copiés** dans `src/components/ui/` via la CLI shadcn (`npx shadcn@latest add <composant>`, configuration dans `components.json`) : leur code appartient au projet et peut être modifié.
@@ -54,6 +56,8 @@ const [state, formAction, pending] = useActionState(createApplicationAction, ini
 
 - Description d'Annonce, notes, lettre : rendues en **texte brut** (retours à la ligne conservés via CSS `white-space: pre-wrap`). Jamais de `dangerouslySetInnerHTML`, jamais d'interprétation Markdown.
 - Liens externes : `target="_blank"` avec `rel="noopener noreferrer"`.
+- Champ facultatif non renseigné : affiché « — » (listes et fiche), jamais vide ni « null ».
+- Dates : une date sans heure (date de candidature) est formatée avec `timeZone: "UTC"` pour ne pas glisser d'un jour ; un instant (historique des statuts) est formaté dans le fuseau `Europe/Paris` (« 27 sept. 2026 · 16:21 »).
 
 ## États de page
 
@@ -81,7 +85,7 @@ const [state, formAction, pending] = useActionState(createApplicationAction, ini
 - Tailwind CSS, avec les variables de thème de shadcn/ui définies dans `src/app/globals.css` (clair et sombre).
 - **Palette de la maquette** : fond `#f5f7fa`, surfaces blanches, texte `#0f172a`, **bleu `#2563eb`** pour l'action (`--primary`, `--ring`), **vert `#16a34a`** en second accent (`--success`), bordures `#dde3ea`. Changer de palette = modifier les variables, pas les composants.
 - **Police** : Archivo (`next/font/google`, variable `--font-archivo`) ; titres en graisse 800 (`font-heading font-extrabold`).
-- **Couleurs de statut** : pour chaque statut, une couleur pleine (`--status-applied`, barres et pastilles), un fond et un texte de badge (`--status-applied-bg`, `--status-applied-fg`), exposés en classes Tailwind (`bg-status-applied-bg`, `text-status-applied-fg`).
+- **Couleurs de statut** : pour chaque statut, une couleur pleine (`--status-applied`, barres et pastilles), un fond et un texte de badge (`--status-applied-bg`, `--status-applied-fg`), exposés en classes Tailwind (`bg-status-applied-bg`, `text-status-applied-fg`). La couleur pleine est exposée par `STATUS_DOT_CLASSES` (`status-badge.tsx`), source unique pour barres, pastilles et points de l'historique.
 - Rayons : 8 px par défaut (`--radius`), badges en pilule.
 
 ## Formulaire de candidature
