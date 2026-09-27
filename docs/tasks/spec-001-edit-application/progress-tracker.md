@@ -23,7 +23,7 @@ Un bouton « Modifier » sur la fiche ouvre le formulaire pré-rempli (« Modifi
 
 ## Missions
 - [x] Mission 1: Backend — schéma de modification (+ « Retirer » CV / lettre) et `updateApplication` : propriétaire vérifié (404 sinon), champs mis à jour, Entreprise trouvée ou créée, pièces jointes gardées / remplacées / ajoutées / retirées, anciens fichiers supprimés après l'enregistrement, tous les cas d'échec (tests d'intégration avec faux stockage)
-- [ ] Mission 2: Frontend — action `updateApplicationAction`, formulaire pré-rempli avec le bloc « pièces jointes actuelles », bouton « Modifier » et fenêtre « Modifier — <Entreprise> » sur la fiche, fermeture et rechargement après succès (AC-001-11)
+- [x] Mission 2: Frontend — action `updateApplicationAction`, formulaire pré-rempli avec le bloc « pièces jointes actuelles », bouton « Modifier » et fenêtre « Modifier — <Entreprise> » sur la fiche, fermeture et rechargement après succès (AC-001-11)
 - [ ] Mission 3: Docs — SPEC-001 (§8 : modification en fenêtre, plus de page `/edit` ; pièces jointes modifiables), `frontend-patterns.md`, `backend-patterns.md` si un pattern change, `TASKS.md`
 
 ## Mission Summaries
@@ -36,3 +36,10 @@ _Filled in as each mission completes. Future missions read these for context._
 - **Tests**: 10 tests d'intégration (AC-001-11, champ vidé, propriétaire, Entreprise corrigée, ajout, remplacement, retrait, échec d'envoi, introuvable avec fichier envoyé, ancien fichier non supprimé) + 1 unitaire (cases « Retirer ») ; mutation vérifiée (ignorer « Retirer » fait échouer un test).
 - **Gotchas**: Prisma **ignore** une valeur `undefined` au lieu de vider la colonne : sans `toColumns`, vider des notes n'aurait rien effacé (trouvé par le test « champ vidé »). Sans contrôle de propriétaire, `update({ where: { id } })` aurait laissé un autre utilisateur modifier la Candidature (test rouge avant le correctif). Une `DomainError` levée dans la transaction (ex. introuvable) garde son message après le nettoyage des fichiers (`saveOrDiscard`).
 - **Integrates with**: Mission 2 appelle `updateApplication` depuis `updateApplicationAction` et affiche `leftover` dans le message de succès.
+
+### Mission 2: Interface de modification
+**Status**: Completed
+- **Files**: `actions.ts`, `form-values.ts` (+ test), `form-state.ts`, `format.ts`, `components/application-form.tsx` (+ test), `application-form-dialog.tsx`, `new-application-dialog.tsx`, `edit-application-dialog.tsx` (+ test), `application-detail.tsx` (+ test), `app/applications/[id]/page.tsx`
+- **Built**: `updateApplicationAction(id, …)` (lié par la page avec `bind`), `readForm` / `invalid` partagés avec la création ; nouvel état `warning` (enregistré mais un ancien fichier reste chez UploadThing → la fenêtre reste ouverte et l'affiche) ; `toFormValues(application)` ; `ApplicationForm` accepte `label`, `initialValues`, `attachments` et affiche `AttachmentField` (fichier actuel + « Retirer … » + « Remplacer … par… ») ; `ApplicationFormDialog` générique (fermeture sur `success`), utilisé par `NewApplicationDialog` et `EditApplicationDialog` (« Modifier — <Entreprise> ») ; `ApplicationDetail` reçoit un emplacement `actions` ; `formatFileSize` partagé (`format.ts`).
+- **Tests**: form-values.test.ts ; formulaire (pré-remplissage, pièces jointes actuelles) ; fenêtre de modification (ouverture, fermeture après succès, reste ouverte sur `warning`) ; fiche (emplacement des actions). Essai réel : Candidature d'essai modifiée depuis sa fiche (poste changé, CV ajouté chez UploadThing) → fiche mise à jour ; tout nettoyé ensuite (UploadThing vide, base : Sanofi seule).
+- **Gotchas**: dans le panneau navigateur caché, la fenêtre Radix fermée reste dans le DOM (`data-state="closed"`, animation de sortie jamais jouée car `visibilityState: hidden`) : vérifier `data-state`, pas la présence de `[role=dialog]`. Ce n'est pas un bug de l'application.

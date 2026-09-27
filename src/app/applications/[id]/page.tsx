@@ -3,7 +3,10 @@ import { notFound } from "next/navigation";
 
 import { getCurrentUserId } from "@/lib/current-user";
 import { NotFoundError } from "@/lib/errors";
+import { updateApplicationAction } from "@/modules/applications/actions";
 import { ApplicationDetail } from "@/modules/applications/components/application-detail";
+import { EditApplicationDialog } from "@/modules/applications/components/edit-application-dialog";
+import { toFormValues } from "@/modules/applications/form-values";
 import { getApplication } from "@/modules/applications/service";
 
 export const metadata: Metadata = {
@@ -19,5 +22,17 @@ export default async function ApplicationPage({ params }: PageProps<"/applicatio
     if (error instanceof NotFoundError) notFound();
     throw error;
   });
-  return <ApplicationDetail application={application} />;
+  return (
+    <ApplicationDetail
+      application={application}
+      actions={
+        <EditApplicationDialog
+          action={updateApplicationAction.bind(null, application.id)}
+          companyName={application.company.name}
+          initialValues={toFormValues(application)}
+          attachments={application.attachments.map(({ kind, name, size }) => ({ kind, name, size }))}
+        />
+      }
+    />
+  );
 }
