@@ -6,7 +6,10 @@ import {
   APPLICATION_STATUSES,
   type ApplicationStatus,
 } from "@/modules/applications/domain/application";
-import { StatusBadge } from "@/modules/applications/components/status-badge";
+import {
+  STATUS_DOT_CLASSES,
+  StatusBadge,
+} from "@/modules/applications/components/status-badge";
 import { STATUS_LABELS } from "@/modules/applications/labels";
 
 export type RecentApplication = {
@@ -15,12 +18,6 @@ export type RecentApplication = {
   jobTitle: string;
   status: ApplicationStatus;
   updatedAt: Date;
-};
-
-const STATUS_DOT: Record<ApplicationStatus, string> = {
-  APPLIED: "bg-status-applied",
-  INTERVIEW: "bg-status-interview",
-  REJECTED: "bg-status-rejected",
 };
 
 const dateFormat = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" });
@@ -68,7 +65,7 @@ export function Dashboard({
             APPLICATION_STATUSES.map((status) => (
               <span
                 key={status}
-                className={STATUS_DOT[status]}
+                className={STATUS_DOT_CLASSES[status]}
                 style={{ width: `${(counts[status] / total) * 100}%` }}
               />
             ))}
@@ -77,7 +74,7 @@ export function Dashboard({
           {APPLICATION_STATUSES.map((status) => (
             <li key={status} className="flex flex-col gap-1 border-r border-b p-4 last:border-r-0">
               <span className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span aria-hidden className={cn("size-2 rounded-sm", STATUS_DOT[status])} />
+                <span aria-hidden className={cn("size-2 rounded-sm", STATUS_DOT_CLASSES[status])} />
                 {STATUS_LABELS[status]}
               </span>
               <span className="font-heading text-2xl font-extrabold">

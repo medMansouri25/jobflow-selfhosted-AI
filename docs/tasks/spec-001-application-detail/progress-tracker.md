@@ -23,7 +23,7 @@ Une Candidature enregistrée ne s'ouvre nulle part : les lignes de la liste et d
 
 ## Missions
 - [x] Mission 1: Backend — `getApplication` renvoie `NotFoundError` pour un id qui n'est pas un UUID comme pour un id inconnu (test d'intégration)
-- [ ] Mission 2: Frontend — page `/applications/[id]` et composant de fiche (en-tête, Annonce, notes, historique des statuts, pièces jointes), 404 via `notFound()` (AC-001-19, AC-001-20)
+- [x] Mission 2: Frontend — page `/applications/[id]` et composant de fiche (en-tête, Annonce, notes, historique des statuts, pièces jointes), 404 via `notFound()` (AC-001-19, AC-001-20)
 - [ ] Mission 3: Frontend — lignes cliquables vers la fiche dans la liste et les « Candidatures récentes », texte de l'état vide corrigé
 
 ## Mission Summaries
@@ -34,3 +34,11 @@ _Filled in as each mission completes. Future missions read these for context._
 - **Files**: `src/modules/applications/service.ts`, `service.integration.test.ts`
 - **Built**: `getApplication` vérifie `z.uuid()` avant la requête et lève `NotFoundError("Candidature introuvable.")`, comme pour un id inconnu ou appartenant à un autre utilisateur.
 - **Integrates with**: la page de la Mission 2 n'a qu'une erreur à traduire en `notFound()`.
+
+### Mission 2: Fiche d'une Candidature
+**Status**: Completed
+- **Files**: `src/app/applications/[id]/page.tsx`, `components/application-detail.tsx` (+ test), `components/status-badge.tsx`, `dashboard/components/dashboard.tsx`
+- **Built**: `ApplicationDetail` (composant serveur, type `ApplicationDetailData` = retour de `getApplication`) : en-tête (poste, badge, « Entreprise · Lieu · Contrat · Postulée le … »), Annonce (source, salaire formaté, lien `_blank` + `noopener noreferrer`, description en `whitespace-pre-wrap`), Notes et Pièces jointes affichées seulement si remplies, historique (Europe/Paris, « Candidature créée » / « depuis … », point coloré). La page traduit `NotFoundError` en `notFound()` via `.catch` (pas de JSX dans un try/catch : règle ESLint React).
+- **Tests**: application-detail.test.tsx — 7 tests (en-tête, AC-001-19, champs d'Annonce, « — », historique, sections conditionnelles). 404 vérifiée par HTTP : `abc` et un UUID inconnu → 404, Sanofi → 200.
+- **Patterns**: `STATUS_DOT_CLASSES` exporté par `status-badge.tsx`, partagé par le tableau de bord et l'historique.
+- **Integrates with**: la tâche `pieces-jointes-pdf` remplace le contenu de la section « Pièces jointes » (`TODO(pieces-jointes-pdf)`).
