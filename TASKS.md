@@ -108,7 +108,7 @@ git push
 - Ajouter `.github/pull_request_template.md` (résumé, critères d'acceptation couverts, comment tester, checklist Definition of Done).
 - **Terminé quand** : un `git push` direct sur `main` est refusé par GitHub.
 
-### [ ] T0.3 — Initialisation Next.js
+### [x] T0.3 — Initialisation Next.js
 - `create-next-app` : TypeScript, App Router, Tailwind CSS, ESLint, dossier `src/`, alias `@/*`.
 - TypeScript en mode `strict`.
 - Scripts npm : `dev`, `build`, `start`, `lint`, `typecheck`.
@@ -117,20 +117,20 @@ git push
 - Renseigner les versions dans `docs/architecture/tech-stack.md`.
 - **Terminé quand** : `npm run lint`, `npm run typecheck` et `npm run build` passent.
 
-### [ ] T0.4 — Mise en place de Vitest
+### [x] T0.4 — Mise en place de Vitest
 - Installer et configurer Vitest (+ Testing Library pour les composants).
 - Deux projets de test : **unit** (parallèle) et **integration** (en série, base `jobflow_test`).
 - Scripts : `test`, `test:unit`, `test:integration`.
 - Un premier test trivial pour valider la configuration.
 - **Terminé quand** : `npm test` passe.
 
-### [ ] T0.5 — PostgreSQL local et configuration
+### [x] T0.5 — PostgreSQL local et configuration
 - `docker-compose.yml` : un service PostgreSQL, un volume nommé, un script d'initialisation créant `jobflow_dev` et `jobflow_test`.
 - `.env.example` (sans secret réel).
 - `src/lib/env.ts` : validation des variables d'environnement par Zod au démarrage.
 - **Terminé quand** : `docker compose up -d` démarre la base ; l'application refuse de démarrer si `DATABASE_URL` manque.
 
-### [ ] T0.6 — Prisma, seed et socle serveur
+### [x] T0.6 — Prisma, seed et socle serveur
 - Installer Prisma ; `prisma/schema.prisma` avec le modèle `User`.
 - Première migration ; `prisma/seed.ts` créant l'utilisateur unique.
 - `src/lib/db.ts` (client unique), `src/lib/current-user.ts`, `src/lib/errors.ts` (`DomainError`, `NotFoundError`, conversion en état d'action).
@@ -138,13 +138,13 @@ git push
 - `src/app/api/health/route.ts` : répond `200` si la base répond.
 - **Terminé quand** : un test d'intégration lit l'utilisateur seedé ; `/api/health` répond `200`.
 
-### [ ] T0.7 — CI GitHub Actions
+### [~] T0.7 — CI GitHub Actions
 - `.github/workflows/ci.yml` sur chaque Pull Request et chaque push sur `main` :
   - `npm ci`, `lint`, `typecheck`, tests unitaires, tests d'intégration (PostgreSQL en *service container*), `build`.
 - Rendre ce check **obligatoire** dans la protection de `main` (T0.2).
 - **Terminé quand** : une PR affiche la CI verte, et une PR avec un test cassé ne peut pas être mergée.
 
-### [ ] T0.8 — Socle UI
+### [x] T0.8 — Socle UI
 - Initialiser shadcn/ui ; ajouter Button, Input, Label, Textarea, Select, Badge, Dialog.
 - Layout racine : en-tête, navigation (Candidatures), langue `fr`.
 - `error.tsx` et `not-found.tsx` globaux.
@@ -167,7 +167,7 @@ git push
 | T1.9 | Liste, recherche, filtres, tri | `feature/spec-001-application-list` | AC-001-14, 15, 16, 21 | T1.4 |
 | T1.10 | Clôture de SPEC-001 | `docs/spec-001-done` | tous | T1.2 à T1.9 |
 
-### [ ] T1.1 — Modèle de données
+### [x] T1.1 — Modèle de données
 - Modèles Prisma `Company`, `Application`, `ApplicationStatusChange` et les énumérations (SPEC-001 §7).
 - Unicité `(userId, normalizedName)` ; cascade de `Application` vers son historique.
 - Migration.
@@ -178,13 +178,13 @@ git push
 - Tests unitaires couvrant **toutes** les transitions autorisées et interdites (BR-001-05).
 - **Terminé quand** : AC-001-05 à 09 couverts par des tests unitaires verts.
 
-### [ ] T1.3 — Schémas de validation
+### [~] T1.3 — Schémas de validation
 - `modules/applications/schemas.ts` : création, modification, changement de statut, filtres de liste.
 - Règles : champs obligatoires selon le statut, date non future, salaire, URL `http(s)`, longueurs.
 - `modules/companies/domain` : normalisation du nom d'Entreprise.
 - **Terminé quand** : AC-001-02, 03, 04, 17, 18 couverts par des tests unitaires verts.
 
-### [ ] T1.4 — Créer une Candidature
+### [~] T1.4 — Créer une Candidature
 - Service : `createApplication` (Entreprise trouvée ou créée, statut initial, entrée d'historique, en transaction).
 - Service `companies` : recherche par préfixe pour l'autocomplétion.
 - Server Action + page `/applications/new` : formulaire, autocomplétion de l'Entreprise, choix Brouillon / Postulée.
