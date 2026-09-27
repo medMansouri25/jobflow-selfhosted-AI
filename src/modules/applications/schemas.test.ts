@@ -6,21 +6,21 @@ import { createApplicationSchema } from "@/modules/applications/schemas";
 const TODAY = "2026-09-24";
 
 // Ce que le navigateur envoie : uniquement des chaînes, vides quand un champ n'est pas rempli.
+// Par défaut, une Candidature complète : toute Candidature naît Postulée.
 function formInput(overrides: Record<string, string> = {}) {
   return {
-    status: "DRAFT",
     companyName: "Thales",
     jobTitle: "Développeur backend",
-    location: "",
-    contractType: "",
-    source: "",
+    location: "Paris",
+    contractType: "CDI",
+    source: "LINKEDIN",
     jobUrl: "",
     jobDescription: "",
     salaryMin: "",
     salaryMax: "",
     salaryCurrency: "EUR",
     salaryPeriod: "",
-    appliedAt: "",
+    appliedAt: "2026-09-24",
     cvLabel: "",
     coverLetter: "",
     notes: "",
@@ -35,15 +35,14 @@ function fieldErrors(input: Record<string, string>) {
 }
 
 describe("création d'une candidature", () => {
-  it("accepte un Brouillon avec seulement l'Entreprise et l'intitulé du poste (BR-001-01)", () => {
+  it("accepte une Candidature complète, sans statut à saisir", () => {
     const result = createApplicationSchema(TODAY).safeParse(formInput());
 
     expect(result.success).toBe(true);
-    expect(result.data?.location).toBeUndefined();
     expect(result.data?.salaryMin).toBeUndefined();
   });
 
-  it("refuse un Brouillon sans intitulé de poste (AC-001-02)", () => {
+  it("refuse une Candidature sans intitulé de poste (AC-001-02)", () => {
     expect(fieldErrors(formInput({ jobTitle: "   " }))).toHaveProperty(
       "jobTitle",
     );
@@ -63,40 +62,16 @@ describe("création d'une candidature", () => {
     expect(result.data?.companyName).toBe("Capgemini");
   });
 
-  it("refuse une Candidature Postulée sans date de candidature (AC-001-03)", () => {
-    expect(fieldErrors(formInput({ status: "APPLIED" }))).toHaveProperty(
-      "appliedAt",
-    );
-  });
-
-  const COMPLETE_APPLIED = {
-    status: "APPLIED",
-    appliedAt: "2026-09-24",
-    location: "Paris",
-    contractType: "CDI",
-    source: "LINKEDIN",
-  };
-
-  it("accepte une Candidature Postulée complète datée d'aujourd'hui", () => {
-    const result = createApplicationSchema(TODAY).safeParse(
-      formInput(COMPLETE_APPLIED),
-    );
-
-    expect(result.success).toBe(true);
-  });
-
-  it.each(["location", "contractType", "source"])(
-    "exige « %s » pour une Candidature Postulée (BR-001-02)",
+  it.each(["location", "contractType", "source", "appliedAt"])(
+    "exige « %s » pour toute Candidature (BR-001-02, AC-001-03)",
     (field) => {
-      expect(
-        fieldErrors(formInput({ ...COMPLETE_APPLIED, [field]: "" })),
-      ).toHaveProperty(field);
+      expect(fieldErrors(formInput({ [field]: "" }))).toHaveProperty(field);
     },
   );
 
   it("refuse une date de candidature dans le futur (BR-001-03)", () => {
     expect(
-      fieldErrors(formInput({ ...COMPLETE_APPLIED, appliedAt: "2026-09-25" })),
+      fieldErrors(formInput({ appliedAt: "2026-09-25" })),
     ).toHaveProperty("appliedAt");
   });
 
@@ -106,12 +81,6 @@ describe("création d'une candidature", () => {
     );
 
     expect(result.success).toBe(true);
-  });
-
-  it("refuse un statut initial autre que Brouillon ou Postulée (FR-001-01)", () => {
-    expect(fieldErrors(formInput({ status: "ACCEPTED" }))).toHaveProperty(
-      "status",
-    );
   });
 
   it("refuse un salaire minimum supérieur au maximum (AC-001-17)", () => {

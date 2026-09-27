@@ -13,26 +13,29 @@ const TODAY = "2026-09-27";
 
 function input(overrides: Record<string, string> = {}) {
   return createApplicationSchema(TODAY).parse({
-    status: "DRAFT",
     companyName: "Thales",
     jobTitle: "Dev Backend",
+    location: "Paris",
+    contractType: "CDI",
+    source: "LINKEDIN",
+    appliedAt: "2026-09-20",
     ...overrides,
   });
 }
 
 describe("service des candidatures", () => {
-  it("crée un Brouillon, son Entreprise et la première entrée d'historique (AC-001-01)", async () => {
+  it("crée une Candidature Postulée, son Entreprise et la première entrée d'historique (AC-001-01)", async () => {
     const user = await createTestUser();
 
     const created = await createApplication(user.id, input());
     const application = await getApplication(user.id, created.id);
 
-    expect(application.status).toBe("DRAFT");
+    expect(application.status).toBe("APPLIED");
     expect(application.jobTitle).toBe("Dev Backend");
     expect(application.company.name).toBe("Thales");
     expect(
       application.statusChanges.map((c) => [c.fromStatus, c.toStatus]),
-    ).toEqual([[null, "DRAFT"]]);
+    ).toEqual([[null, "APPLIED"]]);
   });
 
   it("rattache la Candidature à l'Entreprise existante, sans tenir compte de la casse (AC-001-04)", async () => {
@@ -52,17 +55,12 @@ describe("service des candidatures", () => {
     expect(b.company.name).toBe("Capgemini");
   });
 
-  it("enregistre une Candidature Postulée avec sa date de candidature", async () => {
+  it("enregistre la date de candidature et le salaire", async () => {
     const user = await createTestUser();
 
     const created = await createApplication(
       user.id,
       input({
-        status: "APPLIED",
-        appliedAt: "2026-09-20",
-        location: "Paris",
-        contractType: "CDI",
-        source: "LINKEDIN",
         salaryMin: "42000",
         salaryPeriod: "YEARLY",
       }),
@@ -97,13 +95,13 @@ describe("service des candidatures", () => {
   it("compte les Candidatures par statut", async () => {
     const user = await createTestUser();
     await createApplication(user.id, input());
-    await createApplication(user.id, input({ jobTitle: "Autre brouillon" }));
+    await createApplication(user.id, input({ jobTitle: "Autre poste" }));
 
     const counts = await countApplicationsByStatus(user.id);
 
     expect(counts).toEqual({
-      DRAFT: 2,
-      APPLIED: 0,
+      DRAFT: 0,
+      APPLIED: 2,
       INTERVIEW: 0,
       ACCEPTED: 0,
       REJECTED: 0,

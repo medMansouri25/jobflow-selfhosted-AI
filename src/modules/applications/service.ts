@@ -7,12 +7,12 @@ import {
 import type { CreateApplicationInput } from "@/modules/applications/schemas";
 import { findOrCreateCompany } from "@/modules/companies/service";
 
-/** Crée une Candidature, son Entreprise si besoin et la première entrée d'historique. */
+/** Crée une Candidature, toujours Postulée, son Entreprise si besoin et la première entrée d'historique. */
 export async function createApplication(
   userId: string,
   input: CreateApplicationInput,
 ) {
-  const { companyName, appliedAt, status, ...fields } = input;
+  const { companyName, appliedAt, ...fields } = input;
   const hasSalary = fields.salaryMin !== undefined || fields.salaryMax !== undefined;
 
   return db.$transaction(async (tx) => {
@@ -21,11 +21,11 @@ export async function createApplication(
       data: {
         ...fields,
         salaryCurrency: hasSalary ? fields.salaryCurrency : null,
-        status,
-        appliedAt: appliedAt ? new Date(`${appliedAt}T00:00:00Z`) : null,
+        status: "APPLIED",
+        appliedAt: new Date(`${appliedAt}T00:00:00Z`),
         userId,
         companyId: company.id,
-        statusChanges: { create: { fromStatus: null, toStatus: status } },
+        statusChanges: { create: { fromStatus: null, toStatus: "APPLIED" } },
       },
     });
   });

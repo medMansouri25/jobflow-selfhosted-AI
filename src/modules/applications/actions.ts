@@ -4,15 +4,11 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 import { getCurrentUserId } from "@/lib/current-user";
+import { todayInParis } from "@/lib/dates";
 import { domainErrorToFormState } from "@/lib/errors";
 import type { ApplicationFormState } from "@/modules/applications/form-state";
 import { createApplicationSchema } from "@/modules/applications/schemas";
 import { createApplication } from "@/modules/applications/service";
-
-/** Date du jour (AAAA-MM-JJ) dans le fuseau de l'utilisateur. */
-function todayInParis() {
-  return new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Paris" });
-}
 
 export async function createApplicationAction(
   _previous: ApplicationFormState,
@@ -33,7 +29,7 @@ export async function createApplicationAction(
     };
   }
 
-  const { companyName, jobTitle, status } = result.data;
+  const { companyName, jobTitle } = result.data;
   try {
     await createApplication(await getCurrentUserId(), result.data);
   } catch (error) {
@@ -43,8 +39,6 @@ export async function createApplicationAction(
   revalidatePath("/", "layout");
   return {
     status: "success",
-    message: `Candidature « ${jobTitle} » chez ${companyName} enregistrée ${
-      status === "DRAFT" ? "en brouillon" : "comme postulée"
-    }.`,
+    message: `Candidature « ${jobTitle} » chez ${companyName} enregistrée.`,
   };
 }

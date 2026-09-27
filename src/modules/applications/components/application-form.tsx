@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { todayInParis } from "@/lib/dates";
 import { cn } from "@/lib/utils";
 import {
   APPLICATION_SOURCES,
@@ -35,9 +36,6 @@ type FormAction = (
   state: ApplicationFormState,
   formData: FormData,
 ) => Promise<ApplicationFormState>;
-
-/** Marque d'un champ : `*` toujours obligatoire, `†` obligatoire pour passer en Postulée. */
-type Requirement = "required" | "applied";
 
 export function ApplicationForm({
   action,
@@ -79,7 +77,7 @@ export function ApplicationForm({
       <div className="grid gap-4 sm:grid-cols-3">
         <Field
           label="Entreprise"
-          requirement="required"
+          required
           hint="Choisis une entreprise existante ou saisis-en une nouvelle."
           error={error("companyName")}
         >
@@ -87,18 +85,18 @@ export function ApplicationForm({
             <Input {...props} name="companyName" maxLength={200} defaultValue={values.companyName} />
           )}
         </Field>
-        <Field label="Intitulé du poste" requirement="required" error={error("jobTitle")}>
+        <Field label="Intitulé du poste" required error={error("jobTitle")}>
           {(props) => (
             <Input {...props} name="jobTitle" maxLength={200} defaultValue={values.jobTitle} />
           )}
         </Field>
-        <Field label="Localisation" requirement="applied" error={error("location")}>
+        <Field label="Localisation" required error={error("location")}>
           {(props) => (
             <Input {...props} name="location" maxLength={200} defaultValue={values.location} />
           )}
         </Field>
 
-        <Field label="Type de contrat" requirement="applied" error={error("contractType")}>
+        <Field label="Type de contrat" required error={error("contractType")}>
           {(props) => (
             <SelectField
               {...props}
@@ -108,7 +106,7 @@ export function ApplicationForm({
             />
           )}
         </Field>
-        <Field label="Source de l'annonce" requirement="applied" error={error("source")}>
+        <Field label="Source de l'annonce" required error={error("source")}>
           {(props) => (
             <SelectField
               {...props}
@@ -118,9 +116,14 @@ export function ApplicationForm({
             />
           )}
         </Field>
-        <Field label="Date de candidature" requirement="applied" error={error("appliedAt")}>
+        <Field label="Date de candidature" required error={error("appliedAt")}>
           {(props) => (
-            <Input {...props} name="appliedAt" type="date" defaultValue={values.appliedAt} />
+            <Input
+              {...props}
+              name="appliedAt"
+              type="date"
+              defaultValue={values.appliedAt ?? todayInParis()}
+            />
           )}
         </Field>
 
@@ -226,7 +229,7 @@ export function ApplicationForm({
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-4">
         <p className="text-xs text-muted-foreground">
-          * requis · † requis pour passer en « Postulée »
+          * requis
         </p>
         <div className="flex flex-wrap items-center gap-2">
           {onCancel ? (
@@ -238,11 +241,8 @@ export function ApplicationForm({
               <Link href="/applications">Annuler</Link>
             </Button>
           )}
-          <Button type="submit" name="status" value="DRAFT" variant="outline" disabled={pending}>
-            Enregistrer en brouillon
-          </Button>
-          <Button type="submit" name="status" value="APPLIED" disabled={pending}>
-            Enregistrer comme postulée
+          <Button type="submit" disabled={pending}>
+            Enregistrer
           </Button>
         </div>
       </div>
@@ -258,14 +258,14 @@ type ControlProps = {
 
 function Field({
   label,
-  requirement,
+  required,
   hint,
   error,
   className,
   children,
 }: {
   label: string;
-  requirement?: Requirement;
+  required?: boolean;
   hint?: string;
   error?: string;
   className?: string;
@@ -281,9 +281,9 @@ function Field({
     <div className={cn("flex flex-col gap-1.5", className)}>
       <Label htmlFor={id} className="text-xs font-medium text-foreground/80">
         {label}
-        {requirement && (
+        {required && (
           <span aria-hidden className="text-primary">
-            {requirement === "required" ? "*" : "†"}
+            *
           </span>
         )}
       </Label>
