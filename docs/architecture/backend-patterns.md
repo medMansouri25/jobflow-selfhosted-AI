@@ -11,6 +11,7 @@ src/
 │   └── <fonctionnalité>/      ex. applications (SPEC-001), companies, interviews (SPEC-003)
 │       ├── domain/            ① TypeScript pur : règles métier, types, erreurs métier
 │       ├── schemas.ts         ② Schémas Zod des entrées
+│       ├── form-values.ts     Correspondance saisie ↔ colonnes, dans les deux sens (`toColumns` / `toFormValues`)
 │       ├── service.ts         ③ Cas d'usage : lectures et écritures, transactions
 │       ├── actions.ts         ④ Server Actions ('use server')
 │       └── components/        UI propre au module (voir frontend-patterns.md)
@@ -54,6 +55,8 @@ export function isDefinitive(status: ApplicationStatus): boolean  // Statut déf
 - Un champ fichier est validé comme `z.instanceof(File)` (type et taille) ; un champ fichier laissé vide arrive dans la Server Action comme un fichier de 0 octet nommé « blob » : `z.preprocess` le convertit en `undefined` (« pas de fichier »).
 - Une règle qui dépend de la date du jour reçoit cette date en paramètre (`createApplicationSchema(today)`) : le schéma reste déterministe et testable ; l'action calcule `today` dans le fuseau `Europe/Paris`.
 - Les énumérations du domaine sont des tableaux `as const` (`APPLICATION_STATUSES`…) dont on dérive les types ; leurs libellés français vivent dans `modules/<module>/labels.ts`.
+- Une case à cocher HTML arrive comme `"on"` ou absente : `z.preprocess` la convertit en booléen (`removeCv`, `removeCoverLetter`).
+- Création et modification partagent les mêmes champs et règles entre champs (`applicationFields`, `crossFieldRules(today)`) ; le schéma de modification n'a pas de statut et ajoute les cases de retrait des pièces jointes.
 - Un champ obligatoire passe par l'utilitaire `required(schema, label)` : chaîne vide ou absente → message « <Libellé> est obligatoire », puis validation par le schéma cible (`z.enum`, `z.iso.date`…).
 
 ### ③ Service — `modules/*/service.ts`
@@ -65,6 +68,7 @@ export function isDefinitive(status: ApplicationStatus): boolean  // Statut déf
 - Toute écriture multiple qui doit être atomique passe par `prisma.$transaction` — ex. nouveau statut **et** ligne d'historique.
 - Applique les règles du domaine avec l'état **lu en base dans la transaction** (pas celui envoyé par le client) : c'est ce qui protège contre les requêtes forgées et les onglets concurrents.
 - Lance une `DomainError` pour toute violation de règle métier.
+- Une écriture écrit **chaque** colonne explicitement : un champ vidé devient `null` (Prisma ignore `undefined` et garderait l'ancienne valeur). La correspondance saisie ↔ colonnes vit dans `modules/<module>/form-values.ts` : `toColumns` pour enregistrer, `toFormValues` pour pré-remplir la modification.
 - Un identifiant reçu de l'URL est vérifié (`z.uuid()`) avant la requête : un id mal formé lance `NotFoundError` (la colonne uuid de PostgreSQL rejetterait la requête), comme une ressource introuvable.
 
 ### ④ Actions — `modules/*/actions.ts`
@@ -73,6 +77,8 @@ export function isDefinitive(status: ApplicationStatus): boolean  // Statut déf
 - Signature compatible `useActionState` : `(prevState, formData) => Promise<ActionState>`.
 - Convertissent les erreurs via l'utilitaire commun (voir « Erreurs »).
 - Les entrées de `FormData` sont séparées en chaînes et en `File` : les deux sont validées ensemble, seules les chaînes sont renvoyées au formulaire en cas d'erreur (un fichier ne peut pas être ré-affiché).
+- Une action qui vise une ressource reçoit son id en premier paramètre, lié par la page (`updateApplicationAction.bind(null, id)`) ; l'id est vérifié par le service, pas par l'action.
+- États renvoyés : `idle | error | success | warning`. `warning` = enregistré, mais le message demande une action à l'utilisateur (ex. fichier à supprimer à la main).
 
 ### Lectures
 
@@ -84,6 +90,7 @@ export function isDefinitive(status: ApplicationStatus): boolean  // Statut déf
 - Un service externe (stockage des pièces jointes, ADR `0006`) est appelé **uniquement** à travers un adaptateur de `lib/` à interface étroite : `FileStorage` (`upload(file)`, `remove(keys)`), implémenté par `createUploadThingStorage(client)`. Ce n'est pas un repository : c'est la frontière avec un système que les tests ne doivent pas appeler.
 - Le service reçoit l'adaptateur en paramètre, avec la valeur de production par défaut (`storage = getStorage()`) ; les tests d'intégration passent `createMemoryStorage()` (`src/test/memory-storage.ts`), qui sait aussi simuler un échec d'envoi ou de suppression.
 - Ordre fichier → base : envoyer d'abord, enregistrer ensuite dans la transaction ; si l'enregistrement échoue, supprimer les fichiers envoyés, et si cette suppression échoue aussi, le dire à l'utilisateur (`DomainError`) et journaliser les clés restées chez le service.
+- Remplacer ou retirer un fichier : l'ancien n'est supprimé du stockage qu'**après** l'enregistrement (la transaction renvoie les fichiers devenus obsolètes). Si cette suppression échoue, la modification reste faite : le service renvoie `leftover` (fichier à supprimer à la main) et l'action répond `status: "warning"`. Création et modification partagent `uploadAttachments` (envoi, et nettoyage si un envoi échoue) et `saveOrDiscard` (si l'enregistrement échoue, suppression des fichiers envoyés ; une `DomainError` garde son message).
 
 ## Erreurs
 

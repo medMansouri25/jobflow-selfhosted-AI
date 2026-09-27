@@ -191,5 +191,12 @@ describe("fiche d'une Candidature", () => {
 
     expect(screen.getByRole("region", { name: "Pièces jointes" }).textContent).toContain("(1 Ko)");
   });
+
+  it("affiche les actions de la fiche à côté du titre", () => {
+    render(<ApplicationDetail application={application()} actions={<button type="button">Modifier</button>} />);
+
+    const heading = screen.getByRole("heading", { level: 1, name: "Ingénieur SI" });
+    expect(within(heading.parentElement!).getByRole("button", { name: "Modifier" })).toBeDefined();
+  });
 });
 

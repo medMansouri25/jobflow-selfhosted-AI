@@ -6,10 +6,20 @@ import { getStorage, StorageError, type FileStorage, type StoredFile } from "@/l
 import {
   APPLICATION_STATUSES,
   type ApplicationStatus,
+  ATTACHMENT_KINDS,
   type AttachmentKind,
 } from "@/modules/applications/domain/application";
-import type { CreateApplicationInput } from "@/modules/applications/schemas";
+import type {
+  CreateApplicationInput,
+  UpdateApplicationInput,
+} from "@/modules/applications/schemas";
+import { toColumns } from "@/modules/applications/form-values";
 import { findOrCreateCompany } from "@/modules/companies/service";
+
+/** Un id mal formé ferait échouer PostgreSQL (colonne uuid) : c'est simplement une Candidature introuvable. */
+function isUuid(id: string): boolean {
+  return z.uuid().safeParse(id).success;
+}
 
 /** « L'envoi du CV… », « L'envoi de la lettre de motivation… ». */
 const OF_ATTACHMENT: Record<AttachmentKind, string> = {
@@ -26,13 +36,100 @@ export async function createApplication(
   input: CreateApplicationInput,
   storage: FileStorage = getStorage(),
 ) {
-  const { companyName, appliedAt, cv, coverLetter, ...fields } = input;
-  const hasSalary = fields.salaryMin !== undefined || fields.salaryMax !== undefined;
+  const stored = await uploadAttachments(storage, input, "La candidature n'a pas été enregistrée");
 
+  const saving = db.$transaction(async (tx) => {
+    const company = await findOrCreateCompany(tx, userId, input.companyName);
+    return tx.application.create({
+      data: {
+        ...toColumns(input),
+        status: "APPLIED",
+        userId,
+        companyId: company.id,
+        statusChanges: { create: { fromStatus: null, toStatus: "APPLIED" } },
+        attachments: { create: stored.map((file) => toAttachmentRow(userId, file)) },
+      },
+    });
+  });
+  return saveOrDiscard(saving, storage, stored, "La candidature n'a pas pu être enregistrée");
+}
+
+/**
+ * Modifie tous les champs d'une Candidature sauf son statut (FR-001-02, BR-001-10).
+ * Chaque pièce jointe se garde, se remplace (nouveau fichier) ou se retire (case cochée) ; les anciens
+ * fichiers ne sont supprimés du stockage qu'après l'enregistrement. Si cette suppression échoue,
+ * la modification reste faite et `leftover` dit quel fichier supprimer à la main.
+ */
+export async function updateApplication(
+  userId: string,
+  id: string,
+  input: UpdateApplicationInput,
+  storage: FileStorage = getStorage(),
+) {
+  if (!isUuid(id)) throw new NotFoundError("Candidature introuvable.");
+  const stored = await uploadAttachments(storage, input, "La modification n'a pas été enregistrée");
+  const removals: Record<AttachmentKind, boolean> = {
+    CV: input.removeCv,
+    COVER_LETTER: input.removeCoverLetter,
+  };
+
+  const saving = db.$transaction(async (tx) => {
+    const current = await tx.application.findFirst({
+      where: { id, userId },
+      include: { attachments: true },
+    });
+    if (!current) throw new NotFoundError("Candidature introuvable.");
+
+    const obsolete: StoredFile[] = [];
+    for (const kind of ATTACHMENT_KINDS) {
+      const incoming = stored.find((file) => file.kind === kind);
+      const old = current.attachments.find((attachment) => attachment.kind === kind);
+      if (old && (incoming || removals[kind])) {
+        await tx.attachment.delete({ where: { id: old.id } });
+        obsolete.push({ key: old.fileKey, url: old.url, name: old.name, size: old.size });
+      }
+      if (incoming) {
+        await tx.attachment.create({ data: { ...toAttachmentRow(userId, incoming), applicationId: id } });
+      }
+    }
+
+    const company = await findOrCreateCompany(tx, userId, input.companyName);
+    const application = await tx.application.update({
+      where: { id },
+      data: { ...toColumns(input), companyId: company.id },
+    });
+    return { application, obsolete };
+  });
+
+  const { application, obsolete } = await saveOrDiscard(
+    saving,
+    storage,
+    stored,
+    "La modification n'a pas pu être enregistrée",
+  );
+  return { application, leftover: await discardUploads(storage, obsolete) };
+}
+
+type StoredAttachment = StoredFile & { kind: AttachmentKind };
+
+function toAttachmentRow(userId: string, { kind, key, url, name, size }: StoredAttachment) {
+  return { userId, kind, fileKey: key, url, name, size };
+}
+
+/**
+ * Envoie au stockage le CV et la lettre choisis. Si un envoi échoue, les fichiers déjà envoyés
+ * sont supprimés et une `DomainError` explique que rien n'a été enregistré (`notSaved`).
+ */
+async function uploadAttachments(
+  storage: FileStorage,
+  { cv, coverLetter }: { cv?: File; coverLetter?: File },
+  notSaved: string,
+): Promise<StoredAttachment[]> {
   const uploads: { kind: AttachmentKind; file: File }[] = [];
   if (cv) uploads.push({ kind: "CV", file: cv });
   if (coverLetter) uploads.push({ kind: "COVER_LETTER", file: coverLetter });
-  const stored: (StoredFile & { kind: AttachmentKind })[] = [];
+
+  const stored: StoredAttachment[] = [];
   for (const { kind, file } of uploads) {
     try {
       stored.push({ kind, ...(await storage.upload(file)) });
@@ -41,46 +138,32 @@ export async function createApplication(
       const leftover = await discardUploads(storage, stored);
       throw new DomainError(
         "ATTACHMENT_UPLOAD_FAILED",
-        `L'envoi ${OF_ATTACHMENT[kind]} a échoué. La candidature n'a pas été enregistrée${
-          leftover ? `. ${leftover}` : " : réessaie"
-        }.`,
+        `L'envoi ${OF_ATTACHMENT[kind]} a échoué. ${notSaved}${leftover ? `. ${leftover}` : " : réessaie"}.`,
       );
     }
   }
+  return stored;
+}
 
-  const saving = db.$transaction(async (tx) => {
-    const company = await findOrCreateCompany(tx, userId, companyName);
-    return tx.application.create({
-      data: {
-        ...fields,
-        salaryCurrency: hasSalary ? fields.salaryCurrency : null,
-        status: "APPLIED",
-        appliedAt: new Date(`${appliedAt}T00:00:00Z`),
-        userId,
-        companyId: company.id,
-        statusChanges: { create: { fromStatus: null, toStatus: "APPLIED" } },
-        attachments: {
-          create: stored.map(({ kind, key, url, name, size }) => ({
-            userId,
-            kind,
-            fileKey: key,
-            url,
-            name,
-            size,
-          })),
-        },
-      },
-    });
-  });
+/**
+ * Attend l'enregistrement. S'il échoue alors que des fichiers ont été envoyés, ces fichiers sont
+ * supprimés pour ne pas laisser d'orphelins. Une `DomainError` (ex. Candidature introuvable) garde
+ * son message ; toute autre erreur est journalisée et devient `APPLICATION_SAVE_FAILED`.
+ */
+async function saveOrDiscard<T>(
+  saving: Promise<T>,
+  storage: FileStorage,
+  stored: StoredFile[],
+  notSaved: string,
+): Promise<T> {
   if (stored.length === 0) return saving;
-
-  // Fichiers déjà envoyés mais Candidature non enregistrée : on les supprime pour ne pas laisser d'orphelins.
   return saving.catch(async (error: unknown) => {
-    console.error("Échec de l'enregistrement d'une Candidature avec pièces jointes :", error);
     const leftover = await discardUploads(storage, stored);
+    if (error instanceof DomainError) throw error;
+    console.error("Échec de l'enregistrement d'une Candidature avec pièces jointes :", error);
     throw new DomainError(
       "APPLICATION_SAVE_FAILED",
-      `La candidature n'a pas pu être enregistrée. ${
+      `${notSaved}. ${
         leftover ??
         (stored.length === 1
           ? "Le fichier envoyé a été supprimé : réessaie."
@@ -91,7 +174,7 @@ export async function createApplication(
 }
 
 /**
- * Supprime des fichiers envoyés pour une Candidature qui ne sera pas enregistrée.
+ * Supprime du stockage des fichiers dont la base ne garde pas (ou plus) la référence.
  * Si la suppression échoue aussi, renvoie la phrase qui dit à l'utilisateur quoi nettoyer
  * (et le journalise) ; sinon `null`.
  */
@@ -110,8 +193,7 @@ async function discardUploads(storage: FileStorage, stored: StoredFile[]): Promi
 }
 
 export async function getApplication(userId: string, id: string) {
-  // Un id mal formé ferait échouer PostgreSQL (colonne uuid) : c'est simplement une Candidature introuvable.
-  if (!z.uuid().safeParse(id).success) throw new NotFoundError("Candidature introuvable.");
+  if (!isUuid(id)) throw new NotFoundError("Candidature introuvable.");
   const application = await db.application.findFirst({
     where: { id, userId },
     include: {

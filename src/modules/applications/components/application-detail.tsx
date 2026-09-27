@@ -3,6 +3,7 @@ import { useId, type ReactNode } from "react";
 
 import type { getApplication } from "@/modules/applications/service";
 import { cn } from "@/lib/utils";
+import { formatFileSize } from "@/modules/applications/format";
 import {
   STATUS_DOT_CLASSES,
   StatusBadge,
@@ -36,14 +37,6 @@ const changeTimeFormat = new Intl.DateTimeFormat("fr-FR", {
   timeZone: "Europe/Paris",
 });
 
-/** « 234 Ko », « 1,4 Mo ». */
-const sizeFormat = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 1 });
-function formatSize(bytes: number): string {
-  return bytes < 1024 * 1024
-    ? `${Math.max(1, Math.round(bytes / 1024))} Ko`
-    : `${sizeFormat.format(bytes / (1024 * 1024))} Mo`;
-}
-
 const PER_PERIOD = { YEARLY: "/ an", MONTHLY: "/ mois" } as const;
 
 /** « 42 000 – 48 000 € / an », « À partir de 42 000 € / an », « Jusqu'à 48 000 € / an ». */
@@ -70,7 +63,14 @@ function formatSalary({
 }
 
 /** Fiche d'une Candidature (SPEC-001 §8) — en lecture seule. */
-export function ApplicationDetail({ application }: { application: ApplicationDetailData }) {
+export function ApplicationDetail({
+  application,
+  actions,
+}: {
+  application: ApplicationDetailData;
+  /** Boutons de la fiche (ex. « Modifier »), fournis par la page. */
+  actions?: ReactNode;
+}) {
   const meta = [
     application.company.name,
     application.location,
@@ -89,6 +89,7 @@ export function ApplicationDetail({ application }: { application: ApplicationDet
             {application.jobTitle}
           </h1>
           <StatusBadge status={application.status} />
+          {actions && <div className="ml-auto flex gap-2">{actions}</div>}
         </div>
         <p className="text-muted-foreground">{meta.join(" · ")}</p>
       </div>
@@ -135,7 +136,7 @@ export function ApplicationDetail({ application }: { application: ApplicationDet
                 >
                   {attachment.name}
                 </a>{" "}
-                <span className="text-muted-foreground">({formatSize(attachment.size)})</span>
+                <span className="text-muted-foreground">({formatFileSize(attachment.size)})</span>
               </Field>
             ))}
           </dl>

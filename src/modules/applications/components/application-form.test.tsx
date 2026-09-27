@@ -59,6 +59,37 @@ describe("formulaire de candidature", () => {
     }
   });
 
+  it("se pré-remplit avec une Candidature existante, date enregistrée comprise", () => {
+    render(
+      <ApplicationForm
+        action={noop}
+        label="Modifier la candidature"
+        initialValues={{ companyName: "Sanofi", jobTitle: "Ingénieur SI", appliedAt: "2026-09-20", notes: "Relancer" }}
+      />,
+    );
+
+    expect(screen.getByRole("form", { name: "Modifier la candidature" })).toBeDefined();
+    expect((screen.getByLabelText(/Entreprise/) as HTMLInputElement).value).toBe("Sanofi");
+    expect((screen.getByLabelText(/Date de candidature/) as HTMLInputElement).value).toBe("2026-09-20");
+    expect((screen.getByLabelText(/Notes personnelles/) as HTMLTextAreaElement).value).toBe("Relancer");
+  });
+
+  it("montre le CV déjà joint avec « Retirer » et « Remplacer par… », et un simple champ pour la lettre absente", () => {
+    render(
+      <ApplicationForm
+        action={noop}
+        attachments={[{ kind: "CV", name: "CV_v1.pdf", size: 240_000 }]}
+      />,
+    );
+
+    expect(screen.getByText(/CV_v1\.pdf/).textContent).toMatch(/CV_v1\.pdf\s*\(234\s*Ko\)/);
+    const remove = screen.getByLabelText("Retirer le CV") as HTMLInputElement;
+    expect([remove.type, remove.name]).toEqual(["checkbox", "removeCv"]);
+    expect((screen.getByLabelText(/^Remplacer le CV par/) as HTMLInputElement).name).toBe("cv");
+    expect((screen.getByLabelText(/^Lettre de motivation/) as HTMLInputElement).name).toBe("coverLetter");
+    expect(screen.queryByLabelText("Retirer la lettre de motivation")).toBeNull();
+  });
+
   it("appelle onCancel quand on clique sur Annuler", () => {
     const onCancel = vi.fn();
     render(<ApplicationForm action={noop} onCancel={onCancel} />);

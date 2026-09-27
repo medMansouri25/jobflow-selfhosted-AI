@@ -26,8 +26,11 @@ import {
   initialApplicationFormState,
   type ApplicationFormState,
 } from "@/modules/applications/form-state";
+import type { AttachmentKind } from "@/modules/applications/domain/application";
+import { formatFileSize } from "@/modules/applications/format";
 import { MAX_ATTACHMENT_LABEL } from "@/modules/applications/schemas";
 import {
+  ATTACHMENT_KIND_LABELS,
   CONTRACT_TYPE_LABELS,
   SALARY_PERIOD_LABELS,
   SOURCE_LABELS,
@@ -43,16 +46,25 @@ type FormAction = (
 export function ApplicationForm({
   action,
   onCancel,
+  label = "Nouvelle candidature",
+  initialValues = {},
+  attachments = [],
 }: {
   action: FormAction;
   /** Fourni par la fenêtre modale ; sinon « Annuler » ramène à la liste. */
   onCancel?: () => void;
+  /** Nom accessible du formulaire. */
+  label?: string;
+  /** Valeurs de départ (modification) ; après une erreur, la saisie renvoyée par le serveur prime. */
+  initialValues?: Partial<Record<string, string>>;
+  /** Pièces jointes déjà enregistrées (modification) : à garder, remplacer ou retirer. */
+  attachments?: CurrentAttachment[];
 }) {
   const [state, formAction, pending] = useActionState(
     action,
     initialApplicationFormState,
   );
-  const values = state.values ?? {};
+  const values = state.values ?? initialValues;
   // `/applications/new` est pré-rendue au build : la date du jour est lue dans le navigateur.
   const today = useSyncExternalStore(subscribeNever, todayInParis, () => undefined);
   const errors = state.fieldErrors ?? {};
@@ -61,7 +73,7 @@ export function ApplicationForm({
   return (
     <form
       action={formAction}
-      aria-label="Nouvelle candidature"
+      aria-label={label}
       noValidate
       className="flex flex-col gap-5"
     >
@@ -70,9 +82,9 @@ export function ApplicationForm({
           role={state.status === "error" ? "alert" : "status"}
           className={cn(
             "rounded-md px-4 py-3 text-sm",
-            state.status === "error"
-              ? "bg-status-rejected-bg text-status-rejected-fg"
-              : "bg-status-accepted-bg text-status-accepted-fg",
+            state.status === "error" && "bg-status-rejected-bg text-status-rejected-fg",
+            state.status === "warning" && "bg-status-interview-bg text-status-interview-fg",
+            state.status === "success" && "bg-status-accepted-bg text-status-accepted-fg",
           )}
         >
           {state.message}
@@ -199,12 +211,14 @@ export function ApplicationForm({
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label={`CV (PDF, ${MAX_ATTACHMENT_LABEL} max.)`} error={error("cv")}>
-          {(props) => <Input {...props} name="cv" type="file" accept="application/pdf" />}
-        </Field>
-        <Field label={`Lettre de motivation (PDF, ${MAX_ATTACHMENT_LABEL} max.)`} error={error("coverLetter")}>
-          {(props) => <Input {...props} name="coverLetter" type="file" accept="application/pdf" />}
-        </Field>
+        {ATTACHMENT_FIELDS.map((field) => (
+          <AttachmentField
+            key={field.kind}
+            field={field}
+            current={attachments.find((attachment) => attachment.kind === field.kind)}
+            error={error(field.name)}
+          />
+        ))}
         <Field
           label="Notes personnelles (recruteurs, date limite de réponse…)"
           error={error("notes")}
@@ -236,6 +250,58 @@ export function ApplicationForm({
         </div>
       </div>
     </form>
+  );
+}
+
+type CurrentAttachment = { kind: AttachmentKind; name: string; size: number };
+
+const ATTACHMENT_FIELDS = [
+  { kind: "CV", name: "cv", removeName: "removeCv", the: "le CV" },
+  {
+    kind: "COVER_LETTER",
+    name: "coverLetter",
+    removeName: "removeCoverLetter",
+    the: "la lettre de motivation",
+  },
+] as const;
+
+/**
+ * Pièce jointe du formulaire. Sans fichier enregistré : un champ pour en ajouter un. Avec un fichier
+ * enregistré : son nom, une case « Retirer » et un champ « Remplacer par… » (rien choisi = on garde).
+ */
+function AttachmentField({
+  field,
+  current,
+  error,
+}: {
+  field: (typeof ATTACHMENT_FIELDS)[number];
+  current?: CurrentAttachment;
+  error?: string;
+}) {
+  const label = ATTACHMENT_KIND_LABELS[field.kind];
+  const fileLabel = current
+    ? `Remplacer ${field.the} par… (PDF, ${MAX_ATTACHMENT_LABEL} max.)`
+    : `${label} (PDF, ${MAX_ATTACHMENT_LABEL} max.)`;
+  return (
+    <div className="flex flex-col gap-2">
+      {current && (
+        <div className="flex flex-col gap-1 text-sm">
+          <p>
+            <span className="text-muted-foreground">{label} actuel : </span>
+            <span className="font-medium">
+              {current.name} ({formatFileSize(current.size)})
+            </span>
+          </p>
+          <label className="flex items-center gap-2">
+            <input type="checkbox" name={field.removeName} className="size-4" />
+            Retirer {field.the}
+          </label>
+        </div>
+      )}
+      <Field label={fileLabel} error={error}>
+        {(props) => <Input {...props} name={field.name} type="file" accept="application/pdf" />}
+      </Field>
+    </div>
   );
 }
 
