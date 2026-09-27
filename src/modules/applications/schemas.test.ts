@@ -21,8 +21,6 @@ function formInput(overrides: Record<string, string> = {}) {
     salaryCurrency: "EUR",
     salaryPeriod: "",
     appliedAt: "2026-09-24",
-    cvLabel: "",
-    coverLetter: "",
     notes: "",
     ...overrides,
   };

@@ -113,16 +113,6 @@ export function ApplicationDetail({ application }: { application: ApplicationDet
         </Section>
       )}
 
-      {(application.cvLabel || application.coverLetter) && (
-        // TODO(pieces-jointes-pdf) : liens vers les PDF à la place de ces textes.
-        <Section title="Pièces jointes">
-          <dl className="grid gap-x-6 gap-y-2 text-sm sm:grid-cols-[max-content_1fr]">
-            <Field label="CV">{application.cvLabel}</Field>
-            <Field label="Lettre de motivation">{application.coverLetter}</Field>
-          </dl>
-        </Section>
-      )}
-
       <Section title="Historique des statuts">
         <ol className="flex flex-col">
           {application.statusChanges.map((change) => (

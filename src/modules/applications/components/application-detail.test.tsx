@@ -33,8 +33,6 @@ function application(overrides: Partial<ApplicationDetailData> = {}): Applicatio
     salaryCurrency: null,
     salaryPeriod: null,
     appliedAt: new Date("2026-09-27T00:00:00Z"),
-    cvLabel: null,
-    coverLetter: null,
     notes: null,
     createdAt: new Date("2026-09-27T14:21:35Z"),
     updatedAt: new Date("2026-09-27T14:21:35Z"),
@@ -134,29 +132,17 @@ describe("fiche d'une Candidature", () => {
     expect(entries[1]).toContain("27 sept. 2026 · 16:21");
   });
 
-  it("affiche les notes et les pièces jointes quand elles sont renseignées", () => {
-    render(
-      <ApplicationDetail
-        application={application({
-          notes: "Relancer le 5 octobre",
-          cvLabel: "CV DevOps v3",
-          coverLetter: "Lettre Sanofi — sept.",
-        })}
-      />,
-    );
+  it("affiche les notes quand elles sont renseignées", () => {
+    render(<ApplicationDetail application={application({ notes: "Relancer le 5 octobre" })} />);
 
     expect(
       screen.getByRole("region", { name: "Notes personnelles" }).textContent,
     ).toContain("Relancer le 5 octobre");
-    const attachments = screen.getByRole("region", { name: "Pièces jointes" });
-    expect(attachments.textContent).toContain("CV DevOps v3");
-    expect(attachments.textContent).toContain("Lettre Sanofi — sept.");
   });
 
-  it("n'affiche pas les sections Notes et Pièces jointes quand elles sont vides", () => {
+  it("n'affiche pas la section Notes quand elle est vide", () => {
     render(<ApplicationDetail application={application()} />);
 
     expect(screen.queryByRole("region", { name: "Notes personnelles" })).toBeNull();
-    expect(screen.queryByRole("region", { name: "Pièces jointes" })).toBeNull();
   });
 });

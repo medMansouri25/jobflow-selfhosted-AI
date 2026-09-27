@@ -45,12 +45,18 @@ enum SalaryPeriod {
   MONTHLY
 }
 
+enum AttachmentKind {
+  CV
+  COVER_LETTER
+}
+
 /// L'utilisateur unique (seed). Présent pour ne pas fermer la porte au multi-utilisateur (ADR 0001).
 model User {
   id           String        @id @default(uuid()) @db.Uuid
   createdAt    DateTime      @default(now()) @db.Timestamptz
   companies    Company[]
   applications Application[]
+  attachments  Attachment[]
 }
 
 /// Entreprise — nom unique par utilisateur, sans distinction de casse (BR-001-11).
@@ -87,12 +93,11 @@ model Application {
   salaryCurrency String?                   @db.Char(3)
   salaryPeriod   SalaryPeriod?
   appliedAt      DateTime?                 @db.Date
-  cvLabel        String?                   @db.VarChar(200)
-  coverLetter    String?
   notes          String?
   createdAt      DateTime                  @default(now()) @db.Timestamptz
   updatedAt      DateTime                  @updatedAt @db.Timestamptz
   statusChanges  ApplicationStatusChange[]
+  attachments    Attachment[]
 
   @@index([userId, status])
   @@index([userId, updatedAt])
@@ -108,4 +113,22 @@ model ApplicationStatusChange {
   changedAt     DateTime           @default(now()) @db.Timestamptz
 
   @@index([applicationId, changedAt])
+}
+
+/// Pièce jointe — CV ou lettre de motivation en PDF, stocké chez UploadThing (ADR 0006) :
+/// la base ne garde que sa référence, jamais le fichier.
+model Attachment {
+  id            String         @id @default(uuid()) @db.Uuid
+  userId        String         @db.Uuid
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  applicationId String         @db.Uuid
+  application   Application    @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  kind          AttachmentKind
+  fileKey       String         @unique @db.VarChar(256)
+  url           String         @db.VarChar(2048)
+  name          String         @db.VarChar(255)
+  size          Int
+  createdAt     DateTime       @default(now()) @db.Timestamptz
+
+  @@unique([applicationId, kind])
 }

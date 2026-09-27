@@ -198,28 +198,6 @@ export function ApplicationForm({
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Version du CV" error={error("cvLabel")}>
-          {(props) => (
-            <Input
-              {...props}
-              name="cvLabel"
-              maxLength={200}
-              placeholder="ex. CV DevOps v3"
-              defaultValue={values.cvLabel}
-            />
-          )}
-        </Field>
-        <Field label="Lettre de motivation" error={error("coverLetter")}>
-          {(props) => (
-            <Input
-              {...props}
-              name="coverLetter"
-              maxLength={20_000}
-              placeholder="ex. Lettre OVH — sept."
-              defaultValue={values.coverLetter}
-            />
-          )}
-        </Field>
         <Field
           label="Notes personnelles (recruteurs, date limite de réponse…)"
           error={error("notes")}

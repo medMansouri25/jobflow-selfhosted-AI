@@ -75,8 +75,6 @@ export function createApplicationSchema(today: string) {
       ),
       salaryPeriod: optionalEnum(SALARY_PERIODS),
       appliedAt: required(z.iso.date("Date invalide"), "La date de candidature"),
-      cvLabel: optionalText(200),
-      coverLetter: optionalText(20_000),
       notes: optionalText(20_000),
     })
     .superRefine((input, ctx) => {
