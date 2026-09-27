@@ -1,4 +1,37 @@
-// Passage d'une Candidature enregistrée aux valeurs texte du formulaire (modification, FR-001-02).
+// Correspondance entre la saisie du formulaire et les colonnes d'une Candidature, dans les deux sens :
+// `toColumns` à l'enregistrement, `toFormValues` pour pré-remplir la modification (FR-001-02).
+
+import type { CreateApplicationInput } from "@/modules/applications/schemas";
+
+/** Date sans heure (AAAA-MM-JJ) ↔ colonne `date`, stockée à minuit UTC. */
+function dateOnlyToColumn(value: string): Date {
+  return new Date(`${value}T00:00:00Z`);
+}
+function columnToDateOnly(date: Date): string {
+  return date.toISOString().slice(0, 10);
+}
+
+/**
+ * Colonnes saisies d'une Candidature. Chaque colonne est écrite explicitement : un champ vidé
+ * devient `null` (Prisma ignorerait `undefined` et garderait l'ancienne valeur).
+ */
+export function toColumns(input: CreateApplicationInput) {
+  const hasSalary = input.salaryMin !== undefined || input.salaryMax !== undefined;
+  return {
+    jobTitle: input.jobTitle,
+    location: input.location,
+    contractType: input.contractType,
+    source: input.source,
+    jobUrl: input.jobUrl ?? null,
+    jobDescription: input.jobDescription ?? null,
+    salaryMin: input.salaryMin ?? null,
+    salaryMax: input.salaryMax ?? null,
+    salaryCurrency: hasSalary ? input.salaryCurrency : null,
+    salaryPeriod: input.salaryPeriod ?? null,
+    appliedAt: dateOnlyToColumn(input.appliedAt),
+    notes: input.notes ?? null,
+  };
+}
 
 type EditableApplication = {
   company: { name: string };
@@ -31,8 +64,7 @@ export function toFormValues(application: EditableApplication): Record<string, s
     salaryMax: text(application.salaryMax),
     salaryCurrency: text(application.salaryCurrency),
     salaryPeriod: text(application.salaryPeriod),
-    // Date sans heure, stockée à minuit UTC : on reprend AAAA-MM-JJ tel quel.
-    appliedAt: application.appliedAt ? application.appliedAt.toISOString().slice(0, 10) : "",
+    appliedAt: application.appliedAt ? columnToDateOnly(application.appliedAt) : "",
     notes: text(application.notes),
   };
 }

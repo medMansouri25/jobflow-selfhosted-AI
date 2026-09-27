@@ -6,7 +6,6 @@ import type { ComponentProps } from "react";
 import { Button } from "@/components/ui/button";
 import { ApplicationFormDialog } from "@/modules/applications/components/application-form-dialog";
 
-// Enregistrement réussi : la fenêtre se ferme, la Candidature apparaît dans les listes.
 export function NewApplicationDialog({
   action,
 }: Pick<ComponentProps<typeof ApplicationFormDialog>, "action">) {

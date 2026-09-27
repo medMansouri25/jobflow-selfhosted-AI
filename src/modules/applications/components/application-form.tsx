@@ -30,6 +30,7 @@ import type { AttachmentKind } from "@/modules/applications/domain/application";
 import { formatFileSize } from "@/modules/applications/format";
 import { MAX_ATTACHMENT_LABEL } from "@/modules/applications/schemas";
 import {
+  ATTACHMENT_KIND_LABELS,
   CONTRACT_TYPE_LABELS,
   SALARY_PERIOD_LABELS,
   SOURCE_LABELS,
@@ -255,12 +256,11 @@ export function ApplicationForm({
 type CurrentAttachment = { kind: AttachmentKind; name: string; size: number };
 
 const ATTACHMENT_FIELDS = [
-  { kind: "CV", name: "cv", removeName: "removeCv", label: "CV", the: "le CV" },
+  { kind: "CV", name: "cv", removeName: "removeCv", the: "le CV" },
   {
     kind: "COVER_LETTER",
     name: "coverLetter",
     removeName: "removeCoverLetter",
-    label: "Lettre de motivation",
     the: "la lettre de motivation",
   },
 ] as const;
@@ -278,15 +278,16 @@ function AttachmentField({
   current?: CurrentAttachment;
   error?: string;
 }) {
+  const label = ATTACHMENT_KIND_LABELS[field.kind];
   const fileLabel = current
     ? `Remplacer ${field.the} par… (PDF, ${MAX_ATTACHMENT_LABEL} max.)`
-    : `${field.label} (PDF, ${MAX_ATTACHMENT_LABEL} max.)`;
+    : `${label} (PDF, ${MAX_ATTACHMENT_LABEL} max.)`;
   return (
     <div className="flex flex-col gap-2">
       {current && (
         <div className="flex flex-col gap-1 text-sm">
           <p>
-            <span className="text-muted-foreground">{field.label} actuel : </span>
+            <span className="text-muted-foreground">{label} actuel : </span>
             <span className="font-medium">
               {current.name} ({formatFileSize(current.size)})
             </span>

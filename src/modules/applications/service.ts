@@ -13,33 +13,12 @@ import type {
   CreateApplicationInput,
   UpdateApplicationInput,
 } from "@/modules/applications/schemas";
+import { toColumns } from "@/modules/applications/form-values";
 import { findOrCreateCompany } from "@/modules/companies/service";
 
 /** Un id mal formé ferait échouer PostgreSQL (colonne uuid) : c'est simplement une Candidature introuvable. */
 function isUuid(id: string): boolean {
   return z.uuid().safeParse(id).success;
-}
-
-/**
- * Colonnes saisies d'une Candidature. Chaque colonne est écrite explicitement : un champ vidé
- * devient `null` (Prisma ignorerait `undefined` et garderait l'ancienne valeur).
- */
-function toColumns(input: CreateApplicationInput) {
-  const hasSalary = input.salaryMin !== undefined || input.salaryMax !== undefined;
-  return {
-    jobTitle: input.jobTitle,
-    location: input.location,
-    contractType: input.contractType,
-    source: input.source,
-    jobUrl: input.jobUrl ?? null,
-    jobDescription: input.jobDescription ?? null,
-    salaryMin: input.salaryMin ?? null,
-    salaryMax: input.salaryMax ?? null,
-    salaryCurrency: hasSalary ? input.salaryCurrency : null,
-    salaryPeriod: input.salaryPeriod ?? null,
-    appliedAt: new Date(`${input.appliedAt}T00:00:00Z`),
-    notes: input.notes ?? null,
-  };
 }
 
 /** « L'envoi du CV… », « L'envoi de la lettre de motivation… ». */
