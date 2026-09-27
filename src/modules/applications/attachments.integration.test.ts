@@ -104,8 +104,9 @@ describe("pièces jointes en base", () => {
   // Un utilisateur absent de la base fait échouer l'enregistrement (clé étrangère).
   const MISSING_USER = "00000000-0000-4000-8000-000000000000";
 
-  it("échec d'enregistrement : supprime le fichier envoyé et le dit", async () => {
+  it("échec d'enregistrement : supprime le fichier envoyé, le dit et journalise la cause", async () => {
     const { storage, files } = createMemoryStorage();
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
 
     await expect(
       createApplication(MISSING_USER, input({ cv: pdf("CV_DevOps.pdf", 240_000) }), storage),
@@ -116,6 +117,9 @@ describe("pièces jointes en base", () => {
       ),
     );
     expect(files.size).toBe(0);
+    // La cause réelle (ici une clé étrangère) reste consultable dans les journaux du serveur.
+    expect(log).toHaveBeenCalledWith(expect.stringContaining("enregistrement"), expect.any(Error));
+    log.mockRestore();
   });
 
   it("échec d'enregistrement puis de suppression : nomme le fichier resté sur UploadThing et le journalise", async () => {

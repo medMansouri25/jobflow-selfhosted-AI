@@ -26,6 +26,7 @@ import {
   initialApplicationFormState,
   type ApplicationFormState,
 } from "@/modules/applications/form-state";
+import { MAX_ATTACHMENT_LABEL } from "@/modules/applications/schemas";
 import {
   CONTRACT_TYPE_LABELS,
   SALARY_PERIOD_LABELS,
@@ -198,10 +199,10 @@ export function ApplicationForm({
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="CV (PDF, 4 Mo max.)" error={error("cv")}>
+        <Field label={`CV (PDF, ${MAX_ATTACHMENT_LABEL} max.)`} error={error("cv")}>
           {(props) => <Input {...props} name="cv" type="file" accept="application/pdf" />}
         </Field>
-        <Field label="Lettre de motivation (PDF, 4 Mo max.)" error={error("coverLetter")}>
+        <Field label={`Lettre de motivation (PDF, ${MAX_ATTACHMENT_LABEL} max.)`} error={error("coverLetter")}>
           {(props) => <Input {...props} name="coverLetter" type="file" accept="application/pdf" />}
         </Field>
         <Field

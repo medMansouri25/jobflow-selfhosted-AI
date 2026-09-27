@@ -75,7 +75,8 @@ export async function createApplication(
   if (stored.length === 0) return saving;
 
   // Fichiers déjà envoyés mais Candidature non enregistrée : on les supprime pour ne pas laisser d'orphelins.
-  return saving.catch(async () => {
+  return saving.catch(async (error: unknown) => {
+    console.error("Échec de l'enregistrement d'une Candidature avec pièces jointes :", error);
     const leftover = await discardUploads(storage, stored);
     throw new DomainError(
       "APPLICATION_SAVE_FAILED",

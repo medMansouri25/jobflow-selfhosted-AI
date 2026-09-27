@@ -38,6 +38,8 @@ const httpUrl = z.preprocess(
 );
 
 export const MAX_ATTACHMENT_BYTES = 4 * 1024 * 1024;
+/** « 4 Mo » : la limite telle qu'affichée, dérivée de la constante. */
+export const MAX_ATTACHMENT_LABEL = `${MAX_ATTACHMENT_BYTES / (1024 * 1024)} Mo`;
 
 /**
  * Pièce jointe facultative : PDF de 4 Mo maximum. Un champ fichier laissé vide arrive comme un
@@ -50,7 +52,7 @@ const pdfAttachment = (label: string) =>
       .instanceof(File)
       .refine(
         (file) => file.type === "application/pdf" && file.size <= MAX_ATTACHMENT_BYTES,
-        `${label} doit être un PDF de 4 Mo maximum`,
+        `${label} doit être un PDF de ${MAX_ATTACHMENT_LABEL} maximum`,
       )
       .optional(),
   );
