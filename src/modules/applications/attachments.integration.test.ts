@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import { db } from "@/lib/db";
 import { DomainError } from "@/lib/errors";
 import { createApplicationSchema } from "@/modules/applications/schemas";
-import { createApplication } from "@/modules/applications/service";
+import { createApplication, getApplication } from "@/modules/applications/service";
 import { createTestUser } from "@/test/database";
 import { createMemoryStorage } from "@/test/memory-storage";
 
@@ -132,6 +132,23 @@ describe("pièces jointes en base", () => {
     );
     expect(log).toHaveBeenCalled();
     log.mockRestore();
+  });
+
+  it("sont renvoyées avec la Candidature pour la fiche", async () => {
+    const user = await createTestUser();
+    const { storage } = createMemoryStorage();
+    const created = await createApplication(
+      user.id,
+      input({ cv: pdf("CV_DevOps.pdf", 240_000) }),
+      storage,
+    );
+
+    const application = await getApplication(user.id, created.id);
+
+    expect(application.attachments.map((a) => [a.kind, a.name, a.size])).toEqual([
+      ["CV", "CV_DevOps.pdf", 240_000],
+    ]);
+    expect(application.attachments[0].url).toMatch(/^https:\/\//);
   });
 });
 

@@ -8,6 +8,7 @@ import {
   StatusBadge,
 } from "@/modules/applications/components/status-badge";
 import {
+  ATTACHMENT_KIND_LABELS,
   CONTRACT_TYPE_LABELS,
   SOURCE_LABELS,
   STATUS_LABELS,
@@ -34,6 +35,14 @@ const changeTimeFormat = new Intl.DateTimeFormat("fr-FR", {
   minute: "2-digit",
   timeZone: "Europe/Paris",
 });
+
+/** « 234 Ko », « 1,4 Mo ». */
+const sizeFormat = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 1 });
+function formatSize(bytes: number): string {
+  return bytes < 1024 * 1024
+    ? `${Math.max(1, Math.round(bytes / 1024))} Ko`
+    : `${sizeFormat.format(bytes / (1024 * 1024))} Mo`;
+}
 
 const PER_PERIOD = { YEARLY: "/ an", MONTHLY: "/ mois" } as const;
 
@@ -110,6 +119,26 @@ export function ApplicationDetail({ application }: { application: ApplicationDet
       {application.notes && (
         <Section title="Notes personnelles">
           <p className="whitespace-pre-wrap text-sm">{application.notes}</p>
+        </Section>
+      )}
+
+      {application.attachments.length > 0 && (
+        <Section title="Pièces jointes">
+          <dl className="grid gap-x-6 gap-y-2 text-sm sm:grid-cols-[max-content_1fr]">
+            {application.attachments.map((attachment) => (
+              <Field key={attachment.id} label={ATTACHMENT_KIND_LABELS[attachment.kind]}>
+                <a
+                  href={attachment.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="break-all text-primary underline-offset-4 hover:underline"
+                >
+                  {attachment.name}
+                </a>{" "}
+                <span className="text-muted-foreground">({formatSize(attachment.size)})</span>
+              </Field>
+            ))}
+          </dl>
         </Section>
       )}
 

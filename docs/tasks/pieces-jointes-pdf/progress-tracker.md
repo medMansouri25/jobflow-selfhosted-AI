@@ -28,7 +28,7 @@ Chaque Candidature peut porter deux **Pièces jointes** PDF — son CV et sa let
 ## Missions
 - [x] Mission 1: Backend — dépendance UploadThing, adaptateur de stockage (envoyer / supprimer) avec faux pour les tests, modèle `Attachment` + migration (retrait de `cvLabel` / `coverLetter`), `UPLOADTHING_TOKEN`
 - [x] Mission 2: Backend — création avec pièces jointes : validation PDF ≤ 4 Mo, envoi puis transaction, suppression des fichiers si échec, les quatre messages d'erreur, limite des Server Actions
-- [ ] Mission 3: Frontend — formulaire à deux champs fichier (CV, lettre) à la place des champs texte ; section « Pièces jointes » de la fiche avec nom et taille, ouverture dans un nouvel onglet
+- [x] Mission 3: Frontend — formulaire à deux champs fichier (CV, lettre) à la place des champs texte ; section « Pièces jointes » de la fiche avec nom et taille, ouverture dans un nouvel onglet
 - [ ] Mission 4: Docs — ADR 0006 (UploadThing, amende ADR 0001), SPEC-001 (modèle, formulaire, « fichiers joints » retirés du hors-périmètre), SPEC-000 (005 réduit à une future bibliothèque de documents partagés), `tech-stack.md`, `backend-patterns.md` (adaptateur de stockage), suppression du handoff
 
 ## Mission Summaries
@@ -49,3 +49,14 @@ _Filled in as each mission completes. Future missions read these for context._
 - **Tests**: schemas.test.ts (+4 : non-PDF, > 4 Mo, PDF accepté, champ vide ignoré) ; attachments.integration.test.ts (+4 : nominal, échec d'envoi, échec d'enregistrement, double échec avec journalisation) — faux stockage `createMemoryStorage({ failUploadOf, failRemove })`.
 - **Gotchas**: sans fichier, une erreur d'enregistrement reste une erreur inattendue (→ `error.tsx`), comme avant. Un fichier ne peut pas être ré-affiché après une erreur de validation : le navigateur interdit de pré-remplir un `<input type="file">`.
 - **Integrates with**: Mission 3 ajoute les deux champs `name="cv"` / `name="coverLetter"` (`type="file"`, `accept="application/pdf"`) et lit `attachments` dans `getApplication` pour la fiche.
+
+### Mission 3: Formulaire et fiche
+**Status**: Completed
+- **Files**: `components/application-form.tsx` (+ test), `components/application-detail.tsx` (+ test), `service.ts` (`getApplication` inclut `attachments`), `domain/application.ts` (`ATTACHMENT_KINDS`), `labels.ts` (`ATTACHMENT_KIND_LABELS`), `schemas.ts` (+ test), `package.json` (`overrides.effect`)
+- **Built**: champs « CV (PDF, 4 Mo max.) » et « Lettre de motivation (PDF, 4 Mo max.) » (`type="file"`, `accept="application/pdf"`) ; section « Pièces jointes » de la fiche : libellé, lien `_blank` + `noopener noreferrer`, taille (« 234 Ko », « 1,4 Mo », jamais « 0 Ko ») ; section masquée sans pièce jointe.
+- **Tests**: champs fichier du formulaire ; `getApplication` renvoie les pièces jointes (intégration) ; affichage, taille minimale, section masquée.
+- **Essai réel UploadThing (2026-09-27)** : candidature créée depuis `/applications/new` avec un PDF de 193 octets → ligne `Attachment` en base, fichier servi `200 application/pdf` par `https://bbnz1rk2yk.ufs.sh/f/…`, section visible sur la fiche. Nettoyé ensuite : fichier supprimé d'UploadThing (`deletedCount: 1`, `listFiles` vide), candidature et entreprise d'essai supprimées de `jobflow_dev`.
+- **Gotchas**:
+  - Via une Server Action, un champ fichier laissé vide arrive comme un `File` nommé « blob » de 0 octet (et non sans nom, comme en Node pur) : tout fichier de 0 octet vaut « pas de fichier ». Trouvé à l'essai réel, test ajouté.
+  - `effect` était installé en deux versions (3.20.0 par Prisma, 3.17.7 par UploadThing) : chaque appel `UTApi` inondait les journaux d'avertissements. `overrides.effect = "3.20.0"` dans `package.json` n'en garde qu'une.
+  - L'URL d'un fichier supprimé peut encore répondre un moment (cache CDN d'UploadThing).

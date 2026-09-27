@@ -1,5 +1,6 @@
 import type {
   ApplicationSource,
+  AttachmentKind,
   ApplicationStatus,
   ContractType,
   SalaryPeriod,
@@ -11,6 +12,11 @@ export const STATUS_LABELS: Record<ApplicationStatus, string> = {
   APPLIED: "Postulée",
   INTERVIEW: "Entretien",
   REJECTED: "Refusée",
+};
+
+export const ATTACHMENT_KIND_LABELS: Record<AttachmentKind, string> = {
+  CV: "CV",
+  COVER_LETTER: "Lettre de motivation",
 };
 
 export const CONTRACT_TYPE_LABELS: Record<ContractType, string> = {

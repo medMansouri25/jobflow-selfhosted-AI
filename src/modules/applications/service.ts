@@ -3,10 +3,10 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { DomainError, NotFoundError } from "@/lib/errors";
 import { getStorage, StorageError, type FileStorage, type StoredFile } from "@/lib/storage";
-import type { AttachmentKind } from "@/generated/prisma/client";
 import {
   APPLICATION_STATUSES,
   type ApplicationStatus,
+  type AttachmentKind,
 } from "@/modules/applications/domain/application";
 import type { CreateApplicationInput } from "@/modules/applications/schemas";
 import { findOrCreateCompany } from "@/modules/companies/service";
@@ -116,6 +116,7 @@ export async function getApplication(userId: string, id: string) {
     include: {
       company: true,
       statusChanges: { orderBy: { changedAt: "desc" } },
+      attachments: { orderBy: { kind: "asc" } },
     },
   });
   if (!application) throw new NotFoundError("Candidature introuvable.");

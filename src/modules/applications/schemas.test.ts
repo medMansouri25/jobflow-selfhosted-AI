@@ -157,8 +157,8 @@ describe("création d'une candidature", () => {
       expect(result.data?.coverLetter?.name).toBe("Lettre.pdf");
     });
 
-    it("ignore un champ fichier laissé vide (le navigateur envoie un fichier sans nom de 0 octet)", () => {
-      const empty = new File([], "", { type: "application/octet-stream" });
+    it("ignore un champ fichier laissé vide (reçu par la Server Action comme « blob » de 0 octet)", () => {
+      const empty = new File([], "blob", { type: "application/octet-stream" });
       const result = createApplicationSchema(TODAY).safeParse({ ...formInput(), cv: empty });
 
       expect(result.success).toBe(true);

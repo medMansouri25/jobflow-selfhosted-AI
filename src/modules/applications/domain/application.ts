@@ -4,6 +4,10 @@
 export const APPLICATION_STATUSES = ["APPLIED", "INTERVIEW", "REJECTED"] as const;
 export type ApplicationStatus = (typeof APPLICATION_STATUSES)[number];
 
+/** Pièces jointes d'une Candidature (CONTEXT.md) : au plus une de chaque. */
+export const ATTACHMENT_KINDS = ["CV", "COVER_LETTER"] as const;
+export type AttachmentKind = (typeof ATTACHMENT_KINDS)[number];
+
 export const CONTRACT_TYPES = [
   "CDI",
   "CDD",

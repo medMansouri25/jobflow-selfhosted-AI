@@ -198,6 +198,12 @@ export function ApplicationForm({
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="CV (PDF, 4 Mo max.)" error={error("cv")}>
+          {(props) => <Input {...props} name="cv" type="file" accept="application/pdf" />}
+        </Field>
+        <Field label="Lettre de motivation (PDF, 4 Mo max.)" error={error("coverLetter")}>
+          {(props) => <Input {...props} name="coverLetter" type="file" accept="application/pdf" />}
+        </Field>
         <Field
           label="Notes personnelles (recruteurs, date limite de réponse…)"
           error={error("notes")}

@@ -40,12 +40,12 @@ const httpUrl = z.preprocess(
 export const MAX_ATTACHMENT_BYTES = 4 * 1024 * 1024;
 
 /**
- * Pièce jointe facultative : PDF de 4 Mo maximum. Un champ fichier laissé vide arrive
- * comme un fichier sans nom de 0 octet : il vaut « pas de fichier ».
+ * Pièce jointe facultative : PDF de 4 Mo maximum. Un champ fichier laissé vide arrive comme un
+ * fichier de 0 octet (nommé « blob » par les Server Actions) : il vaut « pas de fichier ».
  */
 const pdfAttachment = (label: string) =>
   z.preprocess(
-    (value) => (value instanceof File && value.size === 0 && !value.name ? undefined : value),
+    (value) => (value instanceof File && value.size === 0 ? undefined : value),
     z
       .instanceof(File)
       .refine(

@@ -47,6 +47,18 @@ describe("formulaire de candidature", () => {
     expect(dateInput).not.toMatch(/value="\d{4}-/);
   });
 
+  it("propose d'y joindre le CV et la lettre de motivation en PDF", () => {
+    render(<ApplicationForm action={noop} />);
+
+    for (const [label, name] of [
+      [/^CV/, "cv"],
+      [/^Lettre de motivation/, "coverLetter"],
+    ] as const) {
+      const input = screen.getByLabelText(label) as HTMLInputElement;
+      expect([input.type, input.name, input.accept]).toEqual(["file", name, "application/pdf"]);
+    }
+  });
+
   it("appelle onCancel quand on clique sur Annuler", () => {
     const onCancel = vi.fn();
     render(<ApplicationForm action={noop} onCancel={onCancel} />);
