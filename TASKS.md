@@ -100,7 +100,7 @@ git push
 - Passer les deux specs au statut **Validée**.
 - **Terminé quand** : aucune hypothèse ouverte ; statut « Validée » dans les deux fichiers.
 
-### [ ] T0.2 — Protection de `main` et modèle de PR
+### [~] T0.2 — Protection de `main` et modèle de PR
 - Sur GitHub : *Settings → Rules → Rulesets* (ou *Branches → Branch protection rules*) pour `main` :
   - exiger une Pull Request avant de merger ;
   - interdire les *force push* et la suppression ;
@@ -173,8 +173,8 @@ git push
 - Migration.
 - **Terminé quand** : la migration s'applique sur une base vide ; le seed passe toujours.
 
-### [ ] T1.2 — Machine à états des statuts
-- `modules/applications/domain/status.ts` : `canTransition`, `allowedTransitions`, statuts terminaux, candidatures actives.
+### [x] T1.2 — Machine à états des statuts
+- `modules/applications/domain/status.ts` : `canTransition`, `allowedTransitions`, `isDefinitive` — trois statuts seulement, Postulée → Entretien → Refusée (ADR 0005).
 - Tests unitaires couvrant **toutes** les transitions autorisées et interdites (BR-001-05).
 - **Terminé quand** : AC-001-05 à 09 couverts par des tests unitaires verts.
 
@@ -187,7 +187,7 @@ git push
 ### [~] T1.4 — Créer une Candidature
 - Service : `createApplication` (Entreprise trouvée ou créée, statut initial, entrée d'historique, en transaction).
 - Service `companies` : recherche par préfixe pour l'autocomplétion.
-- Server Action + page `/applications/new` : formulaire, autocomplétion de l'Entreprise, choix Brouillon / Postulée.
+- Server Action + page `/applications/new` : formulaire, autocomplétion de l'Entreprise, création toujours Postulée (ADR 0005).
 - **Terminé quand** : AC-001-01 à 04, 17, 18 verts ; création possible depuis l'interface.
 
 ### [ ] T1.5 — Consulter une Candidature
@@ -201,9 +201,9 @@ git push
 - **Terminé quand** : AC-001-11 vert.
 
 ### [ ] T1.7 — Changer le statut
-- Service `changeApplicationStatus` : transition vérifiée sur l'état **en base**, historique en transaction, date de candidature par défaut au passage en Postulée.
-- Composant `StatusMenu` : uniquement les transitions autorisées ; confirmation pour Acceptée / Refusée.
-- **Terminé quand** : AC-001-05 à 10 verts (y compris requêtes forgées).
+- Service `changeApplicationStatus` : transition vérifiée sur l'état **en base**, historique en transaction.
+- Composant `StatusMenu` : uniquement les transitions autorisées ; confirmation pour Refusée (définitive).
+- **Terminé quand** : AC-001-05 à 08 verts (y compris requêtes forgées).
 
 ### [ ] T1.8 — Supprimer une Candidature
 - Service `deleteApplication` (cascade de l'historique, l'Entreprise est conservée).
@@ -211,7 +211,7 @@ git push
 - **Terminé quand** : AC-001-12, 13 vérifiés.
 
 ### [ ] T1.9 — Liste, recherche, filtres, tri
-- Service `listApplications` : actives par défaut, filtres (statut, actives/terminées/toutes, contrat, source), recherche texte, tri, pagination par 25.
+- Service `listApplications` : toutes les Candidatures, filtres (statut, contrat, source), recherche texte, tri, pagination par 25.
 - Page `/applications` ; paramètres de recherche dans l'URL ; état vide.
 - **Terminé quand** : AC-001-14, 15, 16, 21 verts.
 
@@ -239,7 +239,7 @@ git push
 | # | Tâche | Branche |
 |---|---|---|
 | [ ] T2.1 | Rédiger SPEC-002 | `docs/spec-002-dashboard` |
-| [ ] T2.2 | Compteurs par statut et candidatures actives | `feature/spec-002-counters` |
+| [ ] T2.2 | Compteurs par statut | `feature/spec-002-counters` |
 | [ ] T2.3 | Candidatures récentes | `feature/spec-002-recent-applications` |
 | [ ] T2.4 | Statistiques basiques (taux de réponse, candidatures par semaine) | `feature/spec-002-stats` |
 
