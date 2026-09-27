@@ -82,6 +82,7 @@ Les tests sont placés à côté du fichier testé. L'alias `@/` est résolu à 
 - Cible **ARM64** (Raspberry Pi, 4 Go de RAM) : image Docker multi-arch construite en CI ; `next build` n'est jamais exécuté sur la Pi.
 - Aucune exposition publique de l'application (ADR `0001`) ; seules les pièces jointes sont servies hors du tailnet, par UploadThing (ADR `0006`).
 - Aucun secret dans Git.
+- Corps des Server Actions limité à 10 Mo (`experimental.serverActions.bodySizeLimit`, `next.config.ts`) : deux pièces jointes de 4 Mo + le formulaire. À relever si la taille ou le nombre des pièces jointes augmente.
 
 ## Services externes
 

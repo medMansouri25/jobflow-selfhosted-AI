@@ -51,6 +51,7 @@ export function isDefinitive(status: ApplicationStatus): boolean  // Statut déf
 - Les types d'entrée du service sont **dérivés** des schémas (`z.infer`), jamais redéclarés.
 - Les règles qui dépendent de plusieurs champs (salaire min ≤ max, date obligatoire en Postulée) sont exprimées dans le schéma (`superRefine`) en s'appuyant sur les fonctions du domaine.
 - Les schémas acceptent **directement les chaînes envoyées par le formulaire** : une chaîne vide devient `undefined` (`z.preprocess`), les montants sont convertis en nombres (`z.coerce`).
+- Un champ fichier est validé comme `z.instanceof(File)` (type et taille) ; un champ fichier laissé vide arrive dans la Server Action comme un fichier de 0 octet nommé « blob » : `z.preprocess` le convertit en `undefined` (« pas de fichier »).
 - Une règle qui dépend de la date du jour reçoit cette date en paramètre (`createApplicationSchema(today)`) : le schéma reste déterministe et testable ; l'action calcule `today` dans le fuseau `Europe/Paris`.
 - Les énumérations du domaine sont des tableaux `as const` (`APPLICATION_STATUSES`…) dont on dérive les types ; leurs libellés français vivent dans `modules/<module>/labels.ts`.
 - Un champ obligatoire passe par l'utilitaire `required(schema, label)` : chaîne vide ou absente → message « <Libellé> est obligatoire », puis validation par le schéma cible (`z.enum`, `z.iso.date`…).
@@ -71,6 +72,7 @@ export function isDefinitive(status: ApplicationStatus): boolean  // Statut déf
 - Adaptateurs web **sans règle métier** : `FormData` → validation Zod → `getCurrentUserId()` → service → `revalidatePath` / `redirect`.
 - Signature compatible `useActionState` : `(prevState, formData) => Promise<ActionState>`.
 - Convertissent les erreurs via l'utilitaire commun (voir « Erreurs »).
+- Les entrées de `FormData` sont séparées en chaînes et en `File` : les deux sont validées ensemble, seules les chaînes sont renvoyées au formulaire en cas d'erreur (un fichier ne peut pas être ré-affiché).
 
 ### Lectures
 
