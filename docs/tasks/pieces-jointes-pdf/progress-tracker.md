@@ -1,6 +1,6 @@
 # Task: Pièces jointes PDF (CV et lettre de motivation)
 
-**Status**: In dev
+**Status**: Completed
 **Type**: Full-stack
 **Created**: 2026-09-28 (depuis le handoff `cv-lettre-pieces-jointes`)
 
