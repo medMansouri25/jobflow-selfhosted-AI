@@ -12,6 +12,9 @@ dist/
 coverage/
 *.tsbuildinfo
 
+# Certificats et clés
+*.pem
+
 # Variables d'environnement : seuls les modèles sont versionnés
 .env
 .env*.local
@@ -45,3 +48,9 @@ Thumbs.db
 AGENTS.md
 CONTEXT.md
 FrontDesignProposition.md
+
+# Maquette de design locale
+JobFlow AI.html
+
+# Client Prisma généré (npm run db:generate)
+/src/generated/
