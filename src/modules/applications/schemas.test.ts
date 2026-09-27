@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
 
-import { createApplicationSchema } from "@/modules/applications/schemas";
+import {
+  createApplicationSchema,
+  updateApplicationSchema,
+} from "@/modules/applications/schemas";
 
 const TODAY = "2026-09-24";
 
@@ -163,6 +166,18 @@ describe("création d'une candidature", () => {
 
       expect(result.success).toBe(true);
       expect(result.data?.cv).toBeUndefined();
+    });
+  });
+
+  describe("modification", () => {
+    it("lit les cases « Retirer » : cochée → vrai, absente → faux, et garde les règles de la création", () => {
+      const result = updateApplicationSchema(TODAY).safeParse({ ...formInput(), removeCv: "on" });
+
+      expect(result.data?.removeCv).toBe(true);
+      expect(result.data?.removeCoverLetter).toBe(false);
+      expect(
+        updateApplicationSchema(TODAY).safeParse({ ...formInput(), appliedAt: "2026-09-25" }).success,
+      ).toBe(false);
     });
   });
 });

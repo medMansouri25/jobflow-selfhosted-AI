@@ -64,71 +64,99 @@ const required = <T extends z.ZodType<unknown, string>>(schema: T, label: string
     z.string().trim().min(1, `${label} est obligatoire`).pipe(schema),
   );
 
+/** Champs saisis d'une Candidature, communs à la création et à la modification (FR-001-02). */
+const applicationFields = {
+  companyName: z
+    .string()
+    .trim()
+    .min(1, "L'Entreprise est obligatoire")
+    .max(200, "200 caractères maximum"),
+  jobTitle: z
+    .string()
+    .trim()
+    .min(1, "L'intitulé du poste est obligatoire")
+    .max(200, "200 caractères maximum"),
+  location: required(z.string().max(200, "200 caractères maximum"), "La localisation"),
+  contractType: required(z.enum(CONTRACT_TYPES), "Le type de contrat"),
+  source: required(z.enum(APPLICATION_SOURCES), "La source de l'Annonce"),
+  jobUrl: httpUrl,
+  jobDescription: optionalText(50_000),
+  salaryMin: optionalAmount,
+  salaryMax: optionalAmount,
+  salaryCurrency: z.preprocess(
+    (value) => emptyToUndefined(value) ?? "EUR",
+    z.enum(CURRENCIES, { error: "Devise non prise en charge" }),
+  ),
+  salaryPeriod: optionalEnum(SALARY_PERIODS),
+  appliedAt: required(z.iso.date("Date invalide"), "La date de candidature"),
+  notes: optionalText(20_000),
+  cv: pdfAttachment("Le CV"),
+  coverLetter: pdfAttachment("La lettre de motivation"),
+};
+
+/** Règles entre plusieurs champs : date non future (BR-001-03), salaire (BR-001-04). */
+function crossFieldRules(today: string) {
+  return (
+    input: {
+      appliedAt: string;
+      salaryMin?: number;
+      salaryMax?: number;
+      salaryPeriod?: string;
+    },
+    ctx: z.RefinementCtx,
+  ) => {
+    if (input.appliedAt > today) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["appliedAt"],
+        message: "La date de candidature ne peut pas être dans le futur",
+      });
+    }
+    if (
+      input.salaryMin !== undefined &&
+      input.salaryMax !== undefined &&
+      input.salaryMin > input.salaryMax
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["salaryMax"],
+        message: "Le maximum doit être supérieur ou égal au minimum",
+      });
+    }
+    const hasAmount = input.salaryMin !== undefined || input.salaryMax !== undefined;
+    if (hasAmount && !input.salaryPeriod) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["salaryPeriod"],
+        message: "Précise la période du salaire",
+      });
+    }
+  };
+}
+
+/** Case à cocher HTML : « on » quand elle est cochée, absente sinon. */
+const checkbox = z.preprocess((value) => value === "on" || value === true, z.boolean());
+
 /**
  * Création d'une Candidature (SPEC-001) : toujours Postulée, donc localisation, contrat,
  * source et date toujours obligatoires. `today` (AAAA-MM-JJ) est passé en paramètre
  * pour que la règle « pas de date future » reste testable et déterministe.
  */
 export function createApplicationSchema(today: string) {
-  return z
-    .object({
-      companyName: z
-        .string()
-        .trim()
-        .min(1, "L'Entreprise est obligatoire")
-        .max(200, "200 caractères maximum"),
-      jobTitle: z
-        .string()
-        .trim()
-        .min(1, "L'intitulé du poste est obligatoire")
-        .max(200, "200 caractères maximum"),
-      location: required(z.string().max(200, "200 caractères maximum"), "La localisation"),
-      contractType: required(z.enum(CONTRACT_TYPES), "Le type de contrat"),
-      source: required(z.enum(APPLICATION_SOURCES), "La source de l'Annonce"),
-      jobUrl: httpUrl,
-      jobDescription: optionalText(50_000),
-      salaryMin: optionalAmount,
-      salaryMax: optionalAmount,
-      salaryCurrency: z.preprocess(
-        (value) => emptyToUndefined(value) ?? "EUR",
-        z.enum(CURRENCIES, { error: "Devise non prise en charge" }),
-      ),
-      salaryPeriod: optionalEnum(SALARY_PERIODS),
-      appliedAt: required(z.iso.date("Date invalide"), "La date de candidature"),
-      notes: optionalText(20_000),
-      cv: pdfAttachment("Le CV"),
-      coverLetter: pdfAttachment("La lettre de motivation"),
-    })
-    .superRefine((input, ctx) => {
-      if (input.appliedAt > today) {
-        ctx.addIssue({
-          code: "custom",
-          path: ["appliedAt"],
-          message: "La date de candidature ne peut pas être dans le futur",
-        });
-      }
-      if (
-        input.salaryMin !== undefined &&
-        input.salaryMax !== undefined &&
-        input.salaryMin > input.salaryMax
-      ) {
-        ctx.addIssue({
-          code: "custom",
-          path: ["salaryMax"],
-          message: "Le maximum doit être supérieur ou égal au minimum",
-        });
-      }
-      const hasAmount =
-        input.salaryMin !== undefined || input.salaryMax !== undefined;
-      if (hasAmount && !input.salaryPeriod) {
-        ctx.addIssue({
-          code: "custom",
-          path: ["salaryPeriod"],
-          message: "Précise la période du salaire",
-        });
-      }
-    });
+  return z.object(applicationFields).superRefine(crossFieldRules(today));
 }
+
+/**
+ * Modification d'une Candidature (FR-001-02) : mêmes champs et mêmes règles, sans statut.
+ * Une pièce jointe actuelle se garde (rien), se remplace (nouveau fichier) ou se retire (case cochée).
+ */
+export function updateApplicationSchema(today: string) {
+  return z
+    .object({ ...applicationFields, removeCv: checkbox, removeCoverLetter: checkbox })
+    .superRefine(crossFieldRules(today));
+}
+
+export type UpdateApplicationInput = z.infer<ReturnType<typeof updateApplicationSchema>>;
 
 export type CreateApplicationInput = z.infer<
   ReturnType<typeof createApplicationSchema>

@@ -22,9 +22,17 @@ Un bouton « Modifier » sur la fiche ouvre le formulaire pré-rempli (« Modifi
 - Branche `feature/spec-001-edit-application`, une PR, revue complète avant fusion ; jamais de mention de Claude.
 
 ## Missions
-- [ ] Mission 1: Backend — schéma de modification (+ « Retirer » CV / lettre) et `updateApplication` : propriétaire vérifié (404 sinon), champs mis à jour, Entreprise trouvée ou créée, pièces jointes gardées / remplacées / ajoutées / retirées, anciens fichiers supprimés après l'enregistrement, tous les cas d'échec (tests d'intégration avec faux stockage)
+- [x] Mission 1: Backend — schéma de modification (+ « Retirer » CV / lettre) et `updateApplication` : propriétaire vérifié (404 sinon), champs mis à jour, Entreprise trouvée ou créée, pièces jointes gardées / remplacées / ajoutées / retirées, anciens fichiers supprimés après l'enregistrement, tous les cas d'échec (tests d'intégration avec faux stockage)
 - [ ] Mission 2: Frontend — action `updateApplicationAction`, formulaire pré-rempli avec le bloc « pièces jointes actuelles », bouton « Modifier » et fenêtre « Modifier — <Entreprise> » sur la fiche, fermeture et rechargement après succès (AC-001-11)
 - [ ] Mission 3: Docs — SPEC-001 (§8 : modification en fenêtre, plus de page `/edit` ; pièces jointes modifiables), `frontend-patterns.md`, `backend-patterns.md` si un pattern change, `TASKS.md`
 
 ## Mission Summaries
 _Filled in as each mission completes. Future missions read these for context._
+
+### Mission 1: Schéma et service de modification
+**Status**: Completed
+- **Files**: `schemas.ts` (+ test), `service.ts`, `update.integration.test.ts`
+- **Built**: `schemas.ts` découpé en `applicationFields` + `crossFieldRules(today)`, partagés par `createApplicationSchema` et le nouveau `updateApplicationSchema` (+ cases `removeCv` / `removeCoverLetter`, « on » → vrai). `service.ts` : `toColumns(input)` écrit chaque colonne (champ vidé → `null`), `isUuid`, `uploadAttachments` et `saveOrDiscard` extraits de la création ; `updateApplication(userId, id, input, storage)` → `{ application, leftover }` : propriétaire vérifié dans la transaction (404 sinon), pièces jointes gardées / remplacées / ajoutées / retirées, anciens fichiers supprimés après l'enregistrement.
+- **Tests**: 10 tests d'intégration (AC-001-11, champ vidé, propriétaire, Entreprise corrigée, ajout, remplacement, retrait, échec d'envoi, introuvable avec fichier envoyé, ancien fichier non supprimé) + 1 unitaire (cases « Retirer ») ; mutation vérifiée (ignorer « Retirer » fait échouer un test).
+- **Gotchas**: Prisma **ignore** une valeur `undefined` au lieu de vider la colonne : sans `toColumns`, vider des notes n'aurait rien effacé (trouvé par le test « champ vidé »). Sans contrôle de propriétaire, `update({ where: { id } })` aurait laissé un autre utilisateur modifier la Candidature (test rouge avant le correctif). Une `DomainError` levée dans la transaction (ex. introuvable) garde son message après le nettoyage des fichiers (`saveOrDiscard`).
+- **Integrates with**: Mission 2 appelle `updateApplication` depuis `updateApplicationAction` et affiche `leftover` dans le message de succès.
