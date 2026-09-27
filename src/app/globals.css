@@ -38,9 +38,6 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --color-status-draft: var(--status-draft);
-  --color-status-draft-bg: var(--status-draft-bg);
-  --color-status-draft-fg: var(--status-draft-fg);
   --color-status-applied: var(--status-applied);
   --color-status-applied-bg: var(--status-applied-bg);
   --color-status-applied-fg: var(--status-applied-fg);
@@ -53,9 +50,6 @@
   --color-status-rejected: var(--status-rejected);
   --color-status-rejected-bg: var(--status-rejected-bg);
   --color-status-rejected-fg: var(--status-rejected-fg);
-  --color-status-archived: var(--status-archived);
-  --color-status-archived-bg: var(--status-archived-bg);
-  --color-status-archived-fg: var(--status-archived-fg);
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
   --radius-sm: calc(var(--radius) * 0.6);
@@ -97,9 +91,6 @@ body {
   --input: #cbd5e1;
   --ring: #2563eb;
   /* Statuts : couleur pleine (barres, points), fond et texte des badges */
-  --status-draft: #cbd5e1;
-  --status-draft-bg: #f1f5f9;
-  --status-draft-fg: #334155;
   --status-applied: #2563eb;
   --status-applied-bg: #eef4ff;
   --status-applied-fg: #1e3a8a;
@@ -112,9 +103,6 @@ body {
   --status-rejected: #e5484d;
   --status-rejected-bg: #fdeeee;
   --status-rejected-fg: #8f1d14;
-  --status-archived: #94a3b8;
-  --status-archived-bg: #e2e8f0;
-  --status-archived-fg: #475569;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -151,9 +139,6 @@ body {
   --border: rgb(255 255 255 / 10%);
   --input: rgb(255 255 255 / 15%);
   --ring: #3b82f6;
-  --status-draft: #64748b;
-  --status-draft-bg: #334155;
-  --status-draft-fg: #e2e8f0;
   --status-applied: #3b82f6;
   --status-applied-bg: #1e3a8a;
   --status-applied-fg: #dbe7fe;
@@ -166,9 +151,6 @@ body {
   --status-rejected: #e5484d;
   --status-rejected-bg: #6b1a12;
   --status-rejected-fg: #fdeeee;
-  --status-archived: #94a3b8;
-  --status-archived-bg: #334155;
-  --status-archived-fg: #cbd5e1;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);

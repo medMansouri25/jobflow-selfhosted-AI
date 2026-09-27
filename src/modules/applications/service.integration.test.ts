@@ -7,6 +7,7 @@ import {
   getApplication,
   listApplications,
 } from "@/modules/applications/service";
+import { db } from "@/lib/db";
 import { createTestUser } from "@/test/database";
 
 const TODAY = "2026-09-27";
@@ -99,13 +100,15 @@ describe("service des candidatures", () => {
 
     const counts = await countApplicationsByStatus(user.id);
 
-    expect(counts).toEqual({
-      DRAFT: 0,
-      APPLIED: 2,
-      INTERVIEW: 0,
-      ACCEPTED: 0,
-      REJECTED: 0,
-      ARCHIVED: 0,
-    });
+    expect(counts).toEqual({ APPLIED: 2, INTERVIEW: 0, REJECTED: 0 });
+  });
+
+  it("refuse en base un statut retiré (Brouillon, Acceptée, Classée)", async () => {
+    const user = await createTestUser();
+    const created = await createApplication(user.id, input());
+
+    await expect(
+      db.$executeRaw`UPDATE "Application" SET status = 'DRAFT' WHERE id = ${created.id}::uuid`,
+    ).rejects.toThrow();
   });
 });

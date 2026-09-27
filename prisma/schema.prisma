@@ -9,13 +9,11 @@ datasource db {
   provider = "postgresql"
 }
 
+/// Trois statuts seulement (décision du 2026-09-27) : Postulée → Entretien → Refusée.
 enum ApplicationStatus {
-  DRAFT
   APPLIED
   INTERVIEW
-  ACCEPTED
   REJECTED
-  ARCHIVED
 }
 
 enum ContractType {

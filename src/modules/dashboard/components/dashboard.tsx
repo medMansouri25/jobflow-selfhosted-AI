@@ -18,12 +18,9 @@ export type RecentApplication = {
 };
 
 const STATUS_DOT: Record<ApplicationStatus, string> = {
-  DRAFT: "bg-status-draft",
   APPLIED: "bg-status-applied",
   INTERVIEW: "bg-status-interview",
-  ACCEPTED: "bg-status-accepted",
   REJECTED: "bg-status-rejected",
-  ARCHIVED: "bg-status-archived",
 };
 
 const dateFormat = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" });
@@ -76,7 +73,7 @@ export function Dashboard({
               />
             ))}
         </div>
-        <ul className="grid grid-cols-2 overflow-hidden rounded-lg border bg-card sm:grid-cols-3 lg:grid-cols-6">
+        <ul className="grid overflow-hidden rounded-lg border bg-card sm:grid-cols-3">
           {APPLICATION_STATUSES.map((status) => (
             <li key={status} className="flex flex-col gap-1 border-r border-b p-4 last:border-r-0">
               <span className="flex items-center gap-2 text-xs text-muted-foreground">

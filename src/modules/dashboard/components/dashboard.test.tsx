@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { Dashboard } from "@/modules/dashboard/components/dashboard";
 
-const EMPTY = { DRAFT: 0, APPLIED: 0, INTERVIEW: 0, ACCEPTED: 0, REJECTED: 0, ARCHIVED: 0 };
+const EMPTY = { APPLIED: 0, INTERVIEW: 0, REJECTED: 0 };
 
 describe("tableau de bord", () => {
   it("s'intitule Tableau de bord", () => {
@@ -14,12 +14,15 @@ describe("tableau de bord", () => {
     ).toBeDefined();
   });
 
-  it("présente la répartition des six statuts", () => {
+  it("présente la répartition des trois statuts, et d'aucun autre", () => {
     render(<Dashboard counts={EMPTY} recent={[]} />);
     const distribution = screen.getByRole("region", { name: "Répartition par statut" });
 
-    for (const label of ["Brouillon", "Postulée", "Entretien", "Acceptée", "Refusée", "Classée"]) {
+    for (const label of ["Postulée", "Entretien", "Refusée"]) {
       expect(distribution.textContent).toContain(label);
+    }
+    for (const removed of ["Brouillon", "Acceptée", "Classée"]) {
+      expect(distribution.textContent).not.toContain(removed);
     }
   });
 
