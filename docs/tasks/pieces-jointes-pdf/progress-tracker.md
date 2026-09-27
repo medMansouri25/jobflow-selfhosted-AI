@@ -1,6 +1,6 @@
 # Task: Pièces jointes PDF (CV et lettre de motivation)
 
-**Status**: Validated
+**Status**: Completed
 **Type**: Full-stack
 **Created**: 2026-09-28 (depuis le handoff `cv-lettre-pieces-jointes`)
 
@@ -26,10 +26,42 @@ Chaque Candidature peut porter deux **Pièces jointes** PDF — son CV et sa let
 - Dépend de T1.5 (la fiche affiche les pièces jointes). Branche `feature/pieces-jointes-pdf` depuis un `main` à jour ; jamais de mention de Claude.
 
 ## Missions
-- [ ] Mission 1: Backend — dépendance UploadThing, adaptateur de stockage (envoyer / supprimer) avec faux pour les tests, modèle `Attachment` + migration (retrait de `cvLabel` / `coverLetter`), `UPLOADTHING_TOKEN`
-- [ ] Mission 2: Backend — création avec pièces jointes : validation PDF ≤ 4 Mo, envoi puis transaction, suppression des fichiers si échec, les quatre messages d'erreur, limite des Server Actions
-- [ ] Mission 3: Frontend — formulaire à deux champs fichier (CV, lettre) à la place des champs texte ; section « Pièces jointes » de la fiche avec nom et taille, ouverture dans un nouvel onglet
-- [ ] Mission 4: Docs — ADR 0006 (UploadThing, amende ADR 0001), SPEC-001 (modèle, formulaire, « fichiers joints » retirés du hors-périmètre), SPEC-000 (005 réduit à une future bibliothèque de documents partagés), `tech-stack.md`, `backend-patterns.md` (adaptateur de stockage), suppression du handoff
+- [x] Mission 1: Backend — dépendance UploadThing, adaptateur de stockage (envoyer / supprimer) avec faux pour les tests, modèle `Attachment` + migration (retrait de `cvLabel` / `coverLetter`), `UPLOADTHING_TOKEN`
+- [x] Mission 2: Backend — création avec pièces jointes : validation PDF ≤ 4 Mo, envoi puis transaction, suppression des fichiers si échec, les quatre messages d'erreur, limite des Server Actions
+- [x] Mission 3: Frontend — formulaire à deux champs fichier (CV, lettre) à la place des champs texte ; section « Pièces jointes » de la fiche avec nom et taille, ouverture dans un nouvel onglet
+- [x] Mission 4: Docs — ADR 0006 (UploadThing, amende ADR 0001), SPEC-001 (modèle, formulaire, « fichiers joints » retirés du hors-périmètre), SPEC-000 (005 réduit à une future bibliothèque de documents partagés), `tech-stack.md`, `backend-patterns.md` (adaptateur de stockage), suppression du handoff
 
 ## Mission Summaries
 _Filled in as each mission completes. Future missions read these for context._
+
+### Mission 1: Stockage et modèle
+**Status**: Completed
+- **Files**: `package.json` (uploadthing 7.7.4), `src/lib/storage.ts` (+ test), `src/lib/env.ts` (+ test), `prisma/schema.prisma`, migration `20260927190020_attachments`, `.env.example` ; retrait de `cvLabel` / `coverLetter` dans `schemas.ts`, le formulaire, la fiche et leurs tests
+- **Built**: interface `FileStorage` (`upload(file) → { key, url, name, size }`, `remove(keys)`), `StorageError`, `createUploadThingStorage(client)` sur un sous-ensemble typé de `UTApi` (`uploadFiles`, `deleteFiles`), `getStorage()` paresseux ; `UPLOADTHING_TOKEN` facultatif dans `env.ts` ; modèle `Attachment` (userId, applicationId, `AttachmentKind` CV / COVER_LETTER, fileKey unique, url, name, size, createdAt), `@@unique([applicationId, kind])`, cascade depuis Application et User.
+- **Tests**: storage.test.ts (faux client UploadThing : correspondance des champs, erreurs d'envoi et de suppression → `StorageError`) ; env.test.ts ; attachments.integration.test.ts (cascade, un seul CV par Candidature).
+- **Gotchas**: `UTApi.uploadFiles` renvoie `{ data, error }` (jamais d'exception pour un refus) ; l'URL à garder est `ufsUrl` (`url` est déprécié en v9). Le schéma Zod laissait passer `cvLabel` jusqu'à Prisma : retirer un champ du modèle impose de le retirer aussi du schéma. Le faux stockage en mémoire pour les tests du service arrive avec la Mission 2, son premier utilisateur.
+- **Integrates with**: Mission 2 injecte un `FileStorage` dans la création (faux en test, `getStorage()` en production).
+
+### Mission 2: Création avec pièces jointes
+**Status**: Completed
+- **Files**: `schemas.ts` (+ test), `service.ts`, `actions.ts`, `next.config.ts`, `src/test/memory-storage.ts`, `attachments.integration.test.ts`
+- **Built**: schéma : `cv` / `coverLetter` = `pdfAttachment(libellé)` (`application/pdf`, ≤ `MAX_ATTACHMENT_BYTES` = 4 Mo, fichier vide sans nom → `undefined`) ; `createApplication(userId, input, storage = getStorage())` envoie les fichiers un par un, puis crée Candidature + `attachments` dans la transaction. Échecs → `DomainError` : `ATTACHMENT_UPLOAD_FAILED` (« L'envoi du CV / de la lettre de motivation a échoué… ») et `APPLICATION_SAVE_FAILED` (« … Le fichier envoyé a été supprimé » / pluriel), avec `discardUploads` qui, si la suppression échoue aussi, journalise et nomme les fichiers restés sur UploadThing. L'action passe les `File` du `FormData` au schéma (le texte seul est renvoyé au formulaire). `serverActions.bodySizeLimit = "10mb"` (config `experimental` de Next 16).
+- **Tests**: schemas.test.ts (+4 : non-PDF, > 4 Mo, PDF accepté, champ vide ignoré) ; attachments.integration.test.ts (+4 : nominal, échec d'envoi, échec d'enregistrement, double échec avec journalisation) — faux stockage `createMemoryStorage({ failUploadOf, failRemove })`.
+- **Gotchas**: sans fichier, une erreur d'enregistrement reste une erreur inattendue (→ `error.tsx`), comme avant. Un fichier ne peut pas être ré-affiché après une erreur de validation : le navigateur interdit de pré-remplir un `<input type="file">`.
+- **Integrates with**: Mission 3 ajoute les deux champs `name="cv"` / `name="coverLetter"` (`type="file"`, `accept="application/pdf"`) et lit `attachments` dans `getApplication` pour la fiche.
+
+### Mission 3: Formulaire et fiche
+**Status**: Completed
+- **Files**: `components/application-form.tsx` (+ test), `components/application-detail.tsx` (+ test), `service.ts` (`getApplication` inclut `attachments`), `domain/application.ts` (`ATTACHMENT_KINDS`), `labels.ts` (`ATTACHMENT_KIND_LABELS`), `schemas.ts` (+ test), `package.json` (`overrides.effect`)
+- **Built**: champs « CV (PDF, 4 Mo max.) » et « Lettre de motivation (PDF, 4 Mo max.) » (`type="file"`, `accept="application/pdf"`) ; section « Pièces jointes » de la fiche : libellé, lien `_blank` + `noopener noreferrer`, taille (« 234 Ko », « 1,4 Mo », jamais « 0 Ko ») ; section masquée sans pièce jointe.
+- **Tests**: champs fichier du formulaire ; `getApplication` renvoie les pièces jointes (intégration) ; affichage, taille minimale, section masquée.
+- **Essai réel UploadThing (2026-09-27)** : candidature créée depuis `/applications/new` avec un PDF de 193 octets → ligne `Attachment` en base, fichier servi `200 application/pdf` par `https://bbnz1rk2yk.ufs.sh/f/…`, section visible sur la fiche. Nettoyé ensuite : fichier supprimé d'UploadThing (`deletedCount: 1`, `listFiles` vide), candidature et entreprise d'essai supprimées de `jobflow_dev`.
+- **Gotchas**:
+  - Via une Server Action, un champ fichier laissé vide arrive comme un `File` nommé « blob » de 0 octet (et non sans nom, comme en Node pur) : tout fichier de 0 octet vaut « pas de fichier ». Trouvé à l'essai réel, test ajouté.
+  - `effect` était installé en deux versions (3.20.0 par Prisma, 3.17.7 par UploadThing) : chaque appel `UTApi` inondait les journaux d'avertissements. `overrides.effect = "3.20.0"` dans `package.json` n'en garde qu'une.
+  - L'URL d'un fichier supprimé peut encore répondre un moment (cache CDN d'UploadThing).
+
+### Mission 4: Documentation
+**Status**: Completed
+- **Files**: `docs/adr/0006-pieces-jointes-sur-uploadthing.md` (nouveau), `docs/adr/0001-…` (note d'amendement), `specs/001-application-management.md`, `specs/000-product-vision.md`, `docs/architecture/tech-stack.md`, `backend-patterns.md`, `frontend-patterns.md` ; handoff `cv-lettre-pieces-jointes` supprimé
+- **Built**: ADR 0006 (UploadThing, amende 0001, conséquences : adaptateur unique, nettoyage, à revoir si confidentialité). SPEC-001 : modèle `Attachment`, `cvLabel` / `coverLetter` retirés, formulaire à champs fichier, hors-périmètre « bibliothèque de documents partagés » → SPEC-005. SPEC-000 : 005 réduit à cette bibliothèque. tech-stack : ligne « Stockage de fichiers », service externe UploadThing, contrainte d'exposition précisée. backend-patterns : section « Services externes — `src/lib/storage.ts` ». frontend-patterns : champs fichier.

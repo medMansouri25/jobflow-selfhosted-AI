@@ -12,3 +12,4 @@ JobFlow AI est un outil single-user hébergé sur une Raspberry Pi à domicile. 
 - Les entités principales portent malgré tout un `userId`, pour qu'une authentification applicative (et le multi-user) puisse être ajoutée sans refonte.
 - Si l'application devait un jour être exposée publiquement, cet ADR doit être remplacé **avant** l'exposition : l'absence de login n'est sûre qu'à l'intérieur du tailnet.
 - Le HTTPS est assuré par Caddy avec un certificat pour le nom `*.ts.net`.
+- _Amendé par l'ADR 0006 (2026-09-28)_ : les pièces jointes PDF sont servies par UploadThing, hors du tailnet ; l'application elle-même reste privée.

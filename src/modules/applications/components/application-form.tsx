@@ -26,6 +26,7 @@ import {
   initialApplicationFormState,
   type ApplicationFormState,
 } from "@/modules/applications/form-state";
+import { MAX_ATTACHMENT_LABEL } from "@/modules/applications/schemas";
 import {
   CONTRACT_TYPE_LABELS,
   SALARY_PERIOD_LABELS,
@@ -198,27 +199,11 @@ export function ApplicationForm({
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Version du CV" error={error("cvLabel")}>
-          {(props) => (
-            <Input
-              {...props}
-              name="cvLabel"
-              maxLength={200}
-              placeholder="ex. CV DevOps v3"
-              defaultValue={values.cvLabel}
-            />
-          )}
+        <Field label={`CV (PDF, ${MAX_ATTACHMENT_LABEL} max.)`} error={error("cv")}>
+          {(props) => <Input {...props} name="cv" type="file" accept="application/pdf" />}
         </Field>
-        <Field label="Lettre de motivation" error={error("coverLetter")}>
-          {(props) => (
-            <Input
-              {...props}
-              name="coverLetter"
-              maxLength={20_000}
-              placeholder="ex. Lettre OVH — sept."
-              defaultValue={values.coverLetter}
-            />
-          )}
+        <Field label={`Lettre de motivation (PDF, ${MAX_ATTACHMENT_LABEL} max.)`} error={error("coverLetter")}>
+          {(props) => <Input {...props} name="coverLetter" type="file" accept="application/pdf" />}
         </Field>
         <Field
           label="Notes personnelles (recruteurs, date limite de réponse…)"

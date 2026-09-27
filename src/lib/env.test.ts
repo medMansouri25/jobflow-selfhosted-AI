@@ -22,4 +22,13 @@ describe("variables d'environnement", () => {
       /DATABASE_URL/,
     );
   });
+
+  it("expose UPLOADTHING_TOKEN, facultatif : les tests et la CI n'appellent jamais UploadThing", () => {
+    const url = "postgresql://jobflow:jobflow@localhost:5432/jobflow_dev";
+
+    expect(parseEnv({ DATABASE_URL: url }).UPLOADTHING_TOKEN).toBeUndefined();
+    expect(parseEnv({ DATABASE_URL: url, UPLOADTHING_TOKEN: "jeton" }).UPLOADTHING_TOKEN).toBe(
+      "jeton",
+    );
+  });
 });

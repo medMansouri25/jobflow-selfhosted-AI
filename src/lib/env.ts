@@ -4,6 +4,8 @@ const envSchema = z.object({
   DATABASE_URL: z
     .string({ error: "DATABASE_URL est obligatoire" })
     .regex(/^postgres(ql)?:\/\//, "DATABASE_URL doit être une URL postgresql://"),
+  // Jeton UploadThing (pièces jointes, ADR 0006) : absent en test et en CI, où le stockage est remplacé par un faux.
+  UPLOADTHING_TOKEN: z.string().min(1).optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;

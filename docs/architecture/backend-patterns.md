@@ -51,6 +51,7 @@ export function isDefinitive(status: ApplicationStatus): boolean  // Statut déf
 - Les types d'entrée du service sont **dérivés** des schémas (`z.infer`), jamais redéclarés.
 - Les règles qui dépendent de plusieurs champs (salaire min ≤ max, date obligatoire en Postulée) sont exprimées dans le schéma (`superRefine`) en s'appuyant sur les fonctions du domaine.
 - Les schémas acceptent **directement les chaînes envoyées par le formulaire** : une chaîne vide devient `undefined` (`z.preprocess`), les montants sont convertis en nombres (`z.coerce`).
+- Un champ fichier est validé comme `z.instanceof(File)` (type et taille) ; un champ fichier laissé vide arrive dans la Server Action comme un fichier de 0 octet nommé « blob » : `z.preprocess` le convertit en `undefined` (« pas de fichier »).
 - Une règle qui dépend de la date du jour reçoit cette date en paramètre (`createApplicationSchema(today)`) : le schéma reste déterministe et testable ; l'action calcule `today` dans le fuseau `Europe/Paris`.
 - Les énumérations du domaine sont des tableaux `as const` (`APPLICATION_STATUSES`…) dont on dérive les types ; leurs libellés français vivent dans `modules/<module>/labels.ts`.
 - Un champ obligatoire passe par l'utilitaire `required(schema, label)` : chaîne vide ou absente → message « <Libellé> est obligatoire », puis validation par le schéma cible (`z.enum`, `z.iso.date`…).
@@ -71,11 +72,18 @@ export function isDefinitive(status: ApplicationStatus): boolean  // Statut déf
 - Adaptateurs web **sans règle métier** : `FormData` → validation Zod → `getCurrentUserId()` → service → `revalidatePath` / `redirect`.
 - Signature compatible `useActionState` : `(prevState, formData) => Promise<ActionState>`.
 - Convertissent les erreurs via l'utilitaire commun (voir « Erreurs »).
+- Les entrées de `FormData` sont séparées en chaînes et en `File` : les deux sont validées ensemble, seules les chaînes sont renvoyées au formulaire en cas d'erreur (un fichier ne peut pas être ré-affiché).
 
 ### Lectures
 
 - Les pages (Server Components) appellent **directement** les fonctions de lecture du service. Pas de Server Action ni d'API interne pour lire.
 - Pas de Route Handler métier : le seul Route Handler est `/api/health`.
+
+### Services externes — `src/lib/storage.ts`
+
+- Un service externe (stockage des pièces jointes, ADR `0006`) est appelé **uniquement** à travers un adaptateur de `lib/` à interface étroite : `FileStorage` (`upload(file)`, `remove(keys)`), implémenté par `createUploadThingStorage(client)`. Ce n'est pas un repository : c'est la frontière avec un système que les tests ne doivent pas appeler.
+- Le service reçoit l'adaptateur en paramètre, avec la valeur de production par défaut (`storage = getStorage()`) ; les tests d'intégration passent `createMemoryStorage()` (`src/test/memory-storage.ts`), qui sait aussi simuler un échec d'envoi ou de suppression.
+- Ordre fichier → base : envoyer d'abord, enregistrer ensuite dans la transaction ; si l'enregistrement échoue, supprimer les fichiers envoyés, et si cette suppression échoue aussi, le dire à l'utilisateur (`DomainError`) et journaliser les clés restées chez le service.
 
 ## Erreurs
 

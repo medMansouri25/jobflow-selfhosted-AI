@@ -33,11 +33,10 @@ function application(overrides: Partial<ApplicationDetailData> = {}): Applicatio
     salaryCurrency: null,
     salaryPeriod: null,
     appliedAt: new Date("2026-09-27T00:00:00Z"),
-    cvLabel: null,
-    coverLetter: null,
     notes: null,
     createdAt: new Date("2026-09-27T14:21:35Z"),
     updatedAt: new Date("2026-09-27T14:21:35Z"),
+    attachments: [],
     statusChanges: [
       {
         id: "h1",
@@ -134,29 +133,63 @@ describe("fiche d'une Candidature", () => {
     expect(entries[1]).toContain("27 sept. 2026 · 16:21");
   });
 
-  it("affiche les notes et les pièces jointes quand elles sont renseignées", () => {
-    render(
-      <ApplicationDetail
-        application={application({
-          notes: "Relancer le 5 octobre",
-          cvLabel: "CV DevOps v3",
-          coverLetter: "Lettre Sanofi — sept.",
-        })}
-      />,
-    );
+  it("affiche les notes quand elles sont renseignées", () => {
+    render(<ApplicationDetail application={application({ notes: "Relancer le 5 octobre" })} />);
 
     expect(
       screen.getByRole("region", { name: "Notes personnelles" }).textContent,
     ).toContain("Relancer le 5 octobre");
-    const attachments = screen.getByRole("region", { name: "Pièces jointes" });
-    expect(attachments.textContent).toContain("CV DevOps v3");
-    expect(attachments.textContent).toContain("Lettre Sanofi — sept.");
   });
 
-  it("n'affiche pas les sections Notes et Pièces jointes quand elles sont vides", () => {
+  it("n'affiche pas la section Notes quand elle est vide", () => {
     render(<ApplicationDetail application={application()} />);
 
     expect(screen.queryByRole("region", { name: "Notes personnelles" })).toBeNull();
+  });
+
+  it("ouvre chaque pièce jointe dans un nouvel onglet, avec son nom et sa taille", () => {
+    const at = new Date("2026-09-28T10:00:00Z");
+    render(
+      <ApplicationDetail
+        application={application({
+          attachments: [
+            { id: "a1", userId: "u1", applicationId: "x", kind: "CV", fileKey: "k1", url: "https://app.ufs.sh/f/k1", name: "CV_DevOps.pdf", size: 240_000, createdAt: at },
+            { id: "a2", userId: "u1", applicationId: "x", kind: "COVER_LETTER", fileKey: "k2", url: "https://app.ufs.sh/f/k2", name: "Lettre_Sanofi.pdf", size: 1_500_000, createdAt: at },
+          ],
+        })}
+      />,
+    );
+    const attachments = screen.getByRole("region", { name: "Pièces jointes" });
+    const text = attachments.textContent?.replace(/\s/g, " ");
+
+    const cv = within(attachments).getByRole("link", { name: /CV_DevOps\.pdf/ });
+    expect(cv.getAttribute("href")).toBe("https://app.ufs.sh/f/k1");
+    expect(cv.getAttribute("target")).toBe("_blank");
+    expect(cv.getAttribute("rel")).toBe("noopener noreferrer");
+    expect(text).toContain("CV");
+    expect(text).toContain("Lettre de motivation");
+    expect(text).toContain("234 Ko");
+    expect(text).toContain("1,4 Mo");
+  });
+
+  it("n'affiche pas la section Pièces jointes sans pièce jointe", () => {
+    render(<ApplicationDetail application={application()} />);
+
     expect(screen.queryByRole("region", { name: "Pièces jointes" })).toBeNull();
   });
+
+  it("n'affiche jamais « 0 Ko » pour un tout petit fichier", () => {
+    render(
+      <ApplicationDetail
+        application={application({
+          attachments: [
+            { id: "a1", userId: "u1", applicationId: "x", kind: "CV", fileKey: "k1", url: "https://app.ufs.sh/f/k1", name: "cv.pdf", size: 193, createdAt: new Date() },
+          ],
+        })}
+      />,
+    );
+
+    expect(screen.getByRole("region", { name: "Pièces jointes" }).textContent).toContain("(1 Ko)");
+  });
 });
+

@@ -61,7 +61,7 @@ Les définitions exactes de chaque statut sont dans `CONTEXT.md` ; les règles d
 
 | Spec | Fonctionnalité |
 |---|---|
-| 005 | Documents (CV, lettres, pièces jointes) |
+| 005 | Bibliothèque de documents partagés (les pièces jointes d'une Candidature relèvent de SPEC-001, ADR 0006) |
 | 006 | Profil — prérequis de l'IA |
 | 007 | IA : analyse d'une Annonce |
 | 008 | IA : brouillon de lettre de motivation |
