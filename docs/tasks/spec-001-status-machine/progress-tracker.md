@@ -1,6 +1,6 @@
 # Task: Machine à états et trois statuts (T1.2)
 
-**Status**: In dev
+**Status**: Completed
 **Type**: Full-stack
 **Created**: 2026-09-27
 
