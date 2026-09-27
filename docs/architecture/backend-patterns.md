@@ -34,7 +34,7 @@ Un module = une spec. Le vocabulaire du code suit le glossaire du domaine (`Appl
 ### ① Domaine — `modules/*/domain/`
 
 - TypeScript pur : **aucun import** de Next.js, de Prisma ou de React.
-- Contient les règles métier testables sans base : machine à états des statuts, règles de champs obligatoires selon le statut, normalisation du nom d'Entreprise.
+- Contient les règles métier testables sans base : machine à états des statuts (`domain/status.ts`, table unique `STATUS_TRANSITIONS`), normalisation du nom d'Entreprise.
 - Déterministe : pas d'accès à l'horloge ni à la base ; la date courante est passée en paramètre si nécessaire.
 
 ```ts
@@ -113,4 +113,4 @@ Les erreurs inattendues ne sont jamais avalées ni transformées en message mét
 | Service | Intégration, base `jobflow_test` | `service.integration.test.ts` (projet `integration`, exécuté en série) |
 | Actions | Pas testées directement : minces par construction | — |
 
-Chaque test cite l'identifiant du critère d'acceptation couvert (`it("AC-001-06 refuse DRAFT → ACCEPTED", …)`).
+Chaque test cite l'identifiant du critère d'acceptation couvert (`it("AC-001-06 refuse INTERVIEW → APPLIED", …)`).

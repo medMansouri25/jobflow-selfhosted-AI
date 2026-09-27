@@ -29,7 +29,7 @@ Mission 1 (6 statuts) est remplacée par Mission 2 ; son code est réécrit.
 - [x] Mission 2: Full-stack — création toujours Postulée : schéma sans statut saisi (localisation, contrat, source, date toujours requis), service `createApplication` au statut APPLIED, formulaire à un bouton « Enregistrer » avec date du jour par défaut et marqueurs `*`, fenêtre modale fermée après succès
 - [x] Mission 3: Frontend — tableau de bord sans les cartes « Actives » et « Envoyées »
 - [x] Mission 4: Full-stack — trois statuts : enum `ApplicationStatus` réduit à APPLIED / INTERVIEW / REJECTED + migration de conversion (DRAFT → APPLIED, ACCEPTED → INTERVIEW, ARCHIVED → APPLIED), `domain/application.ts` sans `INITIAL_STATUSES`, `domain/status.ts` réécrit (nouvelle table ; plus d'`ACTIVE_STATUSES` / `isActive`) avec tests des 9 paires, libellés, badge et répartition du tableau de bord sur 3 statuts
-- [ ] Mission 5: Docs — SPEC-001 (FR/BR/AC touchés par la réduction), ADR 0005 « trois statuts », `frontend-patterns.md` (un seul bouton, statut APPLIED à la création) et `backend-patterns.md` (plus de champs requis selon le statut, nouvel exemple de nom de test)
+- [x] Mission 5: Docs — SPEC-001 (FR/BR/AC touchés par la réduction), ADR 0005 « trois statuts », `frontend-patterns.md` (un seul bouton, statut APPLIED à la création) et `backend-patterns.md` (plus de champs requis selon le statut, nouvel exemple de nom de test)
 
 ## Mission Summaries
 _Filled in as each mission completes. Future missions read these for context._
@@ -62,3 +62,9 @@ _Filled in as each mission completes. Future missions read these for context._
 - **Built**: enum `ApplicationStatus` = APPLIED / INTERVIEW / REJECTED ; migration écrite à la main (conversion DRAFT/ARCHIVED → APPLIED, ACCEPTED → INTERVIEW dans les candidatures et l'historique, suppression des changements devenus X → X, nouveau type d'enum puis renommage) ; table `STATUS_TRANSITIONS` à 3 transitions ; `INITIAL_STATUSES`, `ACTIVE_STATUSES`, `isActive` supprimés ; libellés, badge et répartition (grille à 3 colonnes) sur 3 statuts ; jetons CSS `status-draft` / `status-archived` supprimés (`status-accepted` gardé : message de succès du formulaire).
 - **Tests**: status.test.ts (3 statuts, 9 paires, AC-001-05/07/08, définitif) ; test d'intégration « la base refuse un statut retiré » ; badge et répartition sans les anciens libellés.
 - **Gotchas**: PostgreSQL ne retire pas une valeur d'enum : créer le nouveau type, basculer les colonnes avec `USING (col::text::new)`, supprimer l'ancien. `prisma migrate diff --from-config-datasource --to-schema` sur `jobflow_test` confirme l'absence d'écart. `jobflow_dev` : candidature de test supprimée, puis migration appliquée — Sanofi est Postulée.
+
+### Mission 5: Documentation
+**Status**: Completed
+- **Files**: `specs/001-application-management.md`, `docs/adr/0005-trois-statuts-de-candidature.md`, `docs/architecture/frontend-patterns.md`, `docs/architecture/backend-patterns.md` ; correctif `application-form.tsx` (+ test)
+- **Built**: SPEC-001 révisée (identifiants conservés, exigences retirées barrées : US-001-01/06, BR-001-01/06, AC-001-09 ; FR-001-01/08/10, BR-001-02/05/10, AC-001-01/03/06/10/14/15 réécrits) ; ADR 0005 ; patterns : un seul bouton, date lue dans le navigateur, fermeture de la fenêtre, exemple de test `INTERVIEW → APPLIED`.
+- **Gotchas**: en relisant `frontend-patterns.md`, découverte que `/applications/new` est statique : la date par défaut de la Mission 2 aurait été figée au build. Corrigé (`useSyncExternalStore`) avec un test `renderToString` — commit `fix(applications): read today's date in the browser on the prerendered form`.
