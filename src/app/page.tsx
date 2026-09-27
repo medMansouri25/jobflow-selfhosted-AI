@@ -1,11 +1,30 @@
-export default function Home() {
+import { getCurrentUserId } from "@/lib/current-user";
+import {
+  countApplicationsByStatus,
+  listApplications,
+} from "@/modules/applications/service";
+import { Dashboard } from "@/modules/dashboard/components/dashboard";
+
+// Données lues à chaque requête : le tableau de bord reflète l'état actuel de la base.
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const userId = await getCurrentUserId();
+  const [counts, applications] = await Promise.all([
+    countApplicationsByStatus(userId),
+    listApplications(userId),
+  ]);
+
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center gap-4 px-6 py-24">
-      <h1 className="text-4xl font-semibold tracking-tight">JobFlow AI</h1>
-      <p className="text-lg text-zinc-600 dark:text-zinc-400">
-        Suivi de ma recherche d&apos;emploi : chaque candidature, de sa saisie à
-        sa réponse finale.
-      </p>
-    </main>
+    <Dashboard
+      counts={counts}
+      recent={applications.slice(0, 5).map((application) => ({
+        id: application.id,
+        companyName: application.company.name,
+        jobTitle: application.jobTitle,
+        status: application.status,
+        updatedAt: application.updatedAt,
+      }))}
+    />
   );
 }

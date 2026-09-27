@@ -69,7 +69,24 @@ const [state, formAction, pending] = useActionState(createApplicationAction, ini
 - Fichiers `*.test.tsx` à côté du composant, exécutés par le projet Vitest `component` (jsdom).
 - Testing Library : on cherche les éléments comme un utilisateur les perçoit (`getByRole`, `getByLabelText`), jamais par classe CSS ou structure interne.
 
+## Structure de l'écran
+
+- **Référence visuelle** : la maquette `JobFlow AI.html` (fichier local, non versionné).
+- `AppSidebar` (menu latéral, `src/components/`) : logo, Dashboard et Candidatures actifs (`aria-current="page"` sur la page courante), puis les fonctionnalités à venir **affichées sans lien** avec leur phase (`P3`, `P4`…), et le pied « Mon espace · Privé · Tailscale ».
+- `AppTopbar` (barre du haut) : section courante, date du jour calculée **dans le navigateur** (`useSyncExternalStore` : les pages sont pré-rendues au build), recherche (`GET /applications?q=`), bouton « Nouvelle candidature ».
+- La création d'une candidature se fait dans une **fenêtre modale** (`NewApplicationDialog`, Dialog shadcn), disponible sur toutes les pages ; `/applications/new` reste accessible par URL.
+
 ## Style
 
-- Tailwind CSS, avec les variables de thème de shadcn/ui.
-- Style par défaut de shadcn/ui en attendant une proposition de design.
+- Tailwind CSS, avec les variables de thème de shadcn/ui définies dans `src/app/globals.css` (clair et sombre).
+- **Palette de la maquette** : fond `#f5f7fa`, surfaces blanches, texte `#0f172a`, **bleu `#2563eb`** pour l'action (`--primary`, `--ring`), **vert `#16a34a`** en second accent (`--success`), bordures `#dde3ea`. Changer de palette = modifier les variables, pas les composants.
+- **Police** : Archivo (`next/font/google`, variable `--font-archivo`) ; titres en graisse 800 (`font-heading font-extrabold`).
+- **Couleurs de statut** : pour chaque statut, une couleur pleine (`--status-applied`, barres et pastilles), un fond et un texte de badge (`--status-applied-bg`, `--status-applied-fg`), exposés en classes Tailwind (`bg-status-applied-bg`, `text-status-applied-fg`).
+- Rayons : 8 px par défaut (`--radius`), badges en pilule.
+
+## Formulaire de candidature
+
+- `ApplicationForm` reçoit sa Server Action en prop (`action`) et, dans la modale, un `onCancel` ; sans `onCancel`, « Annuler » ramène à la liste.
+- Le **statut initial est porté par le bouton d'envoi** : deux boutons `type="submit"` avec `name="status"` et `value="DRAFT"` / `"APPLIED"`.
+- Marques de champ : `*` obligatoire, `†` obligatoire pour passer en Postulée (BR-001-02).
+- Un composant `Field` relie libellé, aide et erreur (`aria-describedby`, `aria-invalid`) ; `SelectField` enveloppe le `Select` shadcn (Radix) avec `name`, soumis nativement, et un `key` dérivé de la valeur renvoyée pour le réinitialiser après une erreur.

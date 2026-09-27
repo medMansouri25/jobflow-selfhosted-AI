@@ -1,0 +1,22 @@
+# Base de données de développement et de test (le code Next.js tourne hors de Docker).
+services:
+  postgres:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: jobflow
+      POSTGRES_PASSWORD: jobflow
+      POSTGRES_DB: jobflow_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jobflow -d jobflow_dev"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  postgres-data:

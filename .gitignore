@@ -48,3 +48,9 @@ Thumbs.db
 AGENTS.md
 CONTEXT.md
 FrontDesignProposition.md
+
+# Maquette de design locale
+JobFlow AI.html
+
+# Client Prisma généré (npm run db:generate)
+/src/generated/
