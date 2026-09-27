@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { RowLink } from "@/components/row-link";
 import { cn } from "@/lib/utils";
 import {
   APPLICATION_STATUSES,
@@ -117,8 +118,10 @@ export function Dashboard({
               </thead>
               <tbody>
                 {recent.map((application) => (
-                  <tr key={application.id} className="border-t">
-                    <td className="px-4 py-2.5 font-semibold">{application.companyName}</td>
+                  <tr key={application.id} className="relative border-t hover:bg-muted/60">
+                    <td className="px-4 py-2.5 font-semibold">
+                      <RowLink href={`/applications/${application.id}`}>{application.companyName}</RowLink>
+                    </td>
                     <td className="px-4 py-2.5">{application.jobTitle}</td>
                     <td className="px-4 py-2.5">
                       <StatusBadge status={application.status} />

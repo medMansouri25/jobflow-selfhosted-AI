@@ -1,3 +1,5 @@
+
+import { RowLink } from "@/components/row-link";
 import type {
   ApplicationSource,
   ApplicationStatus,
@@ -44,15 +46,15 @@ export function ApplicationsTable({ applications }: { applications: ApplicationR
                 <p className="font-heading font-bold">Aucune candidature pour l&apos;instant</p>
                 <p className="mt-1 text-muted-foreground">
                   Clique sur « Nouvelle candidature » en haut à droite pour enregistrer une
-                  Annonce repérée ou une candidature déjà envoyée.
+                  candidature envoyée.
                 </p>
               </td>
             </tr>
           ) : (
             applications.map((application) => (
-              <tr key={application.id} className="border-t align-top">
+              <tr key={application.id} className="relative border-t align-top hover:bg-muted/60">
                 <th scope="row" className="px-4 py-3 text-left font-semibold">
-                  {application.companyName}
+                  <RowLink href={`/applications/${application.id}`}>{application.companyName}</RowLink>
                 </th>
                 <td className="px-4 py-3">{application.jobTitle}</td>
                 <td className="px-4 py-3">{application.location ?? "—"}</td>

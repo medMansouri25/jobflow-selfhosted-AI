@@ -59,6 +59,9 @@ describe("tableau de bord", () => {
     const recent = screen.getByRole("region", { name: "Candidatures récentes" });
 
     expect(within(recent).getByText("Doctolib")).toBeDefined();
+    expect(within(recent).getByRole("link", { name: "Doctolib" }).getAttribute("href")).toBe(
+      "/applications/1",
+    );
     expect(within(recent).getByText("Postulée")).toBeDefined();
   });
 });

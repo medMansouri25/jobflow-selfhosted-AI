@@ -33,4 +33,27 @@ describe("tableau des candidatures", () => {
     expect(within(row).getByText("Welcome to the Jungle")).toBeDefined();
     expect(within(row).getByText("Entretien")).toBeDefined();
   });
+
+  it("mène à la fiche de chaque candidature depuis le nom de l'Entreprise", () => {
+    render(
+      <ApplicationsTable
+        applications={[
+          {
+            id: "3aca6b3f-d33c-4971-8de8-5ac19f8db9ab",
+            companyName: "Sanofi",
+            jobTitle: "Ingénieur SI",
+            location: "Le Mans",
+            contractType: "CDI",
+            source: "OTHER",
+            appliedAt: new Date("2026-09-27T00:00:00Z"),
+            status: "APPLIED",
+          },
+        ]}
+      />,
+    );
+
+    expect(screen.getByRole("link", { name: "Sanofi" }).getAttribute("href")).toBe(
+      "/applications/3aca6b3f-d33c-4971-8de8-5ac19f8db9ab",
+    );
+  });
 });

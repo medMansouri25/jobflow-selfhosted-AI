@@ -24,7 +24,7 @@ Une Candidature enregistrée ne s'ouvre nulle part : les lignes de la liste et d
 ## Missions
 - [x] Mission 1: Backend — `getApplication` renvoie `NotFoundError` pour un id qui n'est pas un UUID comme pour un id inconnu (test d'intégration)
 - [x] Mission 2: Frontend — page `/applications/[id]` et composant de fiche (en-tête, Annonce, notes, historique des statuts, pièces jointes), 404 via `notFound()` (AC-001-19, AC-001-20)
-- [ ] Mission 3: Frontend — lignes cliquables vers la fiche dans la liste et les « Candidatures récentes », texte de l'état vide corrigé
+- [x] Mission 3: Frontend — lignes cliquables vers la fiche dans la liste et les « Candidatures récentes », texte de l'état vide corrigé
 
 ## Mission Summaries
 _Filled in as each mission completes. Future missions read these for context._
@@ -42,3 +42,9 @@ _Filled in as each mission completes. Future missions read these for context._
 - **Tests**: application-detail.test.tsx — 7 tests (en-tête, AC-001-19, champs d'Annonce, « — », historique, sections conditionnelles). 404 vérifiée par HTTP : `abc` et un UUID inconnu → 404, Sanofi → 200.
 - **Patterns**: `STATUS_DOT_CLASSES` exporté par `status-badge.tsx`, partagé par le tableau de bord et l'historique.
 - **Integrates with**: la tâche `pieces-jointes-pdf` remplace le contenu de la section « Pièces jointes » (`TODO(pieces-jointes-pdf)`).
+
+### Mission 3: Lignes cliquables
+**Status**: Completed
+- **Files**: `src/components/row-link.tsx`, `components/applications-table.tsx` (+ test), `dashboard/components/dashboard.tsx` (+ test)
+- **Built**: `RowLink` — lien dans la première cellule dont `after:absolute after:inset-0` couvre toute la ligne (la ligne est `relative`, survol `bg-muted/60`, anneau de focus clavier) ; utilisé par la liste et les « Candidatures récentes ». État vide de la liste : « … pour enregistrer une candidature envoyée ».
+- **Tests**: href du lien Entreprise dans les deux tableaux. Vérifié dans le navigateur : le centre de la cellule « Le Mans » renvoie le lien (`elementFromPoint`), un clic ouvre la fiche.
