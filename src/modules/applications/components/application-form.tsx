@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useId, type ReactNode } from "react";
+import { useActionState, useId, useSyncExternalStore, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +32,8 @@ import {
   SOURCE_LABELS,
 } from "@/modules/applications/labels";
 
+const subscribeNever = () => () => {};
+
 type FormAction = (
   state: ApplicationFormState,
   formData: FormData,
@@ -50,6 +52,8 @@ export function ApplicationForm({
     initialApplicationFormState,
   );
   const values = state.values ?? {};
+  // `/applications/new` est pré-rendue au build : la date du jour est lue dans le navigateur.
+  const today = useSyncExternalStore(subscribeNever, todayInParis, () => undefined);
   const errors = state.fieldErrors ?? {};
   const error = (name: string) => errors[name]?.[0];
 
@@ -122,7 +126,7 @@ export function ApplicationForm({
               {...props}
               name="appliedAt"
               type="date"
-              defaultValue={values.appliedAt ?? todayInParis()}
+              defaultValue={values.appliedAt ?? today}
             />
           )}
         </Field>

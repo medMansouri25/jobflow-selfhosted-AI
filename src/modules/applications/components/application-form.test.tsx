@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import { renderToString } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
 import type { ApplicationFormState } from "@/modules/applications/form-state";
@@ -36,6 +37,14 @@ describe("formulaire de candidature", () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+
+  it("ne fige pas de date dans le HTML pré-rendu (la page est statique, rendue au build)", () => {
+    const html = renderToString(<ApplicationForm action={noop} />);
+    const dateInput = html.match(/<input[^>]*name="appliedAt"[^>]*>/)?.[0];
+
+    expect(dateInput).toBeDefined();
+    expect(dateInput).not.toMatch(/value="\d{4}-/);
   });
 
   it("appelle onCancel quand on clique sur Annuler", () => {
