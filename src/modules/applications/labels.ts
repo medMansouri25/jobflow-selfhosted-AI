@@ -8,12 +8,9 @@ import type {
 // Dictionnaire unique code → libellé français : les codes ne sont jamais affichés.
 
 export const STATUS_LABELS: Record<ApplicationStatus, string> = {
-  DRAFT: "Brouillon",
   APPLIED: "Postulée",
   INTERVIEW: "Entretien",
-  ACCEPTED: "Acceptée",
   REJECTED: "Refusée",
-  ARCHIVED: "Classée",
 };
 
 export const CONTRACT_TYPE_LABELS: Record<ContractType, string> = {

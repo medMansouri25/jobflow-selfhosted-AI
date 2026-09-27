@@ -19,6 +19,7 @@ src/
     ├── db.ts                  Client Prisma unique
     ├── env.ts                 Variables d'environnement validées (Zod)
     ├── current-user.ts        Utilisateur courant
+    ├── dates.ts               Date du jour (AAAA-MM-JJ) dans le fuseau Europe/Paris (`todayInParis`), partagée serveur / navigateur
     └── errors.ts              DomainError et conversion en réponse d'action
 ```
 
@@ -34,13 +35,14 @@ Un module = une spec. Le vocabulaire du code suit le glossaire du domaine (`Appl
 ### ① Domaine — `modules/*/domain/`
 
 - TypeScript pur : **aucun import** de Next.js, de Prisma ou de React.
-- Contient les règles métier testables sans base : machine à états des statuts, règles de champs obligatoires selon le statut, normalisation du nom d'Entreprise.
+- Contient les règles métier testables sans base : machine à états des statuts (`domain/status.ts`, table unique `STATUS_TRANSITIONS`), normalisation du nom d'Entreprise.
 - Déterministe : pas d'accès à l'horloge ni à la base ; la date courante est passée en paramètre si nécessaire.
 
 ```ts
 // modules/applications/domain/status.ts
 export function canTransition(from: ApplicationStatus, to: ApplicationStatus): boolean
 export function allowedTransitions(from: ApplicationStatus): ApplicationStatus[]
+export function isDefinitive(status: ApplicationStatus): boolean  // Statut définitif : aucune transition sortante
 ```
 
 ### ② Schémas — `modules/*/schemas.ts`
@@ -51,6 +53,7 @@ export function allowedTransitions(from: ApplicationStatus): ApplicationStatus[]
 - Les schémas acceptent **directement les chaînes envoyées par le formulaire** : une chaîne vide devient `undefined` (`z.preprocess`), les montants sont convertis en nombres (`z.coerce`).
 - Une règle qui dépend de la date du jour reçoit cette date en paramètre (`createApplicationSchema(today)`) : le schéma reste déterministe et testable ; l'action calcule `today` dans le fuseau `Europe/Paris`.
 - Les énumérations du domaine sont des tableaux `as const` (`APPLICATION_STATUSES`…) dont on dérive les types ; leurs libellés français vivent dans `modules/<module>/labels.ts`.
+- Un champ obligatoire passe par l'utilitaire `required(schema, label)` : chaîne vide ou absente → message « <Libellé> est obligatoire », puis validation par le schéma cible (`z.enum`, `z.iso.date`…).
 
 ### ③ Service — `modules/*/service.ts`
 
@@ -103,6 +106,7 @@ Les erreurs inattendues ne sont jamais avalées ni transformées en message mét
 - Noms de modèles et de champs en anglais (`Application`, `appliedAt`) ; libellés français uniquement dans l'UI.
 - Horodatages en UTC (`timestamptz`) ; les dates sans heure (`appliedAt`) en type `date`.
 - Suppressions en cascade déclarées dans le schéma (`onDelete: Cascade`) quand la spec l'exige.
+- Retirer une valeur d'un enum PostgreSQL ne se fait pas sans perte par la migration générée : la migration est écrite à la main. Elle convertit d'abord les lignes (tables et historique), crée `<Enum>_new`, bascule les colonnes (`USING col::text::"<Enum>_new"`), supprime l'ancien type puis renomme le nouveau ; `prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma` sur `jobflow_test` doit ensuite renvoyer une migration vide. Exemple : `20260927160000_three_application_statuses`.
 
 ## Tests
 
@@ -113,4 +117,4 @@ Les erreurs inattendues ne sont jamais avalées ni transformées en message mét
 | Service | Intégration, base `jobflow_test` | `service.integration.test.ts` (projet `integration`, exécuté en série) |
 | Actions | Pas testées directement : minces par construction | — |
 
-Chaque test cite l'identifiant du critère d'acceptation couvert (`it("AC-001-06 refuse DRAFT → ACCEPTED", …)`).
+Chaque test cite l'identifiant du critère d'acceptation couvert (`it("AC-001-06 refuse INTERVIEW → APPLIED", …)`).

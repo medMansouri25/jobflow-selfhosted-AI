@@ -8,6 +8,8 @@
 | **Vocabulaire** | `CONTEXT.md` fait foi (glossaire local) |
 | **Dépend de** | [SPEC-000](./000-product-vision.md) |
 
+> **Révision du 2026-09-27** — trois statuts seulement : **Postulée → Entretien → Refusée** ([ADR 0005](../docs/adr/0005-trois-statuts-de-candidature.md)). Brouillon, Acceptée et Classée sont retirés ; les exigences concernées sont barrées ou réécrites, leurs identifiants sont conservés.
+
 > Les points marqués **⚑ Hypothèse** sont des choix que j'ai faits par défaut pour compléter la spec. Ils sont à confirmer ou corriger pendant la revue.
 
 ---
@@ -45,12 +47,12 @@ Pouvoir **enregistrer, retrouver, faire avancer et supprimer** chaque Candidatur
 
 | ID | En tant qu'utilisateur, je veux… | …afin de… |
 |---|---|---|
-| US-001-01 | enregistrer une Annonce repérée en **Brouillon** avec le minimum d'informations | ne pas la perdre avant d'avoir postulé |
+| US-001-01 | ~~enregistrer une Annonce repérée en Brouillon~~ _Retiré le 2026-09-27 (trois statuts, ADR 0005)._ | — |
 | US-001-02 | enregistrer directement une Candidature **Postulée** | saisir une candidature déjà envoyée |
 | US-001-03 | coller la description complète de l'Annonce | la relire même si elle a disparu en ligne |
 | US-001-04 | choisir une Entreprise existante ou en créer une en tapant son nom | ne pas avoir la même Entreprise en trois orthographes |
 | US-001-05 | faire avancer le statut d'une Candidature | savoir où en est chaque démarche |
-| US-001-06 | **classer** une Candidature sans réponse, puis la **rouvrir** si l'Entreprise se manifeste | garder ma liste active propre sans rien perdre |
+| US-001-06 | ~~classer une Candidature sans réponse, puis la rouvrir~~ _Retiré le 2026-09-27 (trois statuts, ADR 0005)._ Une Candidature sans réponse reste Postulée. | — |
 | US-001-07 | consulter l'historique des statuts d'une Candidature | savoir quand elle a avancé |
 | US-001-08 | rechercher, filtrer et trier mes Candidatures | retrouver une Candidature en quelques secondes |
 | US-001-09 | supprimer une Candidature saisie par erreur | corriger une erreur |
@@ -59,16 +61,16 @@ Pouvoir **enregistrer, retrouver, faire avancer et supprimer** chaque Candidatur
 
 | ID | Exigence |
 |---|---|
-| FR-001-01 | Créer une Candidature au statut **Brouillon** ou **Postulée**. Aucun autre statut initial n'est possible. |
+| FR-001-01 | Créer une Candidature, toujours au statut **Postulée** (aucun choix de statut à la création). |
 | FR-001-02 | Modifier tous les champs d'une Candidature, quel que soit son statut, **sauf le statut**, qui ne change que par l'action dédiée (FR-001-05). |
 | FR-001-03 | Consulter une Candidature : tous ses champs, son Entreprise et son historique des statuts. |
 | FR-001-04 | Choisir une Entreprise existante par autocomplétion sur le nom, ou en créer une nouvelle depuis le même champ. |
 | FR-001-05 | Changer le statut d'une Candidature via une action dédiée qui ne propose **que** les transitions autorisées (BR-001-05). |
 | FR-001-06 | Enregistrer chaque changement de statut, y compris le statut initial à la création, dans l'historique. |
 | FR-001-07 | Supprimer une Candidature après confirmation explicite. |
-| FR-001-08 | Lister les Candidatures, par défaut les **Candidatures actives** uniquement. |
+| FR-001-08 | Lister toutes les Candidatures, quel que soit leur statut. |
 | FR-001-09 | Rechercher par texte sur : nom de l'Entreprise, intitulé du poste, localisation. |
-| FR-001-10 | Filtrer par : statut (plusieurs possibles), « actives / terminées / toutes », type de contrat, source. |
+| FR-001-10 | Filtrer par : statut (plusieurs possibles), type de contrat, source. |
 | FR-001-11 | Trier par : date de dernière modification (défaut, décroissant), date de candidature, nom de l'Entreprise. |
 | FR-001-12 | Paginer la liste par pages de 25 Candidatures. ⚑ Hypothèse |
 
@@ -78,8 +80,8 @@ Pouvoir **enregistrer, retrouver, faire avancer et supprimer** chaque Candidatur
 
 | ID | Règle |
 |---|---|
-| BR-001-01 | En **Brouillon**, seuls l'**Entreprise** et l'**intitulé du poste** sont obligatoires. |
-| BR-001-02 | Pour être **Postulée** (à la création ou par transition), une Candidature doit avoir une **localisation**, un **type de contrat**, une **source** et une **date de candidature** (champs marqués † dans le formulaire). Si la date est absente au moment d'une transition, elle est proposée par défaut à la date du jour. La description de l'Annonce reste facultative, pour couvrir les candidatures spontanées. _Modifié le 2026-09-26 d'après la maquette `JobFlow AI.html` (auparavant : seule la date était exigée)._ |
+| BR-001-01 | ~~En Brouillon, seuls l'Entreprise et l'intitulé du poste sont obligatoires.~~ _Retiré le 2026-09-27 (trois statuts, ADR 0005)._ |
+| BR-001-02 | Toute Candidature a une **Entreprise**, un **intitulé de poste**, une **localisation**, un **type de contrat**, une **source** et une **date de candidature** (tous marqués `*`). La date est pré-remplie avec la date du jour. La description de l'Annonce reste facultative, pour couvrir les candidatures spontanées. _Modifié le 2026-09-26 (maquette), puis le 2026-09-27 (plus de Brouillon : ces champs sont toujours obligatoires)._ |
 | BR-001-03 | La date de candidature ne peut pas être dans le futur. |
 | BR-001-04 | Salaire : `salaryMin` ≤ `salaryMax` quand les deux sont saisis ; dès qu'un montant est saisi, la devise et la période sont obligatoires. Devise par défaut : EUR. |
 
@@ -91,20 +93,19 @@ Pouvoir **enregistrer, retrouver, faire avancer et supprimer** chaque Candidatur
 
 | Depuis | Vers |
 |---|---|
-| Brouillon | Postulée |
-| Postulée | Entretien, Refusée, Classée |
-| Entretien | Acceptée, Refusée, Classée |
-| Classée | Postulée, Entretien (**Réouverture**) |
-| Acceptée | — (définitive) |
+| Postulée | Entretien, Refusée |
+| Entretien | Refusée |
 | Refusée | — (définitive) |
+
+Aucun retour en arrière. Une embauche laisse la Candidature en **Entretien** ; une Entreprise qui revient après un refus donne lieu à une nouvelle Candidature.
 
 | ID | Règle |
 |---|---|
-| BR-001-06 | Un Brouillon abandonné ne se classe pas : il se **supprime**. |
+| BR-001-06 | ~~Un Brouillon abandonné ne se classe pas : il se supprime.~~ _Retiré le 2026-09-27 (trois statuts, ADR 0005)._ |
 | BR-001-07 | En Phase 1, le passage en **Entretien** est manuel. Le passage automatique à l'ajout d'un entretien relève de SPEC-003. |
 | BR-001-08 | Une Proposition reçue et en attente de réponse ne change pas le statut : la Candidature reste en **Entretien** ; la date limite se note dans les notes. |
 | BR-001-09 | La date d'un changement de statut est l'instant où je l'enregistre. ⚑ Hypothèse : pas de saisie d'une date passée (« refusée il y a 3 jours ») en Phase 1. |
-| BR-001-10 | Une Candidature **Acceptée** ou **Refusée** reste modifiable (notes, champs de l'Annonce) ; seul son statut est figé. |
+| BR-001-10 | Une Candidature **Refusée** reste modifiable (notes, champs de l'Annonce) ; seul son statut est figé. |
 
 ### Entreprise
 
@@ -180,7 +181,7 @@ Un seul enregistrement, créé par le script d'initialisation de la base (seed).
 
 | Enum | Valeurs |
 |---|---|
-| `ApplicationStatus` | `DRAFT`, `APPLIED`, `INTERVIEW`, `ACCEPTED`, `REJECTED`, `ARCHIVED` |
+| `ApplicationStatus` | `APPLIED`, `INTERVIEW`, `REJECTED` |
 | `ContractType` | `CDI`, `CDD`, `INTERNSHIP` (stage), `APPRENTICESHIP` (alternance), `GRADUATE_PROGRAM`, `FREELANCE`, `TEMPORARY` (intérim), `OTHER` |
 | `ApplicationSource` | `LINKEDIN`, `INDEED`, `WELCOME_TO_THE_JUNGLE`, `APEC`, `FRANCE_TRAVAIL`, `COMPANY_WEBSITE` (site carrière), `SCHOOL` (école), `REFERRAL` (réseau / cooptation), `SPONTANEOUS` (candidature spontanée), `OTHER` |
 
@@ -191,12 +192,12 @@ Codes en anglais dans la base et le code ; libellés en français dans l'interfa
 | Page | Contenu |
 |---|---|
 | `/applications` | Liste : Entreprise, poste, statut (badge), date de candidature, dernière modification. Barre de recherche, filtres, tri, pagination. Bouton « Nouvelle candidature ». État vide avec un appel à créer la première Candidature. |
-| Fenêtre « Nouvelle candidature » | Ouverte depuis le bouton de la barre du haut, sur toutes les pages. Le statut initial est choisi par le bouton d'enregistrement : « Enregistrer en brouillon » ou « Enregistrer comme postulée ». Légende : `*` requis, `†` requis pour passer en Postulée. Champ Entreprise avec autocomplétion et option « Créer « … » ». |
+| Fenêtre « Nouvelle candidature » | Ouverte depuis le bouton de la barre du haut, sur toutes les pages. Un seul bouton « Enregistrer » : la Candidature est créée Postulée, puis la fenêtre se ferme. Légende : `*` requis. Date de candidature pré-remplie avec la date du jour. Champ Entreprise avec autocomplétion et option « Créer « … » ». |
 | `/applications/new` | Même formulaire en pleine page, pour un accès direct par URL. |
 | `/applications/[id]` | Détail : champs, description de l'Annonce en texte brut (retours à la ligne conservés), lien vers l'Annonce ouvert dans un nouvel onglet, historique des statuts (le plus récent en haut), actions « Changer le statut », « Modifier », « Supprimer ». |
 | `/applications/[id]/edit` | Même formulaire que la création, sans le statut. |
 
-- **Changer le statut** : un menu ne proposant que les transitions autorisées depuis le statut courant. Pour Acceptée et Refusée, le menu indique que le changement est définitif et demande confirmation.
+- **Changer le statut** : un menu ne proposant que les transitions autorisées depuis le statut courant. Pour Refusée, le menu indique que le changement est définitif et demande confirmation.
 - **Supprimer** : une fenêtre de confirmation rappelant l'Entreprise et le poste, précisant que l'action est irréversible.
 - **Erreurs de validation** : affichées sous le champ concerné, sans perdre la saisie.
 - **Candidature introuvable** (id inexistant) : page 404.
@@ -206,27 +207,27 @@ Codes en anglais dans la base et le code ; libellés en français dans l'interfa
 
 | ID | Étant donné | Quand | Alors |
 |---|---|---|---|
-| AC-001-01 | aucune Entreprise « Thales » | je crée un Brouillon avec l'Entreprise « Thales » et le poste « Dev Backend » | la Candidature est créée en Brouillon, l'Entreprise « Thales » est créée, l'historique contient une entrée `— → DRAFT` |
-| AC-001-02 | le formulaire de création | je crée un Brouillon sans intitulé de poste | la création est refusée avec un message sur le champ intitulé |
-| AC-001-03 | le formulaire de création | je crée une Candidature Postulée sans date de candidature | la création est refusée avec un message sur le champ date |
+| AC-001-01 | aucune Entreprise « Thales » | je crée une Candidature complète chez « Thales » pour le poste « Dev Backend » | la Candidature est créée Postulée, l'Entreprise « Thales » est créée, l'historique contient une entrée `— → APPLIED` |
+| AC-001-02 | le formulaire de création | je crée une Candidature sans intitulé de poste | la création est refusée avec un message sur le champ intitulé |
+| AC-001-03 | le formulaire de création | je crée une Candidature en vidant la date de candidature | la création est refusée avec un message sur le champ date |
 | AC-001-04 | l'Entreprise « Capgemini » existe | je crée une Candidature en tapant « capgemini » | elle est rattachée à l'Entreprise existante ; aucune nouvelle Entreprise n'est créée |
 | AC-001-05 | une Candidature Postulée | je la passe en Entretien | le statut devient Entretien et l'historique contient `APPLIED → INTERVIEW` avec l'horodatage |
-| AC-001-06 | une Candidature Brouillon | je demande la transition vers Acceptée | la transition est refusée côté serveur, même si la requête est forgée hors de l'interface |
+| AC-001-06 | une Candidature en Entretien | je demande la transition vers Postulée | la transition est refusée côté serveur, même si la requête est forgée hors de l'interface |
 | AC-001-07 | une Candidature Refusée | j'ouvre le menu « Changer le statut » | aucune transition n'est proposée |
 | AC-001-08 | une Candidature Refusée | j'envoie directement une requête de transition vers Postulée | la transition est refusée côté serveur |
-| AC-001-09 | une Candidature Classée | je la rouvre vers Entretien | le statut devient Entretien et l'historique contient `ARCHIVED → INTERVIEW` |
-| AC-001-10 | une Candidature Brouillon sans date de candidature | je la passe en Postulée | la date du jour est proposée ; après validation, `appliedAt` vaut cette date |
+| AC-001-09 | ~~une Candidature Classée, je la rouvre~~ | _Retiré le 2026-09-27 (trois statuts, ADR 0005)._ | — |
+| AC-001-10 | le formulaire de création | je l'ouvre | la date de candidature vaut la date du jour ; après enregistrement, `appliedAt` vaut cette date |
 | AC-001-11 | une Candidature Refusée | je modifie ses notes | la modification est enregistrée ; le statut reste Refusée |
 | AC-001-12 | une Candidature avec 3 changements de statut | je la supprime et confirme | la Candidature et ses 3 entrées d'historique n'existent plus ; son Entreprise existe toujours |
 | AC-001-13 | une Candidature | je clique sur Supprimer puis annule | rien n'est supprimé |
-| AC-001-14 | 2 Candidatures actives et 1 Refusée | j'ouvre la liste | seules les 2 Candidatures actives s'affichent |
-| AC-001-15 | les mêmes Candidatures | je choisis le filtre « terminées » | seule la Candidature Refusée s'affiche |
+| AC-001-14 | 2 Candidatures Postulée et 1 Refusée | j'ouvre la liste | les 3 Candidatures s'affichent |
+| AC-001-15 | les mêmes Candidatures | je filtre sur le statut Refusée | seule la Candidature Refusée s'affiche |
 | AC-001-16 | des Candidatures chez « Thales » et « Airbus » | je recherche « thal » | seules les Candidatures chez Thales s'affichent |
 | AC-001-17 | une saisie de salaire min 50 000 et max 40 000 | j'enregistre | l'enregistrement est refusé avec un message sur le salaire |
 | AC-001-18 | une URL d'Annonce `javascript:alert(1)` | j'enregistre | l'enregistrement est refusé : seules les URL `http`/`https` sont acceptées |
 | AC-001-19 | une description d'Annonce contenant `<script>alert(1)</script>` | j'affiche la Candidature | le texte s'affiche tel quel, rien n'est exécuté |
 | AC-001-20 | un id de Candidature inexistant | j'ouvre `/applications/[id]` | j'obtiens une page 404 |
-| AC-001-21 | 30 Candidatures actives | j'ouvre la liste | 25 s'affichent, avec un accès à la page suivante |
+| AC-001-21 | 30 Candidatures | j'ouvre la liste | 25 s'affichent, avec un accès à la page suivante |
 
 ## 10. Cas limites
 
@@ -239,7 +240,6 @@ Codes en anglais dans la base et le code ; libellés en français dans l'interfa
 | Double clic sur « Enregistrer » | Une seule Candidature créée (bouton désactivé pendant l'envoi) |
 | Changement de statut concurrent (deux onglets ouverts) | La transition est validée par rapport au statut **actuel en base** ; si elle n'est plus autorisée, elle est refusée avec un message invitant à recharger |
 | Recherche avec caractères spéciaux (`%`, `_`, `'`) | Traités comme du texte, sans erreur |
-| Candidature Classée puis rouverte plusieurs fois | Chaque aller-retour apparaît dans l'historique |
 
 ## 11. Sécurité
 
@@ -263,7 +263,7 @@ Codes en anglais dans la base et le code ; libellés en français dans l'interfa
 
 Les tests de bout en bout (Playwright) ne font pas partie de la Phase 1.
 
-Chaque test cite l'identifiant du critère qu'il couvre (ex. `it("AC-001-06 refuse DRAFT → ACCEPTED", …)`).
+Chaque test cite l'identifiant du critère qu'il couvre (ex. `it("AC-001-06 refuse INTERVIEW → APPLIED", …)`).
 
 ---
 

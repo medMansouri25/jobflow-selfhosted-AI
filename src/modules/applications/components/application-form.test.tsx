@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import { renderToString } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
 import type { ApplicationFormState } from "@/modules/applications/form-state";
@@ -14,21 +15,36 @@ describe("formulaire de candidature", () => {
     expect(screen.getByLabelText(/Intitulé du poste/)).toBeDefined();
   });
 
-  it("enregistre en Brouillon ou directement comme Postulée selon le bouton choisi", () => {
+  it("n'a qu'un bouton d'enregistrement, sans choix de statut", () => {
     render(<ApplicationForm action={noop} />);
 
-    const draft = screen.getByRole("button", { name: "Enregistrer en brouillon" });
-    const applied = screen.getByRole("button", {
-      name: "Enregistrer comme postulée",
-    });
-    expect([draft.getAttribute("name"), draft.getAttribute("value")]).toEqual([
-      "status",
-      "DRAFT",
-    ]);
-    expect([applied.getAttribute("name"), applied.getAttribute("value")]).toEqual([
-      "status",
-      "APPLIED",
-    ]);
+    const submits = screen
+      .getAllByRole("button")
+      .filter((button) => button.getAttribute("type") === "submit");
+    expect(submits.map((button) => button.textContent)).toEqual(["Enregistrer"]);
+    expect(submits[0].getAttribute("name")).toBeNull();
+  });
+
+  it("propose la date du jour (Europe/Paris) comme date de candidature", () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-09-27T23:30:00Z")); // déjà le 28 à Paris
+    try {
+      render(<ApplicationForm action={noop} />);
+
+      expect(
+        (screen.getByLabelText(/Date de candidature/) as HTMLInputElement).value,
+      ).toBe("2026-09-28");
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("ne fige pas de date dans le HTML pré-rendu (la page est statique, rendue au build)", () => {
+    const html = renderToString(<ApplicationForm action={noop} />);
+    const dateInput = html.match(/<input[^>]*name="appliedAt"[^>]*>/)?.[0];
+
+    expect(dateInput).toBeDefined();
+    expect(dateInput).not.toMatch(/value="\d{4}-/);
   });
 
   it("appelle onCancel quand on clique sur Annuler", () => {

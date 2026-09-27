@@ -23,6 +23,13 @@ type FormAction = (
 export function NewApplicationDialog({ action }: { action: FormAction }) {
   const [open, setOpen] = useState(false);
 
+  // Enregistrement réussi : la fenêtre se ferme, la Candidature apparaît dans les listes.
+  const saveAndClose: FormAction = async (state, formData) => {
+    const next = await action(state, formData);
+    if (next.status === "success") setOpen(false);
+    return next;
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -37,10 +44,10 @@ export function NewApplicationDialog({ action }: { action: FormAction }) {
             Nouvelle candidature
           </DialogTitle>
           <DialogDescription>
-            Enregistre une Annonce repérée ou une candidature déjà envoyée.
+            Enregistre une candidature envoyée à une entreprise.
           </DialogDescription>
         </DialogHeader>
-        <ApplicationForm action={action} onCancel={() => setOpen(false)} />
+        <ApplicationForm action={saveAndClose} onCancel={() => setOpen(false)} />
       </DialogContent>
     </Dialog>
   );

@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { Dashboard } from "@/modules/dashboard/components/dashboard";
 
-const EMPTY = { DRAFT: 0, APPLIED: 0, INTERVIEW: 0, ACCEPTED: 0, REJECTED: 0, ARCHIVED: 0 };
+const EMPTY = { APPLIED: 0, INTERVIEW: 0, REJECTED: 0 };
 
 describe("tableau de bord", () => {
   it("s'intitule Tableau de bord", () => {
@@ -14,26 +14,31 @@ describe("tableau de bord", () => {
     ).toBeDefined();
   });
 
-  it("présente la répartition des six statuts", () => {
+  it("présente la répartition des trois statuts, et d'aucun autre", () => {
     render(<Dashboard counts={EMPTY} recent={[]} />);
     const distribution = screen.getByRole("region", { name: "Répartition par statut" });
 
-    for (const label of ["Brouillon", "Postulée", "Entretien", "Acceptée", "Refusée", "Classée"]) {
+    for (const label of ["Postulée", "Entretien", "Refusée"]) {
       expect(distribution.textContent).toContain(label);
+    }
+    for (const removed of ["Brouillon", "Acceptée", "Classée"]) {
+      expect(distribution.textContent).not.toContain(removed);
     }
   });
 
-  it("compte les candidatures et les actives à partir des statuts", () => {
+  it("compte les candidatures et les entretiens, sans cartes « Actives » ni « Envoyées »", () => {
     render(
       <Dashboard
-        counts={{ ...EMPTY, DRAFT: 2, APPLIED: 4, INTERVIEW: 5, REJECTED: 3, ARCHIVED: 2 }}
+        counts={{ ...EMPTY, APPLIED: 4, INTERVIEW: 5, REJECTED: 3 }}
         recent={[]}
       />,
     );
     const kpis = screen.getByRole("region", { name: "Indicateurs" });
 
-    expect(within(kpis).getByText("16")).toBeDefined();
-    expect(within(kpis).getByText("11")).toBeDefined();
+    expect(within(kpis).getByText("Candidatures").parentElement?.textContent).toContain("12");
+    expect(within(kpis).getByText("Entretiens").parentElement?.textContent).toContain("5");
+    expect(screen.queryByText(/activ/i)).toBeNull();
+    expect(screen.queryByText("Envoyées")).toBeNull();
   });
 
   it("liste les candidatures récentes avec leur statut", () => {

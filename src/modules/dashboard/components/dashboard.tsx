@@ -18,12 +18,9 @@ export type RecentApplication = {
 };
 
 const STATUS_DOT: Record<ApplicationStatus, string> = {
-  DRAFT: "bg-status-draft",
   APPLIED: "bg-status-applied",
   INTERVIEW: "bg-status-interview",
-  ACCEPTED: "bg-status-accepted",
   REJECTED: "bg-status-rejected",
-  ARCHIVED: "bg-status-archived",
 };
 
 const dateFormat = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" });
@@ -36,8 +33,6 @@ export function Dashboard({
   recent: RecentApplication[];
 }) {
   const total = Object.values(counts).reduce((sum, n) => sum + n, 0);
-  const active = counts.DRAFT + counts.APPLIED + counts.INTERVIEW;
-  const sent = total - counts.DRAFT;
 
   return (
     <main className="flex flex-col gap-8 px-8 py-8">
@@ -46,23 +41,16 @@ export function Dashboard({
           Tableau de bord
         </h1>
         <p className="text-sm text-muted-foreground">
-          {active} active(s) · 0 entretien à venir
+          {total} candidature(s) · 0 entretien à venir
         </p>
       </div>
 
       <section
         aria-label="Indicateurs"
-        className="grid overflow-hidden rounded-lg border bg-card sm:grid-cols-2 lg:grid-cols-4"
+        className="grid overflow-hidden rounded-lg border bg-card sm:grid-cols-2"
       >
-        <Kpi label="Candidatures" value={total} hint={`${counts.DRAFT} brouillon(s) inclus`} />
-        <Kpi
-          label="Actives"
-          value={active}
-          hint="Brouillon · Postulée · Entretien"
-          highlight
-        />
+        <Kpi label="Candidatures" value={total} hint="Tous statuts confondus" highlight />
         {/* TODO(SPEC-002) : taux de réponse et d'entretien, calculés depuis l'historique des statuts. */}
-        <Kpi label="Envoyées" value={sent} hint="Postulée ou au-delà" />
         <Kpi label="Entretiens" value={counts.INTERVIEW} hint="Candidatures au statut Entretien" />
       </section>
 
@@ -85,7 +73,7 @@ export function Dashboard({
               />
             ))}
         </div>
-        <ul className="grid grid-cols-2 overflow-hidden rounded-lg border bg-card sm:grid-cols-3 lg:grid-cols-6">
+        <ul className="grid overflow-hidden rounded-lg border bg-card sm:grid-cols-3">
           {APPLICATION_STATUSES.map((status) => (
             <li key={status} className="flex flex-col gap-1 border-r border-b p-4 last:border-r-0">
               <span className="flex items-center gap-2 text-xs text-muted-foreground">

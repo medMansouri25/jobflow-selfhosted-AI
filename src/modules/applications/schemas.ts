@@ -4,7 +4,6 @@ import {
   APPLICATION_SOURCES,
   CONTRACT_TYPES,
   CURRENCIES,
-  INITIAL_STATUSES,
   SALARY_PERIODS,
 } from "@/modules/applications/domain/application";
 
@@ -38,24 +37,21 @@ const httpUrl = z.preprocess(
     .optional(),
 );
 
-/** Champs exigés pour passer en Postulée (BR-001-02), avec leur libellé d'erreur. */
-const REQUIRED_WHEN_APPLIED = [
-  ["location", "La localisation"],
-  ["contractType", "Le type de contrat"],
-  ["source", "La source de l'Annonce"],
-  ["appliedAt", "La date de candidature"],
-] as const;
+/** Champ obligatoire : vide ou absent → message nommant le champ (BR-001-02). */
+const required = <T extends z.ZodType<unknown, string>>(schema: T, label: string) =>
+  z.preprocess(
+    (value) => emptyToUndefined(value) ?? "",
+    z.string().trim().min(1, `${label} est obligatoire`).pipe(schema),
+  );
 
 /**
- * Création d'une Candidature (SPEC-001). `today` (AAAA-MM-JJ) est passé en paramètre
+ * Création d'une Candidature (SPEC-001) : toujours Postulée, donc localisation, contrat,
+ * source et date toujours obligatoires. `today` (AAAA-MM-JJ) est passé en paramètre
  * pour que la règle « pas de date future » reste testable et déterministe.
  */
 export function createApplicationSchema(today: string) {
   return z
     .object({
-      status: z.enum(INITIAL_STATUSES, {
-        error: "Statut initial : Brouillon ou Postulée",
-      }),
       companyName: z
         .string()
         .trim()
@@ -66,9 +62,9 @@ export function createApplicationSchema(today: string) {
         .trim()
         .min(1, "L'intitulé du poste est obligatoire")
         .max(200, "200 caractères maximum"),
-      location: optionalText(200),
-      contractType: optionalEnum(CONTRACT_TYPES),
-      source: optionalEnum(APPLICATION_SOURCES),
+      location: required(z.string().max(200, "200 caractères maximum"), "La localisation"),
+      contractType: required(z.enum(CONTRACT_TYPES), "Le type de contrat"),
+      source: required(z.enum(APPLICATION_SOURCES), "La source de l'Annonce"),
       jobUrl: httpUrl,
       jobDescription: optionalText(50_000),
       salaryMin: optionalAmount,
@@ -78,27 +74,13 @@ export function createApplicationSchema(today: string) {
         z.enum(CURRENCIES, { error: "Devise non prise en charge" }),
       ),
       salaryPeriod: optionalEnum(SALARY_PERIODS),
-      appliedAt: z.preprocess(
-        emptyToUndefined,
-        z.iso.date("Date invalide").optional(),
-      ),
+      appliedAt: required(z.iso.date("Date invalide"), "La date de candidature"),
       cvLabel: optionalText(200),
       coverLetter: optionalText(20_000),
       notes: optionalText(20_000),
     })
     .superRefine((input, ctx) => {
-      if (input.status === "APPLIED") {
-        for (const [field, label] of REQUIRED_WHEN_APPLIED) {
-          if (!input[field]) {
-            ctx.addIssue({
-              code: "custom",
-              path: [field],
-              message: `${label} est obligatoire pour une candidature Postulée`,
-            });
-          }
-        }
-      }
-      if (input.appliedAt && input.appliedAt > today) {
+      if (input.appliedAt > today) {
         ctx.addIssue({
           code: "custom",
           path: ["appliedAt"],

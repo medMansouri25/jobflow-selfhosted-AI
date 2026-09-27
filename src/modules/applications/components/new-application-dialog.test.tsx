@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import type { ApplicationFormState } from "@/modules/applications/form-state";
@@ -16,5 +16,32 @@ describe("fenêtre de nouvelle candidature", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Annuler" }));
     expect(screen.queryByRole("dialog")).toBeNull();
+  });
+
+  it("se ferme après un enregistrement réussi", async () => {
+    const savingAction = async (): Promise<ApplicationFormState> => ({
+      status: "success",
+      message: "Candidature enregistrée.",
+    });
+    render(<NewApplicationDialog action={savingAction} />);
+    fireEvent.click(screen.getByRole("button", { name: /Nouvelle candidature/ }));
+
+    fireEvent.submit(screen.getByRole("form", { name: "Nouvelle candidature" }));
+
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  });
+
+  it("reste ouverte quand le serveur renvoie une erreur", async () => {
+    const rejectingAction = async (): Promise<ApplicationFormState> => ({
+      status: "error",
+      message: "Certains champs sont à corriger.",
+    });
+    render(<NewApplicationDialog action={rejectingAction} />);
+    fireEvent.click(screen.getByRole("button", { name: /Nouvelle candidature/ }));
+
+    fireEvent.submit(screen.getByRole("form", { name: "Nouvelle candidature" }));
+
+    expect(await screen.findByText("Certains champs sont à corriger.")).toBeDefined();
+    expect(screen.getByRole("dialog")).toBeDefined();
   });
 });
