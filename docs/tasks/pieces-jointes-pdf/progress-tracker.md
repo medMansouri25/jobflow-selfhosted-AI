@@ -27,7 +27,7 @@ Chaque Candidature peut porter deux **Pièces jointes** PDF — son CV et sa let
 
 ## Missions
 - [x] Mission 1: Backend — dépendance UploadThing, adaptateur de stockage (envoyer / supprimer) avec faux pour les tests, modèle `Attachment` + migration (retrait de `cvLabel` / `coverLetter`), `UPLOADTHING_TOKEN`
-- [ ] Mission 2: Backend — création avec pièces jointes : validation PDF ≤ 4 Mo, envoi puis transaction, suppression des fichiers si échec, les quatre messages d'erreur, limite des Server Actions
+- [x] Mission 2: Backend — création avec pièces jointes : validation PDF ≤ 4 Mo, envoi puis transaction, suppression des fichiers si échec, les quatre messages d'erreur, limite des Server Actions
 - [ ] Mission 3: Frontend — formulaire à deux champs fichier (CV, lettre) à la place des champs texte ; section « Pièces jointes » de la fiche avec nom et taille, ouverture dans un nouvel onglet
 - [ ] Mission 4: Docs — ADR 0006 (UploadThing, amende ADR 0001), SPEC-001 (modèle, formulaire, « fichiers joints » retirés du hors-périmètre), SPEC-000 (005 réduit à une future bibliothèque de documents partagés), `tech-stack.md`, `backend-patterns.md` (adaptateur de stockage), suppression du handoff
 
@@ -41,3 +41,11 @@ _Filled in as each mission completes. Future missions read these for context._
 - **Tests**: storage.test.ts (faux client UploadThing : correspondance des champs, erreurs d'envoi et de suppression → `StorageError`) ; env.test.ts ; attachments.integration.test.ts (cascade, un seul CV par Candidature).
 - **Gotchas**: `UTApi.uploadFiles` renvoie `{ data, error }` (jamais d'exception pour un refus) ; l'URL à garder est `ufsUrl` (`url` est déprécié en v9). Le schéma Zod laissait passer `cvLabel` jusqu'à Prisma : retirer un champ du modèle impose de le retirer aussi du schéma. Le faux stockage en mémoire pour les tests du service arrive avec la Mission 2, son premier utilisateur.
 - **Integrates with**: Mission 2 injecte un `FileStorage` dans la création (faux en test, `getStorage()` en production).
+
+### Mission 2: Création avec pièces jointes
+**Status**: Completed
+- **Files**: `schemas.ts` (+ test), `service.ts`, `actions.ts`, `next.config.ts`, `src/test/memory-storage.ts`, `attachments.integration.test.ts`
+- **Built**: schéma : `cv` / `coverLetter` = `pdfAttachment(libellé)` (`application/pdf`, ≤ `MAX_ATTACHMENT_BYTES` = 4 Mo, fichier vide sans nom → `undefined`) ; `createApplication(userId, input, storage = getStorage())` envoie les fichiers un par un, puis crée Candidature + `attachments` dans la transaction. Échecs → `DomainError` : `ATTACHMENT_UPLOAD_FAILED` (« L'envoi du CV / de la lettre de motivation a échoué… ») et `APPLICATION_SAVE_FAILED` (« … Le fichier envoyé a été supprimé » / pluriel), avec `discardUploads` qui, si la suppression échoue aussi, journalise et nomme les fichiers restés sur UploadThing. L'action passe les `File` du `FormData` au schéma (le texte seul est renvoyé au formulaire). `serverActions.bodySizeLimit = "10mb"` (config `experimental` de Next 16).
+- **Tests**: schemas.test.ts (+4 : non-PDF, > 4 Mo, PDF accepté, champ vide ignoré) ; attachments.integration.test.ts (+4 : nominal, échec d'envoi, échec d'enregistrement, double échec avec journalisation) — faux stockage `createMemoryStorage({ failUploadOf, failRemove })`.
+- **Gotchas**: sans fichier, une erreur d'enregistrement reste une erreur inattendue (→ `error.tsx`), comme avant. Un fichier ne peut pas être ré-affiché après une erreur de validation : le navigateur interdit de pré-remplir un `<input type="file">`.
+- **Integrates with**: Mission 3 ajoute les deux champs `name="cv"` / `name="coverLetter"` (`type="file"`, `accept="application/pdf"`) et lit `attachments` dans `getApplication` pour la fiche.

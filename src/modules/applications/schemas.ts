@@ -37,6 +37,24 @@ const httpUrl = z.preprocess(
     .optional(),
 );
 
+export const MAX_ATTACHMENT_BYTES = 4 * 1024 * 1024;
+
+/**
+ * Pièce jointe facultative : PDF de 4 Mo maximum. Un champ fichier laissé vide arrive
+ * comme un fichier sans nom de 0 octet : il vaut « pas de fichier ».
+ */
+const pdfAttachment = (label: string) =>
+  z.preprocess(
+    (value) => (value instanceof File && value.size === 0 && !value.name ? undefined : value),
+    z
+      .instanceof(File)
+      .refine(
+        (file) => file.type === "application/pdf" && file.size <= MAX_ATTACHMENT_BYTES,
+        `${label} doit être un PDF de 4 Mo maximum`,
+      )
+      .optional(),
+  );
+
 /** Champ obligatoire : vide ou absent → message nommant le champ (BR-001-02). */
 const required = <T extends z.ZodType<unknown, string>>(schema: T, label: string) =>
   z.preprocess(
@@ -76,6 +94,8 @@ export function createApplicationSchema(today: string) {
       salaryPeriod: optionalEnum(SALARY_PERIODS),
       appliedAt: required(z.iso.date("Date invalide"), "La date de candidature"),
       notes: optionalText(20_000),
+      cv: pdfAttachment("Le CV"),
+      coverLetter: pdfAttachment("La lettre de motivation"),
     })
     .superRefine((input, ctx) => {
       if (input.appliedAt > today) {

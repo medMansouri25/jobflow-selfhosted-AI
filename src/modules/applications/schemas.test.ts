@@ -125,4 +125,45 @@ describe("création d'une candidature", () => {
 
     expect(result.success).toBe(true);
   });
+
+  describe("pièces jointes", () => {
+    const pdf = (name: string, size = 1_000) =>
+      new File([new Uint8Array(size)], name, { type: "application/pdf" });
+
+    it("refuse un CV qui n'est pas un PDF", () => {
+      const text = new File(["bonjour"], "cv.txt", { type: "text/plain" });
+
+      expect(fieldErrors({ ...formInput(), cv: text } as never)).toEqual({
+        cv: ["Le CV doit être un PDF de 4 Mo maximum"],
+      });
+    });
+
+    it("refuse une lettre de motivation de plus de 4 Mo", () => {
+      const tooBig = pdf("lettre.pdf", 4 * 1024 * 1024 + 1);
+
+      expect(fieldErrors({ ...formInput(), coverLetter: tooBig } as never)).toEqual({
+        coverLetter: ["La lettre de motivation doit être un PDF de 4 Mo maximum"],
+      });
+    });
+
+    it("accepte un CV et une lettre en PDF de 4 Mo maximum", () => {
+      const result = createApplicationSchema(TODAY).safeParse({
+        ...formInput(),
+        cv: pdf("CV.pdf", 4 * 1024 * 1024),
+        coverLetter: pdf("Lettre.pdf"),
+      });
+
+      expect(result.data?.cv?.name).toBe("CV.pdf");
+      expect(result.data?.coverLetter?.name).toBe("Lettre.pdf");
+    });
+
+    it("ignore un champ fichier laissé vide (le navigateur envoie un fichier sans nom de 0 octet)", () => {
+      const empty = new File([], "", { type: "application/octet-stream" });
+      const result = createApplicationSchema(TODAY).safeParse({ ...formInput(), cv: empty });
+
+      expect(result.success).toBe(true);
+      expect(result.data?.cv).toBeUndefined();
+    });
+  });
 });
+

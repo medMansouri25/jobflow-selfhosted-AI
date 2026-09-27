@@ -14,12 +14,15 @@ export async function createApplicationAction(
   _previous: ApplicationFormState,
   formData: FormData,
 ): Promise<ApplicationFormState> {
+  // Le texte est renvoyé au formulaire en cas d'erreur ; un fichier ne peut pas l'être (le navigateur l'interdit).
   const values: Record<string, string> = {};
+  const files: Record<string, File> = {};
   for (const [key, value] of formData.entries()) {
     if (typeof value === "string") values[key] = value;
+    else files[key] = value;
   }
 
-  const result = createApplicationSchema(todayInParis()).safeParse(values);
+  const result = createApplicationSchema(todayInParis()).safeParse({ ...values, ...files });
   if (!result.success) {
     return {
       status: "error",
