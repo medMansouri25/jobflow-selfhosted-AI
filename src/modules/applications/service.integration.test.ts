@@ -8,6 +8,7 @@ import {
   listApplications,
 } from "@/modules/applications/service";
 import { db } from "@/lib/db";
+import { NotFoundError } from "@/lib/errors";
 import { createTestUser } from "@/test/database";
 
 const TODAY = "2026-09-27";
@@ -81,6 +82,12 @@ describe("service des candidatures", () => {
 
     await expect(getApplication(me.id, created.id)).rejects.toThrow(/introuvable/);
     expect(await listApplications(me.id)).toEqual([]);
+  });
+
+  it("répond « introuvable » pour un identifiant qui n'est pas un UUID (AC-001-20)", async () => {
+    const user = await createTestUser();
+
+    await expect(getApplication(user.id, "abc")).rejects.toThrow(NotFoundError);
   });
 
   it("liste les Candidatures les plus récemment modifiées en premier", async () => {

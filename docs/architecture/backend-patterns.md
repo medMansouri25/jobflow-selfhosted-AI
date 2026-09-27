@@ -64,6 +64,7 @@ export function isDefinitive(status: ApplicationStatus): boolean  // Statut déf
 - Toute écriture multiple qui doit être atomique passe par `prisma.$transaction` — ex. nouveau statut **et** ligne d'historique.
 - Applique les règles du domaine avec l'état **lu en base dans la transaction** (pas celui envoyé par le client) : c'est ce qui protège contre les requêtes forgées et les onglets concurrents.
 - Lance une `DomainError` pour toute violation de règle métier.
+- Un identifiant reçu de l'URL est vérifié (`z.uuid()`) avant la requête : un id mal formé lance `NotFoundError` (la colonne uuid de PostgreSQL rejetterait la requête), comme une ressource introuvable.
 
 ### ④ Actions — `modules/*/actions.ts`
 

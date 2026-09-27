@@ -1,12 +1,16 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { RowLink } from "@/components/row-link";
 import { cn } from "@/lib/utils";
 import {
   APPLICATION_STATUSES,
   type ApplicationStatus,
 } from "@/modules/applications/domain/application";
-import { StatusBadge } from "@/modules/applications/components/status-badge";
+import {
+  STATUS_DOT_CLASSES,
+  StatusBadge,
+} from "@/modules/applications/components/status-badge";
 import { STATUS_LABELS } from "@/modules/applications/labels";
 
 export type RecentApplication = {
@@ -15,12 +19,6 @@ export type RecentApplication = {
   jobTitle: string;
   status: ApplicationStatus;
   updatedAt: Date;
-};
-
-const STATUS_DOT: Record<ApplicationStatus, string> = {
-  APPLIED: "bg-status-applied",
-  INTERVIEW: "bg-status-interview",
-  REJECTED: "bg-status-rejected",
 };
 
 const dateFormat = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" });
@@ -68,7 +66,7 @@ export function Dashboard({
             APPLICATION_STATUSES.map((status) => (
               <span
                 key={status}
-                className={STATUS_DOT[status]}
+                className={STATUS_DOT_CLASSES[status]}
                 style={{ width: `${(counts[status] / total) * 100}%` }}
               />
             ))}
@@ -77,7 +75,7 @@ export function Dashboard({
           {APPLICATION_STATUSES.map((status) => (
             <li key={status} className="flex flex-col gap-1 border-r border-b p-4 last:border-r-0">
               <span className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span aria-hidden className={cn("size-2 rounded-sm", STATUS_DOT[status])} />
+                <span aria-hidden className={cn("size-2 rounded-sm", STATUS_DOT_CLASSES[status])} />
                 {STATUS_LABELS[status]}
               </span>
               <span className="font-heading text-2xl font-extrabold">
@@ -120,8 +118,10 @@ export function Dashboard({
               </thead>
               <tbody>
                 {recent.map((application) => (
-                  <tr key={application.id} className="border-t">
-                    <td className="px-4 py-2.5 font-semibold">{application.companyName}</td>
+                  <tr key={application.id} className="relative border-t hover:bg-muted/60">
+                    <td className="px-4 py-2.5 font-semibold">
+                      <RowLink href={`/applications/${application.id}`}>{application.companyName}</RowLink>
+                    </td>
                     <td className="px-4 py-2.5">{application.jobTitle}</td>
                     <td className="px-4 py-2.5">
                       <StatusBadge status={application.status} />

@@ -9,6 +9,13 @@ const STATUS_STYLES: Record<ApplicationStatus, string> = {
   REJECTED: "bg-status-rejected-bg text-status-rejected-fg",
 };
 
+/** Couleur pleine d'un statut : barres, pastilles, points de l'historique. */
+export const STATUS_DOT_CLASSES: Record<ApplicationStatus, string> = {
+  APPLIED: "bg-status-applied",
+  INTERVIEW: "bg-status-interview",
+  REJECTED: "bg-status-rejected",
+};
+
 export function StatusBadge({
   status,
   className,
