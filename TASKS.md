@@ -195,9 +195,9 @@ git push
 - 404 pour un id inconnu.
 - **Terminé quand** : AC-001-19, 20 vérifiés.
 
-### [ ] T1.6 — Modifier une Candidature
-- Service `updateApplication` (tous les champs sauf le statut).
-- Page `/applications/[id]/edit`, formulaire partagé avec la création.
+### [x] T1.6 — Modifier une Candidature
+- Service `updateApplication` (tous les champs sauf le statut), pièces jointes gardées / remplacées / ajoutées / retirées.
+- Fenêtre « Modifier — <Entreprise> » ouverte depuis la fiche, formulaire partagé avec la création (pas de page `/edit`).
 - **Terminé quand** : AC-001-11 vert.
 
 ### [ ] T1.7 — Changer le statut
