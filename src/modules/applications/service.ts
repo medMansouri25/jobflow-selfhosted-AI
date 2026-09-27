@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 import { db } from "@/lib/db";
 import { NotFoundError } from "@/lib/errors";
 import {
@@ -32,6 +34,8 @@ export async function createApplication(
 }
 
 export async function getApplication(userId: string, id: string) {
+  // Un id mal formé ferait échouer PostgreSQL (colonne uuid) : c'est simplement une Candidature introuvable.
+  if (!z.uuid().safeParse(id).success) throw new NotFoundError("Candidature introuvable.");
   const application = await db.application.findFirst({
     where: { id, userId },
     include: {
