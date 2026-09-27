@@ -36,8 +36,6 @@ export function Dashboard({
   recent: RecentApplication[];
 }) {
   const total = Object.values(counts).reduce((sum, n) => sum + n, 0);
-  const active = counts.DRAFT + counts.APPLIED + counts.INTERVIEW;
-  const sent = total - counts.DRAFT;
 
   return (
     <main className="flex flex-col gap-8 px-8 py-8">
@@ -46,23 +44,16 @@ export function Dashboard({
           Tableau de bord
         </h1>
         <p className="text-sm text-muted-foreground">
-          {active} active(s) · 0 entretien à venir
+          {total} candidature(s) · 0 entretien à venir
         </p>
       </div>
 
       <section
         aria-label="Indicateurs"
-        className="grid overflow-hidden rounded-lg border bg-card sm:grid-cols-2 lg:grid-cols-4"
+        className="grid overflow-hidden rounded-lg border bg-card sm:grid-cols-2"
       >
-        <Kpi label="Candidatures" value={total} hint={`${counts.DRAFT} brouillon(s) inclus`} />
-        <Kpi
-          label="Actives"
-          value={active}
-          hint="Brouillon · Postulée · Entretien"
-          highlight
-        />
+        <Kpi label="Candidatures" value={total} hint="Tous statuts confondus" highlight />
         {/* TODO(SPEC-002) : taux de réponse et d'entretien, calculés depuis l'historique des statuts. */}
-        <Kpi label="Envoyées" value={sent} hint="Postulée ou au-delà" />
         <Kpi label="Entretiens" value={counts.INTERVIEW} hint="Candidatures au statut Entretien" />
       </section>
 

@@ -27,7 +27,7 @@ Mission 1 (6 statuts) est remplacée par Mission 2 ; son code est réécrit.
 ## Missions
 - [x] Mission 1: Backend — `domain/status.ts` : `STATUS_TRANSITIONS` (BR-001-05), `canTransition`, `allowedTransitions`, `ACTIVE_STATUSES`, `isActive`, `isDefinitive`, avec tests unitaires des 36 paires et d'AC-001-05 à 09
 - [x] Mission 2: Full-stack — création toujours Postulée : schéma sans statut saisi (localisation, contrat, source, date toujours requis), service `createApplication` au statut APPLIED, formulaire à un bouton « Enregistrer » avec date du jour par défaut et marqueurs `*`, fenêtre modale fermée après succès
-- [ ] Mission 3: Frontend — tableau de bord sans les cartes « Actives » et « Envoyées »
+- [x] Mission 3: Frontend — tableau de bord sans les cartes « Actives » et « Envoyées »
 - [ ] Mission 4: Full-stack — trois statuts : enum `ApplicationStatus` réduit à APPLIED / INTERVIEW / REJECTED + migration de conversion (DRAFT → APPLIED, ACCEPTED → INTERVIEW, ARCHIVED → APPLIED), `domain/application.ts` sans `INITIAL_STATUSES`, `domain/status.ts` réécrit (nouvelle table ; plus d'`ACTIVE_STATUSES` / `isActive`) avec tests des 9 paires, libellés, badge et répartition du tableau de bord sur 3 statuts
 - [ ] Mission 5: Docs — SPEC-001 (FR/BR/AC touchés par la réduction), ADR 0005 « trois statuts », `frontend-patterns.md` (un seul bouton, statut APPLIED à la création) et `backend-patterns.md` (plus de champs requis selon le statut, nouvel exemple de nom de test)
 
@@ -48,3 +48,10 @@ _Filled in as each mission completes. Future missions read these for context._
 - **Tests**: schemas.test.ts (4 champs requis, candidature complète sans statut), service.integration.test.ts (APPLIED + historique), application-form.test.tsx (un bouton, date du jour Europe/Paris avec horloge figée), new-application-dialog.test.tsx (fermeture après succès, reste ouverte sur erreur).
 - **Patterns**: `todayInParis()` vit dans `src/lib/dates.ts`, partagé par l'action serveur et le formulaire client.
 - **Integrates with**: Mission 4 peut retirer DRAFT : plus aucun code ne crée de brouillon (`INITIAL_STATUSES` n'est plus importé).
+
+### Mission 3: Tableau de bord sans « Actives » ni « Envoyées »
+**Status**: Completed
+- **Files**: `src/modules/dashboard/components/dashboard.tsx` (+ test)
+- **Built**: deux indicateurs seulement (Candidatures, mis en avant, « Tous statuts confondus » ; Entretiens) sur une grille à 2 colonnes ; l'en-tête affiche « N candidature(s) · 0 entretien à venir ».
+- **Tests**: dashboard.test.tsx — totaux lus dans leur carte, aucun texte « activ… » ni « Envoyées ».
+- **Integrates with**: Mission 4 réduit la répartition et `EMPTY` du test aux 3 statuts.

@@ -23,17 +23,19 @@ describe("tableau de bord", () => {
     }
   });
 
-  it("compte les candidatures et les actives à partir des statuts", () => {
+  it("compte les candidatures et les entretiens, sans cartes « Actives » ni « Envoyées »", () => {
     render(
       <Dashboard
-        counts={{ ...EMPTY, DRAFT: 2, APPLIED: 4, INTERVIEW: 5, REJECTED: 3, ARCHIVED: 2 }}
+        counts={{ ...EMPTY, APPLIED: 4, INTERVIEW: 5, REJECTED: 3 }}
         recent={[]}
       />,
     );
     const kpis = screen.getByRole("region", { name: "Indicateurs" });
 
-    expect(within(kpis).getByText("16")).toBeDefined();
-    expect(within(kpis).getByText("11")).toBeDefined();
+    expect(within(kpis).getByText("Candidatures").parentElement?.textContent).toContain("12");
+    expect(within(kpis).getByText("Entretiens").parentElement?.textContent).toContain("5");
+    expect(screen.queryByText(/activ/i)).toBeNull();
+    expect(screen.queryByText("Envoyées")).toBeNull();
   });
 
   it("liste les candidatures récentes avec leur statut", () => {
