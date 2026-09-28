@@ -1,6 +1,6 @@
 # Task: Changer le statut (T1.7)
 
-**Status**: In dev
+**Status**: Completed
 **Type**: Full-stack
 **Created**: 2026-09-28
 
