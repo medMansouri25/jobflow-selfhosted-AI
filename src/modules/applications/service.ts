@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import type { Prisma } from "@/generated/prisma/client";
+
 import { db } from "@/lib/db";
 import { DomainError, InvalidTransitionError, NotFoundError } from "@/lib/errors";
 import { getStorage, StorageError, type FileStorage, type StoredFile } from "@/lib/storage";
@@ -18,9 +20,22 @@ import { toColumns } from "@/modules/applications/form-values";
 import { STATUS_LABELS } from "@/modules/applications/labels";
 import { findOrCreateCompany } from "@/modules/companies/service";
 
-/** Un id mal formé ferait échouer PostgreSQL (colonne uuid) : c'est simplement une Candidature introuvable. */
-function isUuid(id: string): boolean {
-  return z.uuid().safeParse(id).success;
+/**
+ * La Candidature `id` de l'utilisateur, ou `NotFoundError` : id mal formé (PostgreSQL rejetterait
+ * la colonne uuid), inconnu ou appartenant à quelqu'un d'autre. Seul accès « par id » du service,
+ * pour que le filtre par utilisateur ne puisse pas être oublié.
+ */
+async function findOwnedApplication<Include extends Prisma.ApplicationInclude = Record<string, never>>(
+  client: Prisma.TransactionClient,
+  userId: string,
+  id: string,
+  include?: Include,
+): Promise<Prisma.ApplicationGetPayload<{ include: Include }>> {
+  const application = z.uuid().safeParse(id).success
+    ? await client.application.findFirst({ where: { id, userId }, include })
+    : null;
+  if (!application) throw new NotFoundError("Candidature introuvable.");
+  return application as Prisma.ApplicationGetPayload<{ include: Include }>;
 }
 
 /** « L'envoi du CV… », « L'envoi de la lettre de motivation… ». */
@@ -68,7 +83,6 @@ export async function updateApplication(
   input: UpdateApplicationInput,
   storage: FileStorage = getStorage(),
 ) {
-  if (!isUuid(id)) throw new NotFoundError("Candidature introuvable.");
   const stored = await uploadAttachments(storage, input, "La modification n'a pas été enregistrée");
   const removals: Record<AttachmentKind, boolean> = {
     CV: input.removeCv,
@@ -76,11 +90,7 @@ export async function updateApplication(
   };
 
   const saving = db.$transaction(async (tx) => {
-    const current = await tx.application.findFirst({
-      where: { id, userId },
-      include: { attachments: true },
-    });
-    if (!current) throw new NotFoundError("Candidature introuvable.");
+    const current = await findOwnedApplication(tx, userId, id, { attachments: true });
 
     const obsolete: StoredFile[] = [];
     for (const kind of ATTACHMENT_KINDS) {
@@ -117,10 +127,8 @@ export async function updateApplication(
  * à l'instant de l'enregistrement (BR-001-09).
  */
 export async function changeApplicationStatus(userId: string, id: string, to: ApplicationStatus) {
-  if (!isUuid(id)) throw new NotFoundError("Candidature introuvable.");
   return db.$transaction(async (tx) => {
-    const current = await tx.application.findFirst({ where: { id, userId } });
-    if (!current) throw new NotFoundError("Candidature introuvable.");
+    const current = await findOwnedApplication(tx, userId, id);
     // Vérifiée sur le statut en base : couvre l'onglet resté ouvert comme la requête forgée.
     if (!canTransition(current.status, to)) {
       throw new InvalidTransitionError(
@@ -220,17 +228,11 @@ async function discardUploads(storage: FileStorage, stored: StoredFile[]): Promi
 }
 
 export async function getApplication(userId: string, id: string) {
-  if (!isUuid(id)) throw new NotFoundError("Candidature introuvable.");
-  const application = await db.application.findFirst({
-    where: { id, userId },
-    include: {
-      company: true,
-      statusChanges: { orderBy: { changedAt: "desc" } },
-      attachments: { orderBy: { kind: "asc" } },
-    },
+  return findOwnedApplication(db, userId, id, {
+    company: true,
+    statusChanges: { orderBy: { changedAt: "desc" } },
+    attachments: { orderBy: { kind: "asc" } },
   });
-  if (!application) throw new NotFoundError("Candidature introuvable.");
-  return application;
 }
 
 /** Candidatures de l'utilisateur, les plus récemment modifiées en premier. */

@@ -56,5 +56,14 @@ describe("bloc Statut de la fiche", () => {
 
     expect((await screen.findByRole("alert")).textContent).toContain("Recharge la page");
   });
+
+  it("confirme le changement enregistré", async () => {
+    const saving = async (): Promise<ApplicationFormState> => ({ status: "success", message: "Statut : Entretien." });
+    render(<StatusPanel status="APPLIED" action={saving} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Passer en Entretien" }));
+
+    expect((await screen.findByRole("status")).textContent).toBe("Statut : Entretien.");
+  });
 });
 

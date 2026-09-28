@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { useId, type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import type { getApplication } from "@/modules/applications/service";
 import { cn } from "@/lib/utils";
+import { Section } from "@/modules/applications/components/section";
 import { formatFileSize } from "@/modules/applications/format";
 import {
   STATUS_DOT_CLASSES,
@@ -185,14 +186,3 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
   );
 }
 
-function Section({ title, children }: { title: string; children: ReactNode }) {
-  const id = useId();
-  return (
-    <section aria-labelledby={id} className="flex flex-col gap-3 rounded-lg border bg-card p-5">
-      <h2 id={id} className="font-heading font-bold">
-        {title}
-      </h2>
-      {children}
-    </section>
-  );
-}

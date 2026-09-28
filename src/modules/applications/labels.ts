@@ -1,3 +1,4 @@
+import type { TransitionTarget } from "@/modules/applications/domain/status";
 import type {
   ApplicationSource,
   AttachmentKind,
@@ -15,8 +16,7 @@ export const STATUS_LABELS: Record<ApplicationStatus, string> = {
 };
 
 /** Bouton qui mène à un statut (bloc « Statut » de la fiche). */
-export const TRANSITION_LABELS: Record<ApplicationStatus, string> = {
-  APPLIED: "Repasser en Postulée",
+export const TRANSITION_LABELS: Record<TransitionTarget, string> = {
   INTERVIEW: "Passer en Entretien",
   REJECTED: "Marquer Refusée",
 };

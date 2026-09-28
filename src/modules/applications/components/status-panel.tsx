@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useId } from "react";
+import { useActionState } from "react";
 
 import {
   AlertDialog,
@@ -13,6 +13,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { FormStateMessage } from "@/modules/applications/components/form-state-message";
+import { Section } from "@/modules/applications/components/section";
 import type { ApplicationStatus } from "@/modules/applications/domain/application";
 import { allowedTransitions, isDefinitive } from "@/modules/applications/domain/status";
 import {
@@ -26,18 +28,10 @@ type StatusAction = (state: ApplicationFormState, formData: FormData) => Promise
 /** Bloc « Statut » de la fiche : un bouton par transition autorisée (FR-001-05). */
 export function StatusPanel({ status, action }: { status: ApplicationStatus; action: StatusAction }) {
   const [state, formAction, pending] = useActionState(action, initialApplicationFormState);
-  const titleId = useId();
 
   return (
-    <section aria-labelledby={titleId} className="flex flex-col gap-3 rounded-lg border bg-card p-5">
-      <h2 id={titleId} className="font-heading font-bold">
-        Statut
-      </h2>
-      {state.status === "error" && state.message && (
-        <p role="alert" className="rounded-md bg-status-rejected-bg px-4 py-3 text-sm text-status-rejected-fg">
-          {state.message}
-        </p>
-      )}
+    <Section title="Statut">
+      <FormStateMessage state={state} />
       {isDefinitive(status) && (
         <p className="text-sm text-muted-foreground">
           Statut définitif : cette candidature ne change plus de statut.
@@ -77,6 +71,6 @@ export function StatusPanel({ status, action }: { status: ApplicationStatus; act
           ),
         )}
       </div>
-    </section>
+    </Section>
   );
 }

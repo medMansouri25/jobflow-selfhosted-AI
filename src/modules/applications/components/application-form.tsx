@@ -27,6 +27,7 @@ import {
   type ApplicationFormState,
 } from "@/modules/applications/form-state";
 import type { AttachmentKind } from "@/modules/applications/domain/application";
+import { FormStateMessage } from "@/modules/applications/components/form-state-message";
 import { formatFileSize } from "@/modules/applications/format";
 import { MAX_ATTACHMENT_LABEL } from "@/modules/applications/schemas";
 import {
@@ -77,19 +78,7 @@ export function ApplicationForm({
       noValidate
       className="flex flex-col gap-5"
     >
-      {state.status !== "idle" && state.message && (
-        <p
-          role={state.status === "error" ? "alert" : "status"}
-          className={cn(
-            "rounded-md px-4 py-3 text-sm",
-            state.status === "error" && "bg-status-rejected-bg text-status-rejected-fg",
-            state.status === "warning" && "bg-status-interview-bg text-status-interview-fg",
-            state.status === "success" && "bg-status-accepted-bg text-status-accepted-fg",
-          )}
-        >
-          {state.message}
-        </p>
-      )}
+      <FormStateMessage state={state} />
 
       <div className="grid gap-4 sm:grid-cols-3">
         <Field
