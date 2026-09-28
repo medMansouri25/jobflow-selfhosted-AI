@@ -200,9 +200,9 @@ git push
 - Fenêtre « Modifier — <Entreprise> » ouverte depuis la fiche, formulaire partagé avec la création (pas de page `/edit`).
 - **Terminé quand** : AC-001-11 vert.
 
-### [ ] T1.7 — Changer le statut
-- Service `changeApplicationStatus` : transition vérifiée sur l'état **en base**, historique en transaction.
-- Composant `StatusMenu` : uniquement les transitions autorisées ; confirmation pour Refusée (définitive).
+### [x] T1.7 — Changer le statut
+- Service `changeApplicationStatus` : transition vérifiée sur l'état **en base**, historique en transaction, `InvalidTransitionError` sinon.
+- Bloc « Statut » (`StatusPanel`) : un bouton par transition autorisée ; confirmation pour Refusée (définitive).
 - **Terminé quand** : AC-001-05 à 08 verts (y compris requêtes forgées).
 
 ### [ ] T1.8 — Supprimer une Candidature
