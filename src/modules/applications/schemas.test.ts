@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { z } from "zod";
 
 import {
+  changeStatusSchema,
   createApplicationSchema,
   updateApplicationSchema,
 } from "@/modules/applications/schemas";
@@ -178,6 +179,14 @@ describe("création d'une candidature", () => {
       expect(
         updateApplicationSchema(TODAY).safeParse({ ...formInput(), appliedAt: "2026-09-25" }).success,
       ).toBe(false);
+    });
+  });
+
+  describe("changement de statut", () => {
+    it("n'accepte qu'un des trois statuts comme cible", () => {
+      expect(changeStatusSchema.safeParse({ to: "INTERVIEW" }).data).toEqual({ to: "INTERVIEW" });
+      expect(changeStatusSchema.safeParse({ to: "ACCEPTED" }).success).toBe(false);
+      expect(changeStatusSchema.safeParse({}).success).toBe(false);
     });
   });
 });

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { db } from "@/lib/db";
-import { DomainError, NotFoundError } from "@/lib/errors";
+import { DomainError, InvalidTransitionError, NotFoundError } from "@/lib/errors";
 import { getStorage, StorageError, type FileStorage, type StoredFile } from "@/lib/storage";
 import {
   APPLICATION_STATUSES,
@@ -13,7 +13,9 @@ import type {
   CreateApplicationInput,
   UpdateApplicationInput,
 } from "@/modules/applications/schemas";
+import { canTransition } from "@/modules/applications/domain/status";
 import { toColumns } from "@/modules/applications/form-values";
+import { STATUS_LABELS } from "@/modules/applications/labels";
 import { findOrCreateCompany } from "@/modules/companies/service";
 
 /** Un id mal formé ferait échouer PostgreSQL (colonne uuid) : c'est simplement une Candidature introuvable. */
@@ -108,6 +110,31 @@ export async function updateApplication(
     "La modification n'a pas pu être enregistrée",
   );
   return { application, leftover: await discardUploads(storage, obsolete) };
+}
+
+/**
+ * Change le statut d'une Candidature (FR-001-05) et l'inscrit dans l'historique (FR-001-06),
+ * à l'instant de l'enregistrement (BR-001-09).
+ */
+export async function changeApplicationStatus(userId: string, id: string, to: ApplicationStatus) {
+  if (!isUuid(id)) throw new NotFoundError("Candidature introuvable.");
+  return db.$transaction(async (tx) => {
+    const current = await tx.application.findFirst({ where: { id, userId } });
+    if (!current) throw new NotFoundError("Candidature introuvable.");
+    // Vérifiée sur le statut en base : couvre l'onglet resté ouvert comme la requête forgée.
+    if (!canTransition(current.status, to)) {
+      throw new InvalidTransitionError(
+        `Le statut a changé entre-temps (la candidature est maintenant ${STATUS_LABELS[current.status]}). Recharge la page.`,
+      );
+    }
+    return tx.application.update({
+      where: { id },
+      data: {
+        status: to,
+        statusChanges: { create: { fromStatus: current.status, toStatus: to } },
+      },
+    });
+  });
 }
 
 type StoredAttachment = StoredFile & { kind: AttachmentKind };
