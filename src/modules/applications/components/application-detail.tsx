@@ -66,10 +66,13 @@ function formatSalary({
 export function ApplicationDetail({
   application,
   actions,
+  statusPanel,
 }: {
   application: ApplicationDetailData;
   /** Boutons de la fiche (ex. « Modifier »), fournis par la page. */
   actions?: ReactNode;
+  /** Bloc « Statut » (transitions), fourni par la page. */
+  statusPanel?: ReactNode;
 }) {
   const meta = [
     application.company.name,
@@ -93,6 +96,8 @@ export function ApplicationDetail({
         </div>
         <p className="text-muted-foreground">{meta.join(" · ")}</p>
       </div>
+
+      {statusPanel}
 
       <Section title="Annonce">
         <dl className="grid gap-x-6 gap-y-2 text-sm sm:grid-cols-[max-content_1fr]">

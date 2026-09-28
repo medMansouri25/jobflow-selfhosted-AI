@@ -198,5 +198,18 @@ describe("fiche d'une Candidature", () => {
     const heading = screen.getByRole("heading", { level: 1, name: "Ingénieur SI" });
     expect(within(heading.parentElement!).getByRole("button", { name: "Modifier" })).toBeDefined();
   });
+
+  it("affiche le bloc de statut fourni par la page, avant l'Annonce", () => {
+    render(
+      <ApplicationDetail
+        application={application()}
+        statusPanel={<section aria-label="Statut">bloc</section>}
+      />,
+    );
+
+    const status = screen.getByRole("region", { name: "Statut" });
+    const annonce = screen.getByRole("region", { name: "Annonce" });
+    expect(status.compareDocumentPosition(annonce) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
 });
 

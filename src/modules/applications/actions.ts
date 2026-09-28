@@ -7,11 +7,17 @@ import { getCurrentUserId } from "@/lib/current-user";
 import { todayInParis } from "@/lib/dates";
 import { domainErrorToFormState } from "@/lib/errors";
 import type { ApplicationFormState } from "@/modules/applications/form-state";
+import { STATUS_LABELS } from "@/modules/applications/labels";
 import {
+  changeStatusSchema,
   createApplicationSchema,
   updateApplicationSchema,
 } from "@/modules/applications/schemas";
-import { createApplication, updateApplication } from "@/modules/applications/service";
+import {
+  changeApplicationStatus,
+  createApplication,
+  updateApplication,
+} from "@/modules/applications/service";
 
 /**
  * Sépare le texte et les fichiers du formulaire : les deux sont validés, seul le texte est renvoyé
@@ -82,3 +88,23 @@ export async function updateApplicationAction(
     ? { status: "warning", message: `${saved} ${leftover}` }
     : { status: "success", message: saved };
 }
+
+/** Changement de statut (FR-001-05) ; `id` est lié par la page. La transition est vérifiée par le service. */
+export async function changeStatusAction(
+  id: string,
+  _previous: ApplicationFormState,
+  formData: FormData,
+): Promise<ApplicationFormState> {
+  const result = changeStatusSchema.safeParse({ to: formData.get("to") });
+  if (!result.success) return { status: "error", message: "Statut inconnu." };
+
+  try {
+    await changeApplicationStatus(await getCurrentUserId(), id, result.data.to);
+  } catch (error) {
+    return domainErrorToFormState(error);
+  }
+
+  revalidatePath("/", "layout");
+  return { status: "success", message: `Statut : ${STATUS_LABELS[result.data.to]}.` };
+}
+

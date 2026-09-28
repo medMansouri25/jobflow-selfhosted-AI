@@ -14,6 +14,13 @@ export const STATUS_LABELS: Record<ApplicationStatus, string> = {
   REJECTED: "Refusée",
 };
 
+/** Bouton qui mène à un statut (bloc « Statut » de la fiche). */
+export const TRANSITION_LABELS: Record<ApplicationStatus, string> = {
+  APPLIED: "Repasser en Postulée",
+  INTERVIEW: "Passer en Entretien",
+  REJECTED: "Marquer Refusée",
+};
+
 export const ATTACHMENT_KIND_LABELS: Record<AttachmentKind, string> = {
   CV: "CV",
   COVER_LETTER: "Lettre de motivation",
