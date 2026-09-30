@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { createApplicationSchema } from "@/modules/applications/schemas";
+import { createApplicationSchema, listApplicationsSchema } from "@/modules/applications/schemas";
 import {
   countApplicationsByStatus,
   createApplication,
@@ -81,7 +81,7 @@ describe("service des candidatures", () => {
     const created = await createApplication(someoneElse.id, input());
 
     await expect(getApplication(me.id, created.id)).rejects.toThrow(/introuvable/);
-    expect(await listApplications(me.id)).toEqual([]);
+    expect((await listApplications(me.id, listApplicationsSchema.parse({}))).applications).toEqual([]);
   });
 
   it("répond « introuvable » pour un identifiant qui n'est pas un UUID (AC-001-20)", async () => {
@@ -95,7 +95,9 @@ describe("service des candidatures", () => {
     await createApplication(user.id, input({ jobTitle: "Premier" }));
     await createApplication(user.id, input({ jobTitle: "Second" }));
 
-    const titles = (await listApplications(user.id)).map((a) => a.jobTitle);
+    const titles = (await listApplications(user.id, listApplicationsSchema.parse({}))).applications.map(
+      (a) => a.jobTitle,
+    );
 
     expect(titles).toEqual(["Second", "Premier"]);
   });

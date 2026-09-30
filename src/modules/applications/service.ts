@@ -13,6 +13,8 @@ import {
 } from "@/modules/applications/domain/application";
 import type {
   CreateApplicationInput,
+  ListApplicationsInput,
+  ListSort,
   UpdateApplicationInput,
 } from "@/modules/applications/schemas";
 import { canTransition } from "@/modules/applications/domain/status";
@@ -259,13 +261,56 @@ export async function getApplication(userId: string, id: string) {
   });
 }
 
-/** Candidatures de l'utilisateur, les plus récemment modifiées en premier. */
-export async function listApplications(userId: string) {
-  // TODO(T1.9) : recherche, filtres (actives par défaut), tri et pagination.
+/** Taille d'une page de la liste (FR-001-12, H5 confirmée). */
+const PAGE_SIZE = 25;
+
+const ORDER_BY: Record<ListSort, Prisma.ApplicationOrderByWithRelationInput[]> = {
+  modifiee: [{ updatedAt: "desc" }],
+  candidature: [{ appliedAt: "desc" }, { updatedAt: "desc" }],
+  entreprise: [{ company: { normalizedName: "asc" } }, { updatedAt: "desc" }],
+};
+
+/**
+ * Une page de Candidatures de l'utilisateur (FR-001-08 à 12) : recherche partielle sans casse sur
+ * l'Entreprise, le poste et la localisation ; statuts, contrat et source ; tri ; page bornée à la
+ * dernière page existante.
+ */
+export async function listApplications(userId: string, filters: ListApplicationsInput) {
+  // Prisma passe le texte tel quel à LIKE : % et _ y seraient des jokers. On les échappe (\ = échappement PostgreSQL).
+  const contains = filters.q && {
+    contains: filters.q.replace(/[\\%_]/g, "\\$&"),
+    mode: "insensitive" as const,
+  };
+  const where: Prisma.ApplicationWhereInput = {
+    userId,
+    ...(filters.statuses.length > 0 && { status: { in: filters.statuses } }),
+    ...(filters.contractType && { contractType: filters.contractType }),
+    ...(filters.source && { source: filters.source }),
+    ...(contains && {
+      OR: [{ company: { name: contains } }, { jobTitle: contains }, { location: contains }],
+    }),
+  };
+
+  const total = await db.application.count({ where });
+  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const page = Math.min(filters.page, pages);
+  const applications = await db.application.findMany({
+    where,
+    include: { company: true },
+    orderBy: ORDER_BY[filters.sort],
+    skip: (page - 1) * PAGE_SIZE,
+    take: PAGE_SIZE,
+  });
+  return { applications, total, page, pages };
+}
+
+/** Les `limit` Candidatures modifiées le plus récemment (tableau de bord). */
+export async function listRecentApplications(userId: string, limit: number) {
   return db.application.findMany({
     where: { userId },
     include: { company: true },
     orderBy: { updatedAt: "desc" },
+    take: limit,
   });
 }
 

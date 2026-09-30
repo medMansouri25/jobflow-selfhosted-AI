@@ -56,4 +56,13 @@ describe("tableau des candidatures", () => {
       "/applications/3aca6b3f-d33c-4971-8de8-5ac19f8db9ab",
     );
   });
+
+  it("dit qu'aucune candidature ne correspond aux filtres, et propose de les réinitialiser", () => {
+    render(<ApplicationsTable applications={[]} filtered />);
+
+    expect(screen.getByText("Aucune candidature ne correspond.")).toBeDefined();
+    expect(screen.getByRole("link", { name: "Réinitialiser les filtres" }).getAttribute("href")).toBe("/applications");
+    expect(screen.queryByText("Aucune candidature pour l'instant")).toBeNull();
+  });
 });
+

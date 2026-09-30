@@ -59,16 +59,19 @@ export function isDefinitive(status: ApplicationStatus): boolean  // Statut déf
 - Une case à cocher HTML arrive comme `"on"` ou absente : `z.preprocess` la convertit en booléen (`removeCv`, `removeCoverLetter`).
 - Création et modification partagent les mêmes champs et règles entre champs (`applicationFields`, `crossFieldRules(today)`) ; le schéma de modification n'a pas de statut et ajoute les cases de retrait des pièces jointes.
 - Un champ obligatoire passe par l'utilitaire `required(schema, label)` : chaîne vide ou absente → message « <Libellé> est obligatoire », puis validation par le schéma cible (`z.enum`, `z.iso.date`…).
+- Les filtres de liste sont lus depuis l'adresse par un schéma **tolérant** (`listApplicationsSchema`, `?q=&statut=&statut=&contrat=&source=&tri=&page=`) : chaque paramètre est `z.unknown()`, puis un `transform` garde une valeur connue (`oneOf(values, value)`) ou revient à la valeur par défaut (tri `modifiee`, page 1, `q` coupé à 200 caractères). Une adresse modifiée à la main ne provoque jamais d'erreur. `hasActiveFilters(filters)` dit si des filtres réduisent la liste ; le tri et la page n'en sont pas.
 
 ### ③ Service — `modules/*/service.ts`
 
-- Exporte des **fonctions** (pas de classes) : `createApplication`, `changeApplicationStatus`, `deleteApplication`, `listApplications`, `getApplication`…
+- Exporte des **fonctions** (pas de classes) : `createApplication`, `changeApplicationStatus`, `deleteApplication`, `listApplications(userId, filters)`, `listRecentApplications`, `getApplication`…
 - Reçoit **toujours** le `userId` en premier paramètre ; filtre toutes les requêtes par `userId`.
 - Reçoit des données **déjà validées** (types issus des schémas).
 - Utilise Prisma **directement** : pas de couche repository. Prisma est déjà l'abstraction d'accès aux données ; une interface à implémentation unique serait une couche sans profondeur.
 - Toute écriture multiple qui doit être atomique passe par `prisma.$transaction` — ex. nouveau statut **et** ligne d'historique.
 - Applique les règles du domaine avec l'état **lu en base dans la transaction** (pas celui envoyé par le client) : c'est ce qui protège contre les requêtes forgées et les onglets concurrents.
 - Lance une `DomainError` pour toute violation de règle métier.
+- Recherche texte : `contains` de Prisma passe le texte tel quel à `LIKE`/`ILIKE`, où `%` et `_` sont des jokers. Le service les échappe d'abord (`q.replace(/[\\%_]/g, "\\$&")`, `\` = échappement PostgreSQL), avec `mode: "insensitive"`.
+- Une lecture de liste paginée renvoie `{ applications, total, page, pages }` : elle compte d'abord (`count`), ramène la page demandée à la dernière page existante, puis lit `skip`/`take`. La taille de page est une constante privée du service (`PAGE_SIZE = 25`) ; le tri vient d'une table `ORDER_BY: Record<ListSort, …>` avec `updatedAt desc` en second critère. Un besoin réduit (tableau de bord) a sa propre lecture bornée (`listRecentApplications(userId, limit)`) au lieu de découper la liste complète.
 - Une écriture écrit **chaque** colonne explicitement : un champ vidé devient `null` (Prisma ignore `undefined` et garderait l'ancienne valeur). La correspondance saisie ↔ colonnes vit dans `modules/<module>/form-values.ts` : `toColumns` pour enregistrer, `toFormValues` pour pré-remplir la modification.
 - Un identifiant reçu de l'URL est vérifié (`z.uuid()`) avant la requête : un id mal formé lance `NotFoundError` (la colonne uuid de PostgreSQL rejetterait la requête), comme une ressource introuvable.
 - Tout accès « par id » passe par `findOwnedApplication(client, userId, id, include?)` (avec `db` ou `tx`) : vérification uuid + filtre `userId` + `NotFoundError`, pour que le filtre par utilisateur ne puisse pas être oublié. Ex. `changeApplicationStatus` le lit dans la transaction, vérifie `canTransition` sur le statut en base, et sinon lance `InvalidTransitionError`.

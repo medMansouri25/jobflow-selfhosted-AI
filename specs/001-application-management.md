@@ -70,9 +70,9 @@ Pouvoir **enregistrer, retrouver, faire avancer et supprimer** chaque Candidatur
 | FR-001-07 | Supprimer une Candidature après confirmation explicite. |
 | FR-001-08 | Lister toutes les Candidatures, quel que soit leur statut. |
 | FR-001-09 | Rechercher par texte sur : nom de l'Entreprise, intitulé du poste, localisation. |
-| FR-001-10 | Filtrer par : statut (plusieurs possibles), type de contrat, source. |
+| FR-001-10 | Filtrer par : statut (plusieurs possibles, en cases à cocher), type de contrat, source. |
 | FR-001-11 | Trier par : date de dernière modification (défaut, décroissant), date de candidature, nom de l'Entreprise. |
-| FR-001-12 | Paginer la liste par pages de 25 Candidatures. ⚑ Hypothèse |
+| FR-001-12 | Paginer la liste par pages de 25 Candidatures. _Hypothèse H5 confirmée le 2026-09-30._ |
 
 ## 6. Règles métier
 
@@ -207,7 +207,7 @@ Codes en anglais dans la base et le code ; libellés en français dans l'interfa
 
 | Page | Contenu |
 |---|---|
-| `/applications` | Liste : Entreprise, poste, statut (badge), date de candidature, dernière modification. Barre de recherche, filtres, tri, pagination. Bouton « Nouvelle candidature ». État vide avec un appel à créer la première Candidature. |
+| `/applications` | Liste : Entreprise, poste, localisation, contrat, source, date de candidature, statut (badge) ; chaque ligne ouvre la fiche. Au-dessus, une barre (formulaire GET) : recherche partielle sans casse sur l'Entreprise, le poste et la localisation ; statuts en cases à cocher ; contrat et source ; tri (dernière modification par défaut, date de candidature, Entreprise A → Z) ; « Filtrer » et « Réinitialiser ». Filtres et page dans l'adresse (`?q=&statut=&contrat=&source=&tri=&page=`) ; une valeur inconnue est ignorée. Pagination par 25 (« Page N sur M · X candidatures », Précédent / Suivant), absente s'il n'y a qu'une page ; une page trop grande affiche la dernière. États vides : « Aucune candidature pour l'instant » ou, avec des filtres, « Aucune candidature ne correspond. » + « Réinitialiser les filtres ». |
 | Fenêtre « Nouvelle candidature » | Ouverte depuis le bouton de la barre du haut, sur toutes les pages. Un seul bouton « Enregistrer » : la Candidature est créée Postulée, puis la fenêtre se ferme. Deux champs fichier facultatifs, CV et lettre de motivation (PDF, 4 Mo maximum) ; en cas d'échec d'envoi ou d'enregistrement, un message dit ce qui a été fait des fichiers (supprimés, ou restés sur UploadThing). Légende : `*` requis. Date de candidature pré-remplie avec la date du jour. Champ Entreprise avec autocomplétion et option « Créer « … » ». |
 | `/applications/new` | Même formulaire en pleine page, pour un accès direct par URL. |
 | `/applications/[id]` | Détail : champs, description de l'Annonce en texte brut (retours à la ligne conservés), lien vers l'Annonce ouvert dans un nouvel onglet, historique des statuts (le plus récent en haut), actions « Changer le statut », « Modifier », « Supprimer ». |
@@ -291,4 +291,4 @@ Chaque test cite l'identifiant du critère qu'il couvre (ex. `it("AC-001-06 refu
 | H2 | ~~Pas de saisie d'une date passée pour un changement de statut (BR-001-09)~~ — confirmée le 2026-09-28 : l'instant de l'enregistrement | — |
 | H3 | ~~L'Entreprise reste après suppression de sa dernière Candidature (BR-001-12)~~ — confirmée le 2026-09-30 | — |
 | H4 | ~~Listes `ContractType` et `ApplicationSource`~~ — tranché par la maquette (ajout de Graduate Program et École) | — |
-| H5 | Pagination par 25 (FR-001-12) | Pas de pagination tant qu'il y a peu de Candidatures |
+| H5 | ~~Pagination par 25 (FR-001-12)~~ — confirmée le 2026-09-30 | — |

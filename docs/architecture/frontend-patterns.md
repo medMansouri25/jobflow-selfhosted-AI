@@ -65,8 +65,16 @@ const [state, formAction, pending] = useActionState(createApplicationAction, ini
 |---|---|
 | Chargement | `loading.tsx` de la route si l'attente est perceptible |
 | Liste vide | Message et appel à l'action (« Créer ma première candidature ») |
+| Liste filtrée vide | « Aucune candidature ne correspond. » et un lien « Réinitialiser les filtres » (`ApplicationsTable filtered={hasActiveFilters(filters)}`) |
 | Ressource introuvable | `notFound()` → `src/app/not-found.tsx` (lien de retour à l'accueil) |
 | Erreur inattendue | `src/app/error.tsx` : message générique, **jamais le détail technique**, bouton « Réessayer » qui appelle `retry()` (Next.js 16 ; anciennement `reset`) |
+
+## Listes : recherche, filtres, pagination
+
+- Les filtres vivent dans l'adresse (favoris, bouton « Précédent ») : la page lit `searchParams` et les passe à `listApplicationsSchema.parse`.
+- La barre de filtres (`ApplicationFilters`, Server Component) est un `<form method="get" action="/applications" role="search">` natif, qui marche sans JavaScript ; les cases à cocher répètent le paramètre (`statut=…&statut=…`) ; chaque envoi repart de la page 1 (`page` n'est pas renvoyé) ; « Réinitialiser » est un lien vers `/applications`.
+- L'inverse du schéma, `listHref(filters, { page })` (`modules/applications/list-href.ts`), construit les liens de pagination en gardant les filtres ; les valeurs par défaut (tri `modifiee`, page 1) ne sont pas écrites.
+- `Pagination` affiche « Page N sur M · X candidatures » et des liens Précédent / Suivant (boutons désactivés aux bornes) ; il n'est pas rendu s'il n'y a qu'une page.
 
 ## Tests de composants
 

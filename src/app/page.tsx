@@ -1,7 +1,7 @@
 import { getCurrentUserId } from "@/lib/current-user";
 import {
   countApplicationsByStatus,
-  listApplications,
+  listRecentApplications,
 } from "@/modules/applications/service";
 import { Dashboard } from "@/modules/dashboard/components/dashboard";
 
@@ -12,13 +12,13 @@ export default async function Home() {
   const userId = await getCurrentUserId();
   const [counts, applications] = await Promise.all([
     countApplicationsByStatus(userId),
-    listApplications(userId),
+    listRecentApplications(userId, 5),
   ]);
 
   return (
     <Dashboard
       counts={counts}
-      recent={applications.slice(0, 5).map((application) => ({
+      recent={applications.map((application) => ({
         id: application.id,
         companyName: application.company.name,
         jobTitle: application.jobTitle,
