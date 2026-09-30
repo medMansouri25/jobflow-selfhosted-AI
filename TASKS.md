@@ -210,7 +210,7 @@ git push
 - Fenêtre de confirmation rappelant l'Entreprise et le poste.
 - **Terminé quand** : AC-001-12, 13 vérifiés.
 
-### [ ] T1.9 — Liste, recherche, filtres, tri
+### [x] T1.9 — Liste, recherche, filtres, tri
 - Service `listApplications` : toutes les Candidatures, filtres (statut, contrat, source), recherche texte, tri, pagination par 25.
 - Page `/applications` ; paramètres de recherche dans l'URL ; état vide.
 - **Terminé quand** : AC-001-14, 15, 16, 21 verts.
