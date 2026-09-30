@@ -22,7 +22,11 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const companyNames = await listCompanyNames(await getCurrentUserId());
+  // Simple confort : sans base ou sans utilisateur, pas de suggestions. Le layout ne doit jamais
+  // échouer, sinon aucune page n'atteindrait sa propre gestion d'erreur (`error.tsx`).
+  const companyNames = await getCurrentUserId()
+    .then(listCompanyNames)
+    .catch(() => []);
   return (
     <html
       lang="fr"

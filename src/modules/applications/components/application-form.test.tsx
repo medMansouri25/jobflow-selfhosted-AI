@@ -39,7 +39,7 @@ describe("formulaire de candidature", () => {
     }
   });
 
-  it("AC-001-10 ne fige pas de date dans le HTML pré-rendu (la page est statique, rendue au build)", () => {
+  it("AC-001-10 ne fige pas de date dans le HTML rendu par le serveur", () => {
     const html = renderToString(<ApplicationForm action={noop} />);
     const dateInput = html.match(/<input[^>]*name="appliedAt"[^>]*>/)?.[0];
 

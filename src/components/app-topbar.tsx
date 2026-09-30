@@ -35,7 +35,7 @@ export function AppTopbar({
   companyNames: string[];
 }) {
   const pathname = usePathname();
-  // Les pages sont pré-rendues : la date est calculée dans le navigateur, pas au build.
+  // Date lue dans le navigateur (fuseau et horloge de l'utilisateur), jamais figée dans le HTML du serveur.
   const today = useSyncExternalStore(subscribeNever, todayLabel, () => "");
 
   return (

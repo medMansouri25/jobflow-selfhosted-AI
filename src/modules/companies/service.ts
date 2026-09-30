@@ -1,3 +1,5 @@
+import { cache } from "react";
+
 import type { Prisma } from "@/generated/prisma/client";
 import { db } from "@/lib/db";
 import {
@@ -22,13 +24,16 @@ export async function findOrCreateCompany(
   });
 }
 
-/** Noms des Entreprises de l'utilisateur, de A à Z (sans casse) : suggestions du champ Entreprise (FR-001-04). */
-export async function listCompanyNames(userId: string): Promise<string[]> {
+/**
+ * Noms des Entreprises de l'utilisateur, de A à Z (sans casse) : suggestions du champ Entreprise
+ * (FR-001-04). Mis en cache le temps d'une requête : le layout et la page le demandent tous les deux.
+ */
+export const listCompanyNames = cache(async (userId: string): Promise<string[]> => {
   const companies = await db.company.findMany({
     where: { userId },
     select: { name: true },
     orderBy: { normalizedName: "asc" },
   });
   return companies.map((company) => company.name);
-}
+});
 

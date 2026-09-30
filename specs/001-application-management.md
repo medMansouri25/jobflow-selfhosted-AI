@@ -265,7 +265,7 @@ Chaque critère est vérifié par un test qui cite son identifiant (dossier `src
 | AC-001-13 | `components/delete-application-button.test.tsx` |
 | AC-001-14, 15, 16, 21 | `list.integration.test.ts` |
 | AC-001-19 | `components/application-detail.test.tsx` |
-| AC-001-20 | `service.integration.test.ts` (id inconnu et id mal formé → introuvable, traduit en page 404 par la fiche) |
+| AC-001-20 | `service.integration.test.ts` : couvert au niveau du service (id inconnu et id mal formé → `NotFoundError`) ; la traduction en page 404 par la fiche (`notFound()`) est vérifiée à la main |
 | FR-001-04 (suggestions) | `companies/service.integration.test.ts`, `components/application-form.test.tsx` — livrée à la clôture (2026-09-30) : liste native `<datalist>` des Entreprises existantes, un nouveau nom reste possible |
 
 ## 10. Cas limites
