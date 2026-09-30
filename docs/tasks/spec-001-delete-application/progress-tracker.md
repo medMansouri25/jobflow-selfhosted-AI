@@ -1,6 +1,6 @@
 # Task: Supprimer une Candidature (T1.8)
 
-**Status**: In dev
+**Status**: Completed
 **Type**: Full-stack
 **Created**: 2026-09-30
 
