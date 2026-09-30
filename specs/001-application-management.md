@@ -265,7 +265,7 @@ Chaque critère est vérifié par un test qui cite son identifiant (dossier `src
 | AC-001-13 | `components/delete-application-button.test.tsx` |
 | AC-001-14, 15, 16, 21 | `list.integration.test.ts` |
 | AC-001-19 | `components/application-detail.test.tsx` |
-| AC-001-20 | `service.integration.test.ts` (id mal formé) ; page 404 vérifiée par HTTP |
+| AC-001-20 | `service.integration.test.ts` (id inconnu et id mal formé → introuvable, traduit en page 404 par la fiche) |
 
 ## 10. Cas limites
 
