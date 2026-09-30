@@ -205,7 +205,7 @@ git push
 - Bloc « Statut » (`StatusPanel`) : un bouton par transition autorisée ; confirmation pour Refusée (définitive).
 - **Terminé quand** : AC-001-05 à 08 verts (y compris requêtes forgées).
 
-### [ ] T1.8 — Supprimer une Candidature
+### [x] T1.8 — Supprimer une Candidature
 - Service `deleteApplication` (cascade de l'historique, l'Entreprise est conservée).
 - Fenêtre de confirmation rappelant l'Entreprise et le poste.
 - **Terminé quand** : AC-001-12, 13 vérifiés.

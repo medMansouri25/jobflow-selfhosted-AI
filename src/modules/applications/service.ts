@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import type { Prisma } from "@/generated/prisma/client";
+import type { Attachment, Prisma } from "@/generated/prisma/client";
 
 import { db } from "@/lib/db";
 import { DomainError, InvalidTransitionError, NotFoundError } from "@/lib/errors";
@@ -98,7 +98,7 @@ export async function updateApplication(
       const old = current.attachments.find((attachment) => attachment.kind === kind);
       if (old && (incoming || removals[kind])) {
         await tx.attachment.delete({ where: { id: old.id } });
-        obsolete.push({ key: old.fileKey, url: old.url, name: old.name, size: old.size });
+        obsolete.push(toStoredFile(old));
       }
       if (incoming) {
         await tx.attachment.create({ data: { ...toAttachmentRow(userId, incoming), applicationId: id } });
@@ -145,7 +145,31 @@ export async function changeApplicationStatus(userId: string, id: string, to: Ap
   });
 }
 
+/**
+ * Supprime définitivement une Candidature (FR-001-07) : en base d'abord, avec son historique et ses
+ * pièces jointes (cascade, BR-001-13), puis ses fichiers au stockage. Son Entreprise reste (BR-001-12).
+ * Si les fichiers ne peuvent pas être supprimés, `leftover` dit lesquels supprimer à la main.
+ */
+export async function deleteApplication(
+  userId: string,
+  id: string,
+  storage: FileStorage = getStorage(),
+) {
+  const attachments = await db.$transaction(async (tx) => {
+    const application = await findOwnedApplication(tx, userId, id, { attachments: true });
+    await tx.application.delete({ where: { id } });
+    return application.attachments;
+  });
+  const leftover = await discardUploads(storage, attachments.map(toStoredFile));
+  return { leftover };
+}
+
 type StoredAttachment = StoredFile & { kind: AttachmentKind };
+
+/** Pièce jointe enregistrée → fichier du stockage (inverse de `toAttachmentRow`). */
+function toStoredFile({ fileKey, url, name, size }: Attachment): StoredFile {
+  return { key: fileKey, url, name, size };
+}
 
 function toAttachmentRow(userId: string, { kind, key, url, name, size }: StoredAttachment) {
   return { userId, kind, fileKey: key, url, name, size };

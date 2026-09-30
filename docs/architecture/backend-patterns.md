@@ -81,6 +81,7 @@ export function isDefinitive(status: ApplicationStatus): boolean  // Statut déf
 - Les entrées de `FormData` sont séparées en chaînes et en `File` : les deux sont validées ensemble, seules les chaînes sont renvoyées au formulaire en cas d'erreur (un fichier ne peut pas être ré-affiché).
 - Une action qui vise une ressource reçoit son id en premier paramètre, lié par la page (`updateApplicationAction.bind(null, id)`) ; l'id est vérifié par le service, pas par l'action.
 - États renvoyés : `idle | error | success | warning`. `warning` = enregistré, mais le message demande une action à l'utilisateur (ex. fichier à supprimer à la main).
+- `redirect()` s'appelle **après** le `try/catch` qui convertit les erreurs du service : il fonctionne en lançant une exception, qu'un `catch` avalerait. Une action qui peut soit rediriger, soit avertir, renvoie `warning` avant d'appeler `redirect` (ex. `deleteApplicationAction` : retour à la liste, ou avertissement si un fichier reste au stockage).
 
 ### Lectures
 
@@ -93,6 +94,7 @@ export function isDefinitive(status: ApplicationStatus): boolean  // Statut déf
 - Le service reçoit l'adaptateur en paramètre, avec la valeur de production par défaut (`storage = getStorage()`) ; les tests d'intégration passent `createMemoryStorage()` (`src/test/memory-storage.ts`), qui sait aussi simuler un échec d'envoi ou de suppression.
 - Ordre fichier → base : envoyer d'abord, enregistrer ensuite dans la transaction ; si l'enregistrement échoue, supprimer les fichiers envoyés, et si cette suppression échoue aussi, le dire à l'utilisateur (`DomainError`) et journaliser les clés restées chez le service.
 - Remplacer ou retirer un fichier : l'ancien n'est supprimé du stockage qu'**après** l'enregistrement (la transaction renvoie les fichiers devenus obsolètes). Si cette suppression échoue, la modification reste faite : le service renvoie `leftover` (fichier à supprimer à la main) et l'action répond `status: "warning"`. Création et modification partagent `uploadAttachments` (envoi, et nettoyage si un envoi échoue) et `saveOrDiscard` (si l'enregistrement échoue, suppression des fichiers envoyés ; une `DomainError` garde son message).
+- Supprimer une ressource qui a des fichiers : la base d'abord (une transaction lit les pièces jointes puis supprime la ligne, la cascade emporte historique et pièces jointes), les fichiers du stockage ensuite. Si cette suppression échoue, la ressource reste supprimée : le service renvoie `leftover` et l'action répond `status: "warning"`. Ex. `deleteApplication`.
 
 ## Erreurs
 

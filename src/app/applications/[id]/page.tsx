@@ -3,8 +3,13 @@ import { notFound } from "next/navigation";
 
 import { getCurrentUserId } from "@/lib/current-user";
 import { NotFoundError } from "@/lib/errors";
-import { changeStatusAction, updateApplicationAction } from "@/modules/applications/actions";
+import {
+  changeStatusAction,
+  deleteApplicationAction,
+  updateApplicationAction,
+} from "@/modules/applications/actions";
 import { ApplicationDetail } from "@/modules/applications/components/application-detail";
+import { DeleteApplicationButton } from "@/modules/applications/components/delete-application-button";
 import { EditApplicationDialog } from "@/modules/applications/components/edit-application-dialog";
 import { StatusPanel } from "@/modules/applications/components/status-panel";
 import { toFormValues } from "@/modules/applications/form-values";
@@ -33,12 +38,19 @@ export default async function ApplicationPage({ params }: PageProps<"/applicatio
         />
       }
       actions={
-        <EditApplicationDialog
-          action={updateApplicationAction.bind(null, application.id)}
-          companyName={application.company.name}
-          initialValues={toFormValues(application)}
-          attachments={application.attachments.map(({ kind, name, size }) => ({ kind, name, size }))}
-        />
+        <>
+          <EditApplicationDialog
+            action={updateApplicationAction.bind(null, application.id)}
+            companyName={application.company.name}
+            initialValues={toFormValues(application)}
+            attachments={application.attachments.map(({ kind, name, size }) => ({ kind, name, size }))}
+          />
+          <DeleteApplicationButton
+            action={deleteApplicationAction.bind(null, application.id)}
+            jobTitle={application.jobTitle}
+            companyName={application.company.name}
+          />
+        </>
       }
     />
   );

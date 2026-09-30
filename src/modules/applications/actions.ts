@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { getCurrentUserId } from "@/lib/current-user";
@@ -16,6 +17,7 @@ import {
 import {
   changeApplicationStatus,
   createApplication,
+  deleteApplication,
   updateApplication,
 } from "@/modules/applications/service";
 
@@ -106,5 +108,22 @@ export async function changeStatusAction(
 
   revalidatePath("/", "layout");
   return { status: "success", message: `Statut : ${STATUS_LABELS[result.data.to]}.` };
+}
+
+/**
+ * Suppression (FR-001-07) ; `id` est lié par la page. Sans fichier resté chez le stockage, retour
+ * à la liste ; sinon la Candidature est supprimée et l'avertissement nomme les fichiers à supprimer.
+ */
+export async function deleteApplicationAction(id: string): Promise<ApplicationFormState> {
+  let leftover: string | null;
+  try {
+    ({ leftover } = await deleteApplication(await getCurrentUserId(), id));
+  } catch (error) {
+    return domainErrorToFormState(error);
+  }
+
+  revalidatePath("/", "layout");
+  if (leftover) return { status: "warning", message: `Candidature supprimée. ${leftover}` };
+  redirect("/applications");
 }
 

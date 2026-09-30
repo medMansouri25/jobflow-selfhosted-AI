@@ -112,7 +112,7 @@ Aucun retour en arrière. Une embauche laisse la Candidature en **Entretien** ; 
 | ID | Règle |
 |---|---|
 | BR-001-11 | Le nom d'une Entreprise est unique **sans distinction de casse** et après suppression des espaces en début et fin (« Capgemini » = « capgemini » = « Capgemini  »). |
-| BR-001-12 | Supprimer une Candidature ne supprime pas son Entreprise, même si c'était la dernière Candidature liée. ⚑ Hypothèse |
+| BR-001-12 | Supprimer une Candidature ne supprime pas son Entreprise, même si c'était la dernière Candidature liée. _Hypothèse H3 confirmée le 2026-09-30._ |
 
 ### Suppression
 
@@ -214,7 +214,7 @@ Codes en anglais dans la base et le code ; libellés en français dans l'interfa
 | Fenêtre « Modifier — <Entreprise> » | Ouverte par le bouton « Modifier » de la fiche (pas de page `/edit`, décision du 2026-09-28). Même formulaire que la création, pré-rempli, sans le statut. Pièces jointes : le fichier actuel s'affiche avec « Retirer » et « Remplacer par… » ; rien choisi = on garde. Les anciens fichiers ne sont supprimés d'UploadThing qu'après l'enregistrement ; si cette suppression échoue, la modification reste faite et la fenêtre reste ouverte pour nommer le fichier à supprimer. |
 
 - **Changer le statut** : un bloc « Statut » sur la fiche, avec **un bouton par transition autorisée** depuis le statut courant (« Passer en Entretien », « Marquer Refusée ») — pas de menu déroulant, décision du 2026-09-28 d'après la maquette. Vers Refusée, une fenêtre de confirmation indique que le changement est définitif. Depuis Refusée, aucun bouton : la mention « Statut définitif ». Si le statut a changé entre-temps (autre onglet), le serveur refuse et invite à recharger.
-- **Supprimer** : une fenêtre de confirmation rappelant l'Entreprise et le poste, précisant que l'action est irréversible.
+- **Supprimer** : bouton sur la fiche, à côté de « Modifier ». Une fenêtre de confirmation rappelle le poste et l'Entreprise et précise que l'action est irréversible ; « Annuler » ne supprime rien. La Candidature, son historique et ses pièces jointes sont supprimés en base, **puis** les fichiers chez UploadThing ; retour à la liste. Si un fichier ne peut pas être supprimé chez UploadThing, la fenêtre reste ouverte et le nomme (la Candidature, elle, est supprimée).
 - **Erreurs de validation** : affichées sous le champ concerné, sans perdre la saisie.
 - **Candidature introuvable** (id inexistant) : page 404.
 - Interface en français.
@@ -289,6 +289,6 @@ Chaque test cite l'identifiant du critère qu'il couvre (ex. `it("AC-001-06 refu
 |---|---|---|
 | H1 | ~~Description de l'Annonce facultative, même en Postulée~~ — tranché par la maquette : facultative | — |
 | H2 | ~~Pas de saisie d'une date passée pour un changement de statut (BR-001-09)~~ — confirmée le 2026-09-28 : l'instant de l'enregistrement | — |
-| H3 | L'Entreprise reste après suppression de sa dernière Candidature (BR-001-12) | Supprimer les Entreprises orphelines |
+| H3 | ~~L'Entreprise reste après suppression de sa dernière Candidature (BR-001-12)~~ — confirmée le 2026-09-30 | — |
 | H4 | ~~Listes `ContractType` et `ApplicationSource`~~ — tranché par la maquette (ajout de Graduate Program et École) | — |
 | H5 | Pagination par 25 (FR-001-12) | Pas de pagination tant qu'il y a peu de Candidatures |
