@@ -10,7 +10,7 @@
 
 > **Révision du 2026-09-27** — trois statuts seulement : **Postulée → Entretien → Refusée** ([ADR 0005](../docs/adr/0005-trois-statuts-de-candidature.md)). Brouillon, Acceptée et Classée sont retirés ; les exigences concernées sont barrées ou réécrites, leurs identifiants sont conservés.
 
-> Les points qui étaient marqués **⚑ Hypothèse** ont tous été tranchés (voir §13) ; la mention est gardée là où elle a été confirmée.
+> Les points qui étaient marqués **⚑ Hypothèse** ont tous été tranchés (voir « Points à valider en revue ») ; la mention est gardée là où elle a été confirmée.
 
 ---
 
