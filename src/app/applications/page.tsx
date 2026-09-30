@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { getCurrentUserId } from "@/lib/current-user";
 import { ApplicationsTable } from "@/modules/applications/components/applications-table";
+import { listApplicationsSchema } from "@/modules/applications/schemas";
 import { listApplications } from "@/modules/applications/service";
 
 export const metadata: Metadata = {
@@ -11,7 +12,10 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function ApplicationsPage() {
-  const applications = await listApplications(await getCurrentUserId());
+  const { applications } = await listApplications(
+    await getCurrentUserId(),
+    listApplicationsSchema.parse({}),
+  );
 
   return (
     <main className="flex flex-col gap-6 px-8 py-8">

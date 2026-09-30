@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import {
   changeStatusSchema,
+  listApplicationsSchema,
   createApplicationSchema,
   updateApplicationSchema,
 } from "@/modules/applications/schemas";
@@ -187,6 +188,59 @@ describe("création d'une candidature", () => {
       expect(changeStatusSchema.safeParse({ to: "INTERVIEW" }).data).toEqual({ to: "INTERVIEW" });
       expect(changeStatusSchema.safeParse({ to: "ACCEPTED" }).success).toBe(false);
       expect(changeStatusSchema.safeParse({}).success).toBe(false);
+    });
+  });
+
+  describe("liste (paramètres de l'adresse)", () => {
+    it("applique les valeurs par défaut sans paramètre", () => {
+      expect(listApplicationsSchema.parse({})).toEqual({
+        q: undefined,
+        statuses: [],
+        contractType: undefined,
+        source: undefined,
+        sort: "modifiee",
+        page: 1,
+      });
+    });
+
+    it("lit la recherche, un ou plusieurs statuts, contrat, source, tri et page", () => {
+      expect(
+        listApplicationsSchema.parse({
+          q: "  thal ",
+          statut: ["APPLIED", "INTERVIEW"],
+          contrat: "CDI",
+          source: "LINKEDIN",
+          tri: "entreprise",
+          page: "3",
+        }),
+      ).toEqual({
+        q: "thal",
+        statuses: ["APPLIED", "INTERVIEW"],
+        contractType: "CDI",
+        source: "LINKEDIN",
+        sort: "entreprise",
+        page: 3,
+      });
+      expect(listApplicationsSchema.parse({ statut: "REJECTED" }).statuses).toEqual(["REJECTED"]);
+    });
+
+    it("ignore sans erreur une valeur inconnue ou mal formée", () => {
+      expect(
+        listApplicationsSchema.parse({
+          statut: ["ACCEPTED", "INTERVIEW"],
+          contrat: "CDD2",
+          tri: "hasard",
+          page: "-4",
+          q: "",
+        }),
+      ).toEqual({
+        q: undefined,
+        statuses: ["INTERVIEW"],
+        contractType: undefined,
+        source: undefined,
+        sort: "modifiee",
+        page: 1,
+      });
     });
   });
 });

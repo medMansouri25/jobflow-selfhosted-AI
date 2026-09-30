@@ -22,9 +22,16 @@ La liste se cherche (Entreprise, poste, localisation), se filtre (statuts coché
 - Branche `feature/spec-001-application-list`, une PR, revue complète avant fusion ; jamais de mention de Claude.
 
 ## Missions
-- [ ] Mission 1: Backend — `listApplicationsSchema` (paramètres d'URL tolérants) et `listApplications(userId, filtres)` → { applications, total, page, pages }, `listRecentApplications` pour le tableau de bord : recherche, statuts, contrat, source, tri, pagination par 25 bornée (AC-001-14, 15, 16, 21, caractères spéciaux) — tests unitaires et d'intégration
+- [x] Mission 1: Backend — `listApplicationsSchema` (paramètres d'URL tolérants) et `listApplications(userId, filtres)` → { applications, total, page, pages }, `listRecentApplications` pour le tableau de bord : recherche, statuts, contrat, source, tri, pagination par 25 bornée (AC-001-14, 15, 16, 21, caractères spéciaux) — tests unitaires et d'intégration
 - [ ] Mission 2: Frontend — page `/applications` : barre de filtres (formulaire GET), résultats, pagination, état « Aucune candidature ne correspond » ; tableau de bord inchangé
 - [ ] Mission 3: Docs — SPEC-001 (H5 confirmée, §8 liste, FR-001-10 statuts cochés), `TASKS.md` (T1.9), patterns si besoin
 
 ## Mission Summaries
 _Filled in as each mission completes. Future missions read these for context._
+
+### Mission 1: Recherche, filtres, tri, pagination (service)
+**Status**: Completed
+- **Files**: `schemas.ts` (+ test), `service.ts`, `list.integration.test.ts`, `service.integration.test.ts`, `app/page.tsx`, `app/applications/page.tsx`
+- **Built**: `listApplicationsSchema` (tolérant : `q`, `statut` répétable, `contrat`, `source`, `tri`, `page` ; valeur inconnue ignorée) → `ListApplicationsInput` ; `LIST_SORTS` ; `listApplications(userId, filters)` → `{ applications, total, page, pages }` (recherche `contains` insensible à la casse sur Entreprise / poste / localisation, statuts `in`, contrat, source, `ORDER_BY` par tri, `PAGE_SIZE` = 25, page bornée) ; `listRecentApplications(userId, limit)` pour le tableau de bord ; ancien TODO « actives par défaut » supprimé.
+- **Tests**: 3 unitaires (défauts, lecture, valeurs inconnues) ; 8 d'intégration (AC-001-14, 15 simple et multiple, contrat + source, AC-001-16 sur Entreprise / poste / localisation, caractères spéciaux, 3 tris, AC-001-21 + page bornée, isolation par utilisateur).
+- **Gotchas**: **Prisma n'échappe pas `%` / `_` dans `contains`** : chercher « % » renvoyait toutes les Candidatures. Échappés (`\`) avant la requête — trouvé par le test des caractères spéciaux (rouge avant le correctif).

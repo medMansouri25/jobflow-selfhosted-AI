@@ -167,3 +167,44 @@ export type CreateApplicationInput = z.infer<
 export const changeStatusSchema = z.object({
   to: z.enum(APPLICATION_STATUSES, { error: "Statut inconnu" }),
 });
+
+/** Tris de la liste (FR-001-11) ; `modifiee` = dernière modification, du plus récent au plus ancien. */
+export const LIST_SORTS = ["modifiee", "candidature", "entreprise"] as const;
+export type ListSort = (typeof LIST_SORTS)[number];
+
+/** Valeur de `values`, ou `undefined` : un paramètre d'adresse inconnu est ignoré, jamais une erreur. */
+function oneOf<T extends readonly string[]>(values: T, value: unknown): T[number] | undefined {
+  return typeof value === "string" && values.includes(value) ? value : undefined;
+}
+
+/**
+ * Filtres de la liste lus depuis l'adresse (`?q=&statut=&statut=&contrat=&source=&tri=&page=`,
+ * FR-001-09 à 12). Tolérant : une adresse modifiée à la main ne provoque jamais d'erreur.
+ */
+export const listApplicationsSchema = z
+  .object({
+    q: z.unknown().optional(),
+    statut: z.unknown().optional(),
+    contrat: z.unknown().optional(),
+    source: z.unknown().optional(),
+    tri: z.unknown().optional(),
+    page: z.unknown().optional(),
+  })
+  .transform((raw) => {
+    const statuses = (Array.isArray(raw.statut) ? raw.statut : [raw.statut])
+      .map((value) => oneOf(APPLICATION_STATUSES, value))
+      .filter((status) => status !== undefined);
+    const q = typeof raw.q === "string" ? raw.q.trim().slice(0, 200) : "";
+    const page = Number(raw.page);
+    return {
+      q: q || undefined,
+      statuses,
+      contractType: oneOf(CONTRACT_TYPES, raw.contrat),
+      source: oneOf(APPLICATION_SOURCES, raw.source),
+      sort: oneOf(LIST_SORTS, raw.tri) ?? "modifiee",
+      page: Number.isInteger(page) && page >= 1 ? page : 1,
+    };
+  });
+
+export type ListApplicationsInput = z.infer<typeof listApplicationsSchema>;
+
