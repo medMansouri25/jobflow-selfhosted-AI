@@ -1,4 +1,5 @@
 import type { Prisma } from "@/generated/prisma/client";
+import { db } from "@/lib/db";
 import {
   cleanCompanyName,
   normalizeCompanyName,
@@ -20,3 +21,14 @@ export async function findOrCreateCompany(
     create: { userId, name: cleanCompanyName(name), normalizedName },
   });
 }
+
+/** Noms des Entreprises de l'utilisateur, de A à Z (sans casse) : suggestions du champ Entreprise (FR-001-04). */
+export async function listCompanyNames(userId: string): Promise<string[]> {
+  const companies = await db.company.findMany({
+    where: { userId },
+    select: { name: true },
+    orderBy: { normalizedName: "asc" },
+  });
+  return companies.map((company) => company.name);
+}
+

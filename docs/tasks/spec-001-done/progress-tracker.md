@@ -20,6 +20,8 @@ SPEC-001 passe « Implémentée » avec la correspondance critère → test ; SP
 - [x] Mission 1: Tests — AC-001-10 cité dans les tests qui le couvrent (date du jour par défaut, pré-rendu)
 - [x] Mission 2: Docs — SPEC-001 « Implémentée » + tableau critère → test ; SPEC-000 cycle de vie à trois statuts, « Validée » ; `TASKS.md` (T0.1, T1.10)
 
+- [x] Mission 3: Full-stack — autocomplétion de l'Entreprise (FR-001-04, jamais livrée, trouvée à la revue de clôture) : `listCompanyNames(userId)` et suggestions natives (`<datalist>`) dans le champ Entreprise des formulaires de création et de modification ; un nouveau nom reste possible
+
 ## Mission Summaries
 _Filled in as each mission completes. Future missions read these for context._
 
@@ -31,3 +33,10 @@ _Filled in as each mission completes. Future missions read these for context._
 ### Mission 2: Specs et TASKS
 **Status**: Completed
 - **Files**: `specs/001-application-management.md` (statut « Implémentée », note d'hypothèses historique, tableau critère → test en fin de §9), `specs/000-product-vision.md` (statut « Validée », cycle de vie à trois statuts), `TASKS.md` (T0.1 et T1.10 cochées)
+
+### Mission 3: Autocomplétion de l'Entreprise
+**Status**: Completed
+- **Files**: `companies/service.ts` (+ `service.integration.test.ts`), `components/application-form.tsx` (+ test), `app/layout.tsx`, `components/app-topbar.tsx` (+ test), `new-application-dialog.tsx`, `edit-application-dialog.tsx`, `app/applications/new/page.tsx`, `app/applications/[id]/page.tsx`, SPEC-001, TASKS, `frontend-patterns.md`
+- **Built**: `listCompanyNames(userId)` (A → Z sans casse) ; champ Entreprise `list` + `<datalist>` (prop `companySuggestions`) dans les trois formulaires ; layout `force-dynamic` qui lit les noms pour la fenêtre de la barre du haut ; commentaire de la date du jour mis à jour (plus de page pré-rendue).
+- **Tests**: intégration (noms de l'utilisateur seulement, A → Z) ; composant (liste proposée). Vérifié : `/applications/new` et la fenêtre « Nouvelle candidature » proposent « Sanofi ».
+- **Gotchas**: lire la base dans le layout aurait fait lire la base **au build** pour les pages statiques (`/applications/new`, 404) et fait échouer le build de la CI sans utilisateur ; le layout est donc `force-dynamic`.

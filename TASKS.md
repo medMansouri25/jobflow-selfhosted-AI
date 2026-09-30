@@ -184,9 +184,9 @@ git push
 - `modules/companies/domain` : normalisation du nom d'Entreprise.
 - **Terminé quand** : AC-001-02, 03, 04, 17, 18 couverts par des tests unitaires verts.
 
-### [~] T1.4 — Créer une Candidature
+### [x] T1.4 — Créer une Candidature
 - Service : `createApplication` (Entreprise trouvée ou créée, statut initial, entrée d'historique, en transaction).
-- Service `companies` : recherche par préfixe pour l'autocomplétion.
+- Service `companies` : `listCompanyNames` pour les suggestions (liste native `<datalist>` du champ Entreprise, livrée à la clôture T1.10).
 - Server Action + page `/applications/new` : formulaire, autocomplétion de l'Entreprise, création toujours Postulée (ADR 0005).
 - **Terminé quand** : AC-001-01 à 04, 17, 18 verts ; création possible depuis l'interface.
 

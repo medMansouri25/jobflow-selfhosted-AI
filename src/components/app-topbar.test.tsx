@@ -16,13 +16,13 @@ describe("barre du haut", () => {
     ["/applications/new", "Candidatures"],
   ])("sur %s, indique la section « %s »", (path, section) => {
     pathname.current = path;
-    render(<AppTopbar createApplicationAction={noop} />);
+    render(<AppTopbar createApplicationAction={noop} companyNames={[]} />);
 
     expect(screen.getByText(section)).toBeDefined();
   });
 
   it("envoie la recherche vers la liste des candidatures", () => {
-    render(<AppTopbar createApplicationAction={noop} />);
+    render(<AppTopbar createApplicationAction={noop} companyNames={[]} />);
 
     const search = screen.getByRole("searchbox", {
       name: "Rechercher une entreprise ou un poste",

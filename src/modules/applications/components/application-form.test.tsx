@@ -90,6 +90,18 @@ describe("formulaire de candidature", () => {
     expect(screen.queryByLabelText("Retirer la lettre de motivation")).toBeNull();
   });
 
+  it("FR-001-04 propose les Entreprises existantes dans le champ Entreprise, sans empêcher un nouveau nom", () => {
+    const { container } = render(
+      <ApplicationForm action={noop} companySuggestions={["Airbus", "Sanofi"]} />,
+    );
+    const input = screen.getByLabelText(/Entreprise/) as HTMLInputElement;
+    const list = container.querySelector(`datalist#${CSS.escape(input.getAttribute("list") ?? "")}`);
+
+    expect(input.getAttribute("list")).toBeTruthy();
+    expect([...(list?.querySelectorAll("option") ?? [])].map((option) => option.value)).toEqual(["Airbus", "Sanofi"]);
+    expect(input.tagName).toBe("INPUT");
+  });
+
   it("appelle onCancel quand on clique sur Annuler", () => {
     const onCancel = vi.fn();
     render(<ApplicationForm action={noop} onCancel={onCancel} />);

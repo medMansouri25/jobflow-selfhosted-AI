@@ -28,8 +28,11 @@ const todayLabel = () =>
 
 export function AppTopbar({
   createApplicationAction,
+  companyNames,
 }: {
   createApplicationAction: FormAction;
+  /** Suggestions du champ Entreprise de la fenêtre « Nouvelle candidature » (FR-001-04). */
+  companyNames: string[];
 }) {
   const pathname = usePathname();
   // Les pages sont pré-rendues : la date est calculée dans le navigateur, pas au build.
@@ -58,7 +61,7 @@ export function AppTopbar({
           />
         </label>
       </form>
-      <NewApplicationDialog action={createApplicationAction} />
+      <NewApplicationDialog action={createApplicationAction} companySuggestions={companyNames} />
     </header>
   );
 }

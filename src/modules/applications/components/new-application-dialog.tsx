@@ -8,10 +8,12 @@ import { ApplicationFormDialog } from "@/modules/applications/components/applica
 
 export function NewApplicationDialog({
   action,
-}: Pick<ComponentProps<typeof ApplicationFormDialog>, "action">) {
+  companySuggestions,
+}: Pick<ComponentProps<typeof ApplicationFormDialog>, "action" | "companySuggestions">) {
   return (
     <ApplicationFormDialog
       action={action}
+      companySuggestions={companySuggestions}
       title="Nouvelle candidature"
       description="Enregistre une candidature envoyée à une entreprise."
       trigger={
