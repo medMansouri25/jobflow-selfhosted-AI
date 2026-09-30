@@ -1,6 +1,6 @@
 # Task: Liste, recherche, filtres, tri (T1.9)
 
-**Status**: In dev
+**Status**: Completed
 **Type**: Full-stack
 **Created**: 2026-09-30
 
