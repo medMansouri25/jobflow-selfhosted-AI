@@ -25,7 +25,7 @@ describe("formulaire de candidature", () => {
     expect(submits[0].getAttribute("name")).toBeNull();
   });
 
-  it("propose la date du jour (Europe/Paris) comme date de candidature", () => {
+  it("AC-001-10 propose la date du jour (Europe/Paris) comme date de candidature", () => {
     vi.useFakeTimers({ toFake: ["Date"] });
     vi.setSystemTime(new Date("2026-09-27T23:30:00Z")); // déjà le 28 à Paris
     try {
@@ -39,7 +39,7 @@ describe("formulaire de candidature", () => {
     }
   });
 
-  it("ne fige pas de date dans le HTML pré-rendu (la page est statique, rendue au build)", () => {
+  it("AC-001-10 ne fige pas de date dans le HTML pré-rendu (la page est statique, rendue au build)", () => {
     const html = renderToString(<ApplicationForm action={noop} />);
     const dateInput = html.match(/<input[^>]*name="appliedAt"[^>]*>/)?.[0];
 

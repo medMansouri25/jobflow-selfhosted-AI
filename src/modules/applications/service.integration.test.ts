@@ -57,7 +57,7 @@ describe("service des candidatures", () => {
     expect(b.company.name).toBe("Capgemini");
   });
 
-  it("enregistre la date de candidature et le salaire", async () => {
+  it("AC-001-10 enregistre la date de candidature et le salaire", async () => {
     const user = await createTestUser();
 
     const created = await createApplication(
