@@ -104,7 +104,7 @@ Aucun retour en arrière. Une embauche laisse la Candidature en **Entretien** ; 
 | BR-001-06 | ~~Un Brouillon abandonné ne se classe pas : il se supprime.~~ _Retiré le 2026-09-27 (trois statuts, ADR 0005)._ |
 | BR-001-07 | En Phase 1, le passage en **Entretien** est manuel. Le passage automatique à l'ajout d'un entretien relève de SPEC-003. |
 | BR-001-08 | Une Proposition reçue et en attente de réponse ne change pas le statut : la Candidature reste en **Entretien** ; la date limite se note dans les notes. |
-| BR-001-09 | La date d'un changement de statut est l'instant où je l'enregistre. ⚑ Hypothèse : pas de saisie d'une date passée (« refusée il y a 3 jours ») en Phase 1. |
+| BR-001-09 | La date d'un changement de statut est l'instant où je l'enregistre ; pas de saisie d'une date passée (« refusée il y a 3 jours ») en Phase 1. _Hypothèse H2 confirmée le 2026-09-28._ |
 | BR-001-10 | Une Candidature **Refusée** reste modifiable (notes, champs de l'Annonce) ; seul son statut est figé. |
 
 ### Entreprise
@@ -213,7 +213,7 @@ Codes en anglais dans la base et le code ; libellés en français dans l'interfa
 | `/applications/[id]` | Détail : champs, description de l'Annonce en texte brut (retours à la ligne conservés), lien vers l'Annonce ouvert dans un nouvel onglet, historique des statuts (le plus récent en haut), actions « Changer le statut », « Modifier », « Supprimer ». |
 | Fenêtre « Modifier — <Entreprise> » | Ouverte par le bouton « Modifier » de la fiche (pas de page `/edit`, décision du 2026-09-28). Même formulaire que la création, pré-rempli, sans le statut. Pièces jointes : le fichier actuel s'affiche avec « Retirer » et « Remplacer par… » ; rien choisi = on garde. Les anciens fichiers ne sont supprimés d'UploadThing qu'après l'enregistrement ; si cette suppression échoue, la modification reste faite et la fenêtre reste ouverte pour nommer le fichier à supprimer. |
 
-- **Changer le statut** : un menu ne proposant que les transitions autorisées depuis le statut courant. Pour Refusée, le menu indique que le changement est définitif et demande confirmation.
+- **Changer le statut** : un bloc « Statut » sur la fiche, avec **un bouton par transition autorisée** depuis le statut courant (« Passer en Entretien », « Marquer Refusée ») — pas de menu déroulant, décision du 2026-09-28 d'après la maquette. Vers Refusée, une fenêtre de confirmation indique que le changement est définitif. Depuis Refusée, aucun bouton : la mention « Statut définitif ». Si le statut a changé entre-temps (autre onglet), le serveur refuse et invite à recharger.
 - **Supprimer** : une fenêtre de confirmation rappelant l'Entreprise et le poste, précisant que l'action est irréversible.
 - **Erreurs de validation** : affichées sous le champ concerné, sans perdre la saisie.
 - **Candidature introuvable** (id inexistant) : page 404.
@@ -288,7 +288,7 @@ Chaque test cite l'identifiant du critère qu'il couvre (ex. `it("AC-001-06 refu
 | # | Hypothèse | Alternative |
 |---|---|---|
 | H1 | ~~Description de l'Annonce facultative, même en Postulée~~ — tranché par la maquette : facultative | — |
-| H2 | Pas de saisie d'une date passée pour un changement de statut (BR-001-09) | Champ « date réelle » facultatif, défaut maintenant |
+| H2 | ~~Pas de saisie d'une date passée pour un changement de statut (BR-001-09)~~ — confirmée le 2026-09-28 : l'instant de l'enregistrement | — |
 | H3 | L'Entreprise reste après suppression de sa dernière Candidature (BR-001-12) | Supprimer les Entreprises orphelines |
 | H4 | ~~Listes `ContractType` et `ApplicationSource`~~ — tranché par la maquette (ajout de Graduate Program et École) | — |
 | H5 | Pagination par 25 (FR-001-12) | Pas de pagination tant qu'il y a peu de Candidatures |

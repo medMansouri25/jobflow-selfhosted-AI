@@ -3,9 +3,10 @@ import { notFound } from "next/navigation";
 
 import { getCurrentUserId } from "@/lib/current-user";
 import { NotFoundError } from "@/lib/errors";
-import { updateApplicationAction } from "@/modules/applications/actions";
+import { changeStatusAction, updateApplicationAction } from "@/modules/applications/actions";
 import { ApplicationDetail } from "@/modules/applications/components/application-detail";
 import { EditApplicationDialog } from "@/modules/applications/components/edit-application-dialog";
+import { StatusPanel } from "@/modules/applications/components/status-panel";
 import { toFormValues } from "@/modules/applications/form-values";
 import { getApplication } from "@/modules/applications/service";
 
@@ -25,6 +26,12 @@ export default async function ApplicationPage({ params }: PageProps<"/applicatio
   return (
     <ApplicationDetail
       application={application}
+      statusPanel={
+        <StatusPanel
+          status={application.status}
+          action={changeStatusAction.bind(null, application.id)}
+        />
+      }
       actions={
         <EditApplicationDialog
           action={updateApplicationAction.bind(null, application.id)}

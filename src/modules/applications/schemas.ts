@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import {
   APPLICATION_SOURCES,
+  APPLICATION_STATUSES,
   CONTRACT_TYPES,
   CURRENCIES,
   SALARY_PERIODS,
@@ -161,3 +162,8 @@ export type UpdateApplicationInput = z.infer<ReturnType<typeof updateApplication
 export type CreateApplicationInput = z.infer<
   ReturnType<typeof createApplicationSchema>
 >;
+
+/** Changement de statut (FR-001-05) : la cible doit être un statut connu ; la transition est vérifiée par le service. */
+export const changeStatusSchema = z.object({
+  to: z.enum(APPLICATION_STATUSES, { error: "Statut inconnu" }),
+});

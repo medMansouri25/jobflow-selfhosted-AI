@@ -13,7 +13,7 @@ Conventions de l'interface. L'interface est en français ; le code en anglais.
 | Emplacement | Contenu |
 |---|---|
 | `src/components/ui/` | Composants shadcn/ui (Button, Input, Label, Select, Dialog, Badge, Command…), ajoutés au fil des besoins |
-| `src/modules/<fonctionnalité>/components/` | Composants propres à une fonctionnalité (`ApplicationForm`, `StatusBadge`, `StatusMenu`…) |
+| `src/modules/<fonctionnalité>/components/` | Composants propres à une fonctionnalité (`ApplicationForm`, `StatusBadge`, `StatusPanel`…) |
 | `src/components/` | Composants partagés de l'application (ex. `AppHeader`, en-tête et navigation principale) |
 | `src/app/**/page.tsx` | Assemblage de la page, sans logique métier |
 
@@ -22,7 +22,7 @@ Conventions de l'interface. L'interface est en français ; le code en anglais.
 ## shadcn/ui
 
 - Les composants sont **copiés** dans `src/components/ui/` via la CLI shadcn (`npx shadcn@latest add <composant>`, configuration dans `components.json`) : leur code appartient au projet et peut être modifié.
-- Installés : Button, Input, Label, Textarea, Select, Badge, Dialog. La fusion des classes Tailwind passe par `cn` (`@/lib/utils`).
+- Installés : Button, Input, Label, Textarea, Select, Badge, Dialog, AlertDialog. La fusion des classes Tailwind passe par `cn` (`@/lib/utils`).
 - On n'ajoute un composant que lorsqu'une fonctionnalité en a besoin.
 - Le composant `Form` de shadcn/ui **n'est pas utilisé** (il dépend de react-hook-form) ; les formulaires utilisent Input, Label, Select, Textarea… directement.
 - Accessibilité : on s'appuie sur Radix UI (focus, clavier, ARIA) plutôt que de réécrire modales, menus et listes déroulantes.
@@ -50,7 +50,7 @@ const [state, formAction, pending] = useActionState(createApplicationAction, ini
 ## Statuts
 
 - Les codes (`APPLIED`) ne sont jamais affichés : un dictionnaire unique fait correspondre code → libellé français (« Postulée ») → style de badge.
-- Le menu de changement de statut n'affiche que les transitions renvoyées par la fonction du domaine `allowedTransitions` ; le serveur revérifie de toute façon.
+- Le bloc « Statut » de la fiche (`StatusPanel`, client) affiche **un bouton par transition** de `allowedTransitions` (libellés `TRANSITION_LABELS`, ex. « Passer en Entretien ») ; le serveur revérifie de toute façon. Une transition vers un Statut définitif demande d'abord une confirmation (`AlertDialog`) ; chaque bouton envoie `to` en champ caché à `changeStatusAction`. Un Statut définitif affiche « Statut définitif : cette candidature ne change plus de statut. »
 
 ## Affichage des contenus saisis
 
@@ -96,5 +96,6 @@ const [state, formAction, pending] = useActionState(createApplicationAction, ini
 - Pièces jointes : deux `Input type="file"` (`name="cv"`, `name="coverLetter"`, `accept="application/pdf"`) dans le même formulaire, envoyés avec la Server Action. Un fichier choisi ne peut pas être ré-affiché après une erreur (le navigateur l'interdit) : seule la saisie texte est conservée.
 - `ApplicationFormDialog` (générique) enveloppe l'action (`saveAndClose`) : la fenêtre se ferme quand l'action renvoie `status: "success"`, et reste ouverte avec la saisie en cas d'erreur **ou d'avertissement** (`status: "warning"` : enregistré, mais le message demande une action). `NewApplicationDialog` (barre du haut) et `EditApplicationDialog` (bouton « Modifier » de la fiche, « Modifier — <Entreprise> ») l'utilisent.
 - Modification : `ApplicationForm` reçoit `initialValues` (`toFormValues(application)`, dates en AAAA-MM-JJ) et `attachments` (fichiers actuels) ; chaque pièce jointe enregistrée s'affiche avec une case « Retirer … » (`removeCv`, `removeCoverLetter`) et un champ « Remplacer … par… ». L'action de modification est liée à l'id par la page (`updateApplicationAction.bind(null, id)`).
-- La fiche (`ApplicationDetail`) reçoit ses boutons par un emplacement `actions`, fourni par la page : le composant reste sans dépendance aux actions serveur.
+- La fiche (`ApplicationDetail`) reçoit ses boutons par un emplacement `actions` et son bloc « Statut » par un emplacement `statusPanel` (`<StatusPanel action={changeStatusAction.bind(null, id)} />`), fournis par la page : le composant reste sans dépendance aux actions serveur.
+- Composants partagés du module : `FormStateMessage` (message renvoyé par une action : `role="alert"` pour une erreur, `role="status"` pour un avertissement ou un succès, couleurs de statut), utilisé par `ApplicationForm` et `StatusPanel` ; `Section` (carte titrée, `<section aria-labelledby>`) pour les blocs de la fiche.
 - Un composant `Field` relie libellé, aide et erreur (`aria-describedby`, `aria-invalid`) ; `SelectField` enveloppe le `Select` shadcn (Radix) avec `name`, soumis nativement, et un `key` dérivé de la valeur renvoyée pour le réinitialiser après une erreur.

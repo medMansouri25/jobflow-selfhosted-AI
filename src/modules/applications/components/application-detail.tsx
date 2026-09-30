@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { useId, type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import type { getApplication } from "@/modules/applications/service";
 import { cn } from "@/lib/utils";
+import { Section } from "@/modules/applications/components/section";
 import { formatFileSize } from "@/modules/applications/format";
 import {
   STATUS_DOT_CLASSES,
@@ -66,10 +67,13 @@ function formatSalary({
 export function ApplicationDetail({
   application,
   actions,
+  statusPanel,
 }: {
   application: ApplicationDetailData;
   /** Boutons de la fiche (ex. « Modifier »), fournis par la page. */
   actions?: ReactNode;
+  /** Bloc « Statut » (transitions), fourni par la page. */
+  statusPanel?: ReactNode;
 }) {
   const meta = [
     application.company.name,
@@ -93,6 +97,8 @@ export function ApplicationDetail({
         </div>
         <p className="text-muted-foreground">{meta.join(" · ")}</p>
       </div>
+
+      {statusPanel}
 
       <Section title="Annonce">
         <dl className="grid gap-x-6 gap-y-2 text-sm sm:grid-cols-[max-content_1fr]">
@@ -180,14 +186,3 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
   );
 }
 
-function Section({ title, children }: { title: string; children: ReactNode }) {
-  const id = useId();
-  return (
-    <section aria-labelledby={id} className="flex flex-col gap-3 rounded-lg border bg-card p-5">
-      <h2 id={id} className="font-heading font-bold">
-        {title}
-      </h2>
-      {children}
-    </section>
-  );
-}

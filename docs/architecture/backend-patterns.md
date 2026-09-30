@@ -42,7 +42,8 @@ Un module = une spec. Le vocabulaire du code suit le glossaire du domaine (`Appl
 ```ts
 // modules/applications/domain/status.ts
 export function canTransition(from: ApplicationStatus, to: ApplicationStatus): boolean
-export function allowedTransitions(from: ApplicationStatus): ApplicationStatus[]
+export function allowedTransitions(from: ApplicationStatus): readonly TransitionTarget[]
+export type TransitionTarget  // statut atteignable par une transition (Postulée n'est qu'un statut de création)
 export function isDefinitive(status: ApplicationStatus): boolean  // Statut définitif : aucune transition sortante
 ```
 
@@ -70,6 +71,7 @@ export function isDefinitive(status: ApplicationStatus): boolean  // Statut déf
 - Lance une `DomainError` pour toute violation de règle métier.
 - Une écriture écrit **chaque** colonne explicitement : un champ vidé devient `null` (Prisma ignore `undefined` et garderait l'ancienne valeur). La correspondance saisie ↔ colonnes vit dans `modules/<module>/form-values.ts` : `toColumns` pour enregistrer, `toFormValues` pour pré-remplir la modification.
 - Un identifiant reçu de l'URL est vérifié (`z.uuid()`) avant la requête : un id mal formé lance `NotFoundError` (la colonne uuid de PostgreSQL rejetterait la requête), comme une ressource introuvable.
+- Tout accès « par id » passe par `findOwnedApplication(client, userId, id, include?)` (avec `db` ou `tx`) : vérification uuid + filtre `userId` + `NotFoundError`, pour que le filtre par utilisateur ne puisse pas être oublié. Ex. `changeApplicationStatus` le lit dans la transaction, vérifie `canTransition` sur le statut en base, et sinon lance `InvalidTransitionError`.
 
 ### ④ Actions — `modules/*/actions.ts`
 
