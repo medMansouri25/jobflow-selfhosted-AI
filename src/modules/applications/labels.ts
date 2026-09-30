@@ -1,4 +1,5 @@
 import type { TransitionTarget } from "@/modules/applications/domain/status";
+import type { ListSort } from "@/modules/applications/schemas";
 import type {
   ApplicationSource,
   AttachmentKind,
@@ -54,3 +55,11 @@ export const SALARY_PERIOD_LABELS: Record<SalaryPeriod, string> = {
   YEARLY: "Annuel",
   MONTHLY: "Mensuel",
 };
+
+/** Tris de la liste (FR-001-11). */
+export const LIST_SORT_LABELS: Record<ListSort, string> = {
+  modifiee: "Dernière modification",
+  candidature: "Date de candidature",
+  entreprise: "Entreprise (A → Z)",
+};
+

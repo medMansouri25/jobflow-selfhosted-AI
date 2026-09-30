@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { RowLink } from "@/components/row-link";
 import type {
   ApplicationSource,
@@ -21,7 +23,14 @@ export type ApplicationRow = {
 const COLUMNS = ["Entreprise", "Poste", "Localisation", "Contrat", "Source", "Candidature", "Statut"];
 const dateFormat = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", timeZone: "UTC" });
 
-export function ApplicationsTable({ applications }: { applications: ApplicationRow[] }) {
+export function ApplicationsTable({
+  applications,
+  filtered = false,
+}: {
+  applications: ApplicationRow[];
+  /** Des filtres sont actifs : une liste vide veut dire « rien ne correspond », pas « aucune candidature ». */
+  filtered?: boolean;
+}) {
   return (
     <div className="overflow-x-auto rounded-lg border bg-card">
       <table className="w-full text-sm">
@@ -42,11 +51,25 @@ export function ApplicationsTable({ applications }: { applications: ApplicationR
           {applications.length === 0 ? (
             <tr>
               <td colSpan={COLUMNS.length} className="px-4 py-16 text-center">
-                <p className="font-heading font-bold">Aucune candidature pour l&apos;instant</p>
-                <p className="mt-1 text-muted-foreground">
-                  Clique sur « Nouvelle candidature » en haut à droite pour enregistrer une
-                  candidature envoyée.
-                </p>
+                {filtered ? (
+                  <>
+                    <p className="font-heading font-bold">Aucune candidature ne correspond.</p>
+                    <Link
+                      href="/applications"
+                      className="mt-1 inline-block text-primary underline-offset-4 hover:underline"
+                    >
+                      Réinitialiser les filtres
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <p className="font-heading font-bold">Aucune candidature pour l&apos;instant</p>
+                    <p className="mt-1 text-muted-foreground">
+                      Clique sur « Nouvelle candidature » en haut à droite pour enregistrer une
+                      candidature envoyée.
+                    </p>
+                  </>
+                )}
               </td>
             </tr>
           ) : (
