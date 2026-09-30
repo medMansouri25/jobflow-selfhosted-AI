@@ -1,6 +1,6 @@
 # Task: Clôture de SPEC-001 (T1.10)
 
-**Status**: In dev
+**Status**: Completed
 **Type**: Docs
 **Created**: 2026-09-30
 
@@ -18,7 +18,7 @@ SPEC-001 passe « Implémentée » avec la correspondance critère → test ; SP
 
 ## Missions
 - [x] Mission 1: Tests — AC-001-10 cité dans les tests qui le couvrent (date du jour par défaut, pré-rendu)
-- [ ] Mission 2: Docs — SPEC-001 « Implémentée » + tableau critère → test ; SPEC-000 cycle de vie à trois statuts, « Validée » ; `TASKS.md` (T0.1, T1.10)
+- [x] Mission 2: Docs — SPEC-001 « Implémentée » + tableau critère → test ; SPEC-000 cycle de vie à trois statuts, « Validée » ; `TASKS.md` (T0.1, T1.10)
 
 ## Mission Summaries
 _Filled in as each mission completes. Future missions read these for context._
@@ -27,3 +27,7 @@ _Filled in as each mission completes. Future missions read these for context._
 **Status**: Completed
 - **Files**: `components/application-form.test.tsx`, `service.integration.test.ts`
 - **Built**: trois tests existants renommés pour citer AC-001-10 (date du jour proposée, pas figée au build, enregistrée telle quelle) ; aucun changement de comportement.
+
+### Mission 2: Specs et TASKS
+**Status**: Completed
+- **Files**: `specs/001-application-management.md` (statut « Implémentée », note d'hypothèses historique, tableau critère → test en fin de §9), `specs/000-product-vision.md` (statut « Validée », cycle de vie à trois statuts), `TASKS.md` (T0.1 et T1.10 cochées)

@@ -95,9 +95,9 @@ git push
 | T0.7 | CI GitHub Actions | `chore/ci` | T0.6 |
 | T0.8 | Socle UI (shadcn/ui, layout) | `chore/ui-foundation` | T0.3 |
 
-### [ ] T0.1 — Revue de SPEC-000 et SPEC-001
+### [x] T0.1 — Revue de SPEC-000 et SPEC-001
 - Trancher les hypothèses **H1 à H5** de SPEC-001.
-- Passer les deux specs au statut **Validée**.
+- Passer les deux specs au statut **Validée** (SPEC-001 : directement « Implémentée » à sa clôture, T1.10).
 - **Terminé quand** : aucune hypothèse ouverte ; statut « Validée » dans les deux fichiers.
 
 ### [~] T0.2 — Protection de `main` et modèle de PR
@@ -215,7 +215,7 @@ git push
 - Page `/applications` ; paramètres de recherche dans l'URL ; état vide.
 - **Terminé quand** : AC-001-14, 15, 16, 21 verts.
 
-### [ ] T1.10 — Clôture de SPEC-001
+### [x] T1.10 — Clôture de SPEC-001
 - Vérifier les 21 critères d'acceptation et la Definition of Done.
 - Mettre à jour la documentation d'architecture si le code a introduit un nouveau pattern.
 - **Terminé quand** : SPEC-001 au statut « Implémentée ».
