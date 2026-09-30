@@ -10,9 +10,9 @@ Depuis son téléphone ou son PC, où qu'il soit, l'utilisateur ouvre `https://j
 - [ ] **spec-010-deployment** — rédiger SPEC-010 (objectif, exigences, critères d'acceptation du déploiement), à partir de l'ADR 0007
       depends-on: []
       plan: ⬜ unplanned      status: pending
-- [ ] **dockerfile** — Dockerfile multi-étapes : sortie `standalone`, utilisateur non-root, `HEALTHCHECK` sur une route de santé
+- [x] **dockerfile** — Dockerfile multi-étapes : sortie `standalone`, utilisateur non-root, `HEALTHCHECK` sur une route de santé
       depends-on: [spec-010-deployment]
-      plan: ⬜ unplanned      status: pending
+      plan: ✅ planned        status: done
 - [ ] **runbook-pi-setup** — compte Tailscale (créé par l'utilisateur), Tailscale sur la Pi, le PC et le téléphone, vérifications Docker ; procédure dans `docs/runbooks/` (commandes `sudo` lancées par l'utilisateur)
       depends-on: [spec-010-deployment]
       plan: ⬜ unplanned      status: pending

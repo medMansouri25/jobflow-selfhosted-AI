@@ -1,0 +1,19 @@
+# Seul ce qui sert à construire l'image entre dans le contexte ; jamais de secret.
+.git
+node_modules
+.next
+src/generated
+.env*
+coverage
+backups
+*.dump
+*.tsbuildinfo
+docs
+specs
+*.md
+*.html
+.claude
+.agents
+.ab-method
+.github
+.vscode
