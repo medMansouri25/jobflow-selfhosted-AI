@@ -57,7 +57,7 @@ describe("service des candidatures", () => {
     expect(b.company.name).toBe("Capgemini");
   });
 
-  it("enregistre la date de candidature et le salaire", async () => {
+  it("AC-001-10 enregistre la date de candidature et le salaire", async () => {
     const user = await createTestUser();
 
     const created = await createApplication(
@@ -82,6 +82,14 @@ describe("service des candidatures", () => {
 
     await expect(getApplication(me.id, created.id)).rejects.toThrow(/introuvable/);
     expect((await listApplications(me.id, listApplicationsSchema.parse({}))).applications).toEqual([]);
+  });
+
+  it("AC-001-20 répond « introuvable » pour un identifiant bien formé mais inconnu", async () => {
+    const user = await createTestUser();
+
+    await expect(
+      getApplication(user.id, "5d0f7a3e-9b1c-4c2d-8e4f-0a1b2c3d4e5f"),
+    ).rejects.toThrow(NotFoundError);
   });
 
   it("répond « introuvable » pour un identifiant qui n'est pas un UUID (AC-001-20)", async () => {

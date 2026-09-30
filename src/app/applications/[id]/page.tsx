@@ -14,6 +14,7 @@ import { EditApplicationDialog } from "@/modules/applications/components/edit-ap
 import { StatusPanel } from "@/modules/applications/components/status-panel";
 import { toFormValues } from "@/modules/applications/form-values";
 import { getApplication } from "@/modules/applications/service";
+import { listCompanyNames } from "@/modules/companies/service";
 
 export const metadata: Metadata = {
   title: "Candidature · JobFlow AI",
@@ -23,7 +24,9 @@ export const dynamic = "force-dynamic";
 
 export default async function ApplicationPage({ params }: PageProps<"/applications/[id]">) {
   const { id } = await params;
-  const application = await getApplication(await getCurrentUserId(), id).catch((error) => {
+  const userId = await getCurrentUserId();
+  const companyNames = await listCompanyNames(userId);
+  const application = await getApplication(userId, id).catch((error) => {
     // Id inconnu, mal formé ou appartenant à quelqu'un d'autre : page 404 (AC-001-20).
     if (error instanceof NotFoundError) notFound();
     throw error;
@@ -44,6 +47,7 @@ export default async function ApplicationPage({ params }: PageProps<"/applicatio
             companyName={application.company.name}
             initialValues={toFormValues(application)}
             attachments={application.attachments.map(({ kind, name, size }) => ({ kind, name, size }))}
+            companySuggestions={companyNames}
           />
           <DeleteApplicationButton
             action={deleteApplicationAction.bind(null, application.id)}

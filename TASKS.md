@@ -95,10 +95,10 @@ git push
 | T0.7 | CI GitHub Actions | `chore/ci` | T0.6 |
 | T0.8 | Socle UI (shadcn/ui, layout) | `chore/ui-foundation` | T0.3 |
 
-### [ ] T0.1 — Revue de SPEC-000 et SPEC-001
+### [x] T0.1 — Revue de SPEC-000 et SPEC-001
 - Trancher les hypothèses **H1 à H5** de SPEC-001.
-- Passer les deux specs au statut **Validée**.
-- **Terminé quand** : aucune hypothèse ouverte ; statut « Validée » dans les deux fichiers.
+- Passer les deux specs au statut **Validée** (SPEC-001 : directement « Implémentée » à sa clôture, T1.10).
+- **Terminé quand** : aucune hypothèse ouverte ; statut « Validée » (SPEC-000) / « Implémentée » (SPEC-001).
 
 ### [~] T0.2 — Protection de `main` et modèle de PR
 - Sur GitHub : *Settings → Rules → Rulesets* (ou *Branches → Branch protection rules*) pour `main` :
@@ -178,19 +178,19 @@ git push
 - Tests unitaires couvrant **toutes** les transitions autorisées et interdites (BR-001-05).
 - **Terminé quand** : AC-001-05 à 09 couverts par des tests unitaires verts.
 
-### [~] T1.3 — Schémas de validation
+### [x] T1.3 — Schémas de validation
 - `modules/applications/schemas.ts` : création, modification, changement de statut, filtres de liste.
 - Règles : champs obligatoires selon le statut, date non future, salaire, URL `http(s)`, longueurs.
 - `modules/companies/domain` : normalisation du nom d'Entreprise.
 - **Terminé quand** : AC-001-02, 03, 04, 17, 18 couverts par des tests unitaires verts.
 
-### [~] T1.4 — Créer une Candidature
+### [x] T1.4 — Créer une Candidature
 - Service : `createApplication` (Entreprise trouvée ou créée, statut initial, entrée d'historique, en transaction).
-- Service `companies` : recherche par préfixe pour l'autocomplétion.
+- Service `companies` : `listCompanyNames` pour les suggestions (liste native `<datalist>` du champ Entreprise, livrée à la clôture T1.10).
 - Server Action + page `/applications/new` : formulaire, autocomplétion de l'Entreprise, création toujours Postulée (ADR 0005).
 - **Terminé quand** : AC-001-01 à 04, 17, 18 verts ; création possible depuis l'interface.
 
-### [ ] T1.5 — Consulter une Candidature
+### [x] T1.5 — Consulter une Candidature
 - Page `/applications/[id]` : champs, Entreprise, description en texte brut, lien externe sécurisé, historique des statuts.
 - 404 pour un id inconnu.
 - **Terminé quand** : AC-001-19, 20 vérifiés.
@@ -215,7 +215,7 @@ git push
 - Page `/applications` ; paramètres de recherche dans l'URL ; état vide.
 - **Terminé quand** : AC-001-14, 15, 16, 21 verts.
 
-### [ ] T1.10 — Clôture de SPEC-001
+### [x] T1.10 — Clôture de SPEC-001
 - Vérifier les 21 critères d'acceptation et la Definition of Done.
 - Mettre à jour la documentation d'architecture si le code a introduit un nouveau pattern.
 - **Terminé quand** : SPEC-001 au statut « Implémentée ».

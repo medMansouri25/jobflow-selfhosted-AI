@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Statut** | Draft — en attente de validation |
+| **Statut** | **Implémentée** le 2026-09-30 (validée : hypothèses H1 à H5 tranchées) |
 | **Date** | 2026-09-24 |
 | **Phase** | 1 — Applications (CRUD + base de données) |
 | **Vocabulaire** | `CONTEXT.md` fait foi (glossaire local) |
@@ -10,7 +10,7 @@
 
 > **Révision du 2026-09-27** — trois statuts seulement : **Postulée → Entretien → Refusée** ([ADR 0005](../docs/adr/0005-trois-statuts-de-candidature.md)). Brouillon, Acceptée et Classée sont retirés ; les exigences concernées sont barrées ou réécrites, leurs identifiants sont conservés.
 
-> Les points marqués **⚑ Hypothèse** sont des choix que j'ai faits par défaut pour compléter la spec. Ils sont à confirmer ou corriger pendant la revue.
+> Les points qui étaient marqués **⚑ Hypothèse** ont tous été tranchés (voir « Points à valider en revue ») ; la mention est gardée là où elle a été confirmée.
 
 ---
 
@@ -244,6 +244,29 @@ Codes en anglais dans la base et le code ; libellés en français dans l'interfa
 | AC-001-19 | une description d'Annonce contenant `<script>alert(1)</script>` | j'affiche la Candidature | le texte s'affiche tel quel, rien n'est exécuté |
 | AC-001-20 | un id de Candidature inexistant | j'ouvre `/applications/[id]` | j'obtiens une page 404 |
 | AC-001-21 | 30 Candidatures | j'ouvre la liste | 25 s'affichent, avec un accès à la page suivante |
+
+### Couverture par les tests (clôture du 2026-09-30)
+
+Chaque critère est vérifié par un test qui cite son identifiant (dossier `src/modules/applications/`).
+
+| Critère | Test(s) |
+|---|---|
+| AC-001-01 | `service.integration.test.ts` |
+| AC-001-02, 03, 17, 18 | `schemas.test.ts` |
+| AC-001-04 | `service.integration.test.ts` |
+| AC-001-05 | `domain/status.test.ts`, `status-change.integration.test.ts` |
+| AC-001-06 | `status-change.integration.test.ts` |
+| AC-001-07 | `domain/status.test.ts`, `components/status-panel.test.tsx` |
+| AC-001-08 | `domain/status.test.ts`, `status-change.integration.test.ts` |
+| AC-001-09 | _Retiré (ADR 0005)_ |
+| AC-001-10 | `components/application-form.test.tsx`, `service.integration.test.ts` |
+| AC-001-11 | `update.integration.test.ts` |
+| AC-001-12 | `delete.integration.test.ts` |
+| AC-001-13 | `components/delete-application-button.test.tsx` |
+| AC-001-14, 15, 16, 21 | `list.integration.test.ts` |
+| AC-001-19 | `components/application-detail.test.tsx` |
+| AC-001-20 | `service.integration.test.ts` : couvert au niveau du service (id inconnu et id mal formé → `NotFoundError`) ; la traduction en page 404 par la fiche (`notFound()`) est vérifiée à la main |
+| FR-001-04 (suggestions) | `companies/service.integration.test.ts`, `components/application-form.test.tsx` — livrée à la clôture (2026-09-30) : liste native `<datalist>` des Entreprises existantes, un nouveau nom reste possible |
 
 ## 10. Cas limites
 

@@ -50,6 +50,7 @@ export function ApplicationForm({
   label = "Nouvelle candidature",
   initialValues = {},
   attachments = [],
+  companySuggestions = [],
 }: {
   action: FormAction;
   /** Fourni par la fenêtre modale ; sinon « Annuler » ramène à la liste. */
@@ -60,14 +61,17 @@ export function ApplicationForm({
   initialValues?: Partial<Record<string, string>>;
   /** Pièces jointes déjà enregistrées (modification) : à garder, remplacer ou retirer. */
   attachments?: CurrentAttachment[];
+  /** Noms des Entreprises existantes, proposés pendant la saisie (FR-001-04). */
+  companySuggestions?: string[];
 }) {
   const [state, formAction, pending] = useActionState(
     action,
     initialApplicationFormState,
   );
   const values = state.values ?? initialValues;
-  // `/applications/new` est pré-rendue au build : la date du jour est lue dans le navigateur.
+  // Date du jour lue dans le navigateur (fuseau de l'utilisateur), jamais figée dans le HTML du serveur.
   const today = useSyncExternalStore(subscribeNever, todayInParis, () => undefined);
+  const companyListId = useId();
   const errors = state.fieldErrors ?? {};
   const error = (name: string) => errors[name]?.[0];
 
@@ -88,7 +92,22 @@ export function ApplicationForm({
           error={error("companyName")}
         >
           {(props) => (
-            <Input {...props} name="companyName" maxLength={200} defaultValue={values.companyName} />
+            <>
+              <Input
+                {...props}
+                name="companyName"
+                maxLength={200}
+                defaultValue={values.companyName}
+                list={companyListId}
+                autoComplete="off"
+              />
+              {/* Suggestions natives du navigateur (FR-001-04) : un nouveau nom reste possible. */}
+              <datalist id={companyListId}>
+                {companySuggestions.map((name) => (
+                  <option key={name} value={name} />
+                ))}
+              </datalist>
+            </>
           )}
         </Field>
         <Field label="Intitulé du poste" required error={error("jobTitle")}>

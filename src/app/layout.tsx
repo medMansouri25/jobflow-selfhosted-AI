@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { Archivo } from "next/font/google";
 import { AppSidebar } from "@/components/app-sidebar";
 import { AppTopbar } from "@/components/app-topbar";
+import { getCurrentUserId } from "@/lib/current-user";
 import { createApplicationAction } from "@/modules/applications/actions";
+import { listCompanyNames } from "@/modules/companies/service";
 
 import "./globals.css";
 
@@ -16,7 +18,15 @@ export const metadata: Metadata = {
   description: "Suivi personnel de recherche d'emploi",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+// La barre du haut propose les Entreprises existantes (FR-001-04) : lues à chaque requête, jamais au build.
+export const dynamic = "force-dynamic";
+
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  // Simple confort : sans base ou sans utilisateur, pas de suggestions. Le layout ne doit jamais
+  // échouer, sinon aucune page n'atteindrait sa propre gestion d'erreur (`error.tsx`).
+  const companyNames = await getCurrentUserId()
+    .then(listCompanyNames)
+    .catch(() => []);
   return (
     <html
       lang="fr"
@@ -25,7 +35,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="flex min-h-full">
         <AppSidebar />
         <div className="flex min-w-0 flex-1 flex-col">
-          <AppTopbar createApplicationAction={createApplicationAction} />
+          <AppTopbar
+            createApplicationAction={createApplicationAction}
+            companyNames={companyNames}
+          />
           {children}
         </div>
       </body>

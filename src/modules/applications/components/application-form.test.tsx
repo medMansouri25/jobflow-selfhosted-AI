@@ -25,7 +25,7 @@ describe("formulaire de candidature", () => {
     expect(submits[0].getAttribute("name")).toBeNull();
   });
 
-  it("propose la date du jour (Europe/Paris) comme date de candidature", () => {
+  it("AC-001-10 propose la date du jour (Europe/Paris) comme date de candidature", () => {
     vi.useFakeTimers({ toFake: ["Date"] });
     vi.setSystemTime(new Date("2026-09-27T23:30:00Z")); // déjà le 28 à Paris
     try {
@@ -39,7 +39,7 @@ describe("formulaire de candidature", () => {
     }
   });
 
-  it("ne fige pas de date dans le HTML pré-rendu (la page est statique, rendue au build)", () => {
+  it("AC-001-10 ne fige pas de date dans le HTML rendu par le serveur", () => {
     const html = renderToString(<ApplicationForm action={noop} />);
     const dateInput = html.match(/<input[^>]*name="appliedAt"[^>]*>/)?.[0];
 
@@ -88,6 +88,18 @@ describe("formulaire de candidature", () => {
     expect((screen.getByLabelText(/^Remplacer le CV par/) as HTMLInputElement).name).toBe("cv");
     expect((screen.getByLabelText(/^Lettre de motivation/) as HTMLInputElement).name).toBe("coverLetter");
     expect(screen.queryByLabelText("Retirer la lettre de motivation")).toBeNull();
+  });
+
+  it("FR-001-04 propose les Entreprises existantes dans le champ Entreprise, sans empêcher un nouveau nom", () => {
+    const { container } = render(
+      <ApplicationForm action={noop} companySuggestions={["Airbus", "Sanofi"]} />,
+    );
+    const input = screen.getByLabelText(/Entreprise/) as HTMLInputElement;
+    const list = container.querySelector(`datalist#${CSS.escape(input.getAttribute("list") ?? "")}`);
+
+    expect(input.getAttribute("list")).toBeTruthy();
+    expect([...(list?.querySelectorAll("option") ?? [])].map((option) => option.value)).toEqual(["Airbus", "Sanofi"]);
+    expect(input.tagName).toBe("INPUT");
   });
 
   it("appelle onCancel quand on clique sur Annuler", () => {

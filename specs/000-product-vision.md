@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Statut** | Draft — en attente de validation |
+| **Statut** | **Validée** le 2026-09-30 |
 | **Date** | 2026-09-24 |
 | **Vocabulaire** | `CONTEXT.md` fait foi (glossaire local) |
 | **Décisions** | [`docs/adr/`](../docs/adr/) |
@@ -34,13 +34,11 @@ Une fois cette base solide, des fonctionnalités d'IA viendront m'aider à analy
 ## 4. Cycle de vie d'une Candidature
 
 ```
-BROUILLON → POSTULÉE → ENTRETIEN → ACCEPTÉE   (définitive)
-               │           │    ↘ REFUSÉE     (définitive)
-               ├──→ REFUSÉE
-               └─────┬─────┘
-                     ↓   ↑ réouverture
-                   CLASSÉE
+POSTULÉE → ENTRETIEN → REFUSÉE   (définitive)
+    └──────────────→ REFUSÉE
 ```
+
+Trois statuts seulement (révision du 2026-09-27, [ADR 0005](../docs/adr/0005-trois-statuts-de-candidature.md)) : toute Candidature naît Postulée, aucun retour en arrière.
 
 Les définitions exactes de chaque statut sont dans `CONTEXT.md` ; les règles de transition dans [SPEC-001](./001-application-management.md).
 

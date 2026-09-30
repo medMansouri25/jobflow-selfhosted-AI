@@ -14,13 +14,17 @@ export function EditApplicationDialog({
   companyName,
   initialValues,
   attachments,
-}: Pick<DialogProps, "action" | "initialValues" | "attachments"> & { companyName: string }) {
+  companySuggestions,
+}: Pick<DialogProps, "action" | "initialValues" | "attachments" | "companySuggestions"> & {
+  companyName: string;
+}) {
   return (
     <ApplicationFormDialog
       action={action}
       label="Modifier la candidature"
       initialValues={initialValues}
       attachments={attachments}
+      companySuggestions={companySuggestions}
       title={`Modifier — ${companyName}`}
       description="Tous les champs se modifient, sauf le statut."
       trigger={
