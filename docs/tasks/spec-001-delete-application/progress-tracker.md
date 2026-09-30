@@ -22,7 +22,7 @@ Un bouton « Supprimer » sur la fiche, après confirmation, supprime définitiv
 ## Missions
 - [x] Mission 1: Backend — `deleteApplication(userId, id, storage)` : propriétaire vérifié, suppression en cascade, puis fichiers chez UploadThing, `leftover` si leur suppression échoue ; Entreprise conservée (AC-001-12) — tests d'intégration
 - [x] Mission 2: Frontend — action `deleteApplicationAction` liée à l'id, bouton « Supprimer » + confirmation sur la fiche, retour à la liste ou avertissement (AC-001-13)
-- [ ] Mission 3: Docs — SPEC-001 (H3 confirmée, §8 suppression), `TASKS.md` (T1.8), patterns si besoin
+- [x] Mission 3: Docs — SPEC-001 (H3 confirmée, §8 suppression), `TASKS.md` (T1.8), patterns si besoin
 
 ## Mission Summaries
 _Filled in as each mission completes. Future missions read these for context._
@@ -39,3 +39,7 @@ _Filled in as each mission completes. Future missions read these for context._
 - **Files**: `components/delete-application-button.tsx` (+ test), `actions.ts` (`deleteApplicationAction`), `app/applications/[id]/page.tsx`
 - **Built**: `DeleteApplicationButton` (contour rouge) → `AlertDialog` « Supprimer cette candidature ? « <poste> » chez <Entreprise>… irréversible » ; bouton d'envoi simple (pas `AlertDialogAction`, qui fermerait la fenêtre avant la réponse) ; état `warning` → message + « Retour à la liste », sans formulaire. `deleteApplicationAction(id)` : service, `revalidatePath`, `redirect("/applications")` sans `leftover`, sinon `warning` « Candidature supprimée. <fichier resté…> ». La fiche reçoit « Modifier » et « Supprimer » dans l'emplacement `actions`.
 - **Tests**: confirmation rappelant poste et Entreprise, Annuler n'envoie rien (AC-001-13) ; envoi après confirmation, avertissement affiché avec lien de retour. Essai réel : Candidature d'essai avec CV (UploadThing) supprimée depuis sa fiche → retour à la liste ; base (candidature, historique, pièce jointe) et UploadThing vides ; Entreprise conservée, puis retirée à la main (donnée d'essai).
+
+### Mission 3: Documentation
+**Status**: Completed
+- **Files**: `specs/001-application-management.md` (BR-001-12 et H3 confirmées, §8 suppression détaillée), `TASKS.md` (T1.8 cochée)
