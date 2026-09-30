@@ -208,3 +208,10 @@ export const listApplicationsSchema = z
 
 export type ListApplicationsInput = z.infer<typeof listApplicationsSchema>;
 
+/** Des filtres réduisent la liste (le tri et la page n'en sont pas) : une liste vide veut alors dire « rien ne correspond ». */
+export function hasActiveFilters(filters: ListApplicationsInput): boolean {
+  return Boolean(
+    filters.q || filters.statuses.length > 0 || filters.contractType || filters.source,
+  );
+}
+

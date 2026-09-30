@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import {
   changeStatusSchema,
+  hasActiveFilters,
   listApplicationsSchema,
   createApplicationSchema,
   updateApplicationSchema,
@@ -241,6 +242,15 @@ describe("création d'une candidature", () => {
         sort: "modifiee",
         page: 1,
       });
+    });
+  });
+
+  describe("filtres actifs", () => {
+    it("ne compte ni le tri ni la page, mais bien la recherche, les statuts, le contrat et la source", () => {
+      expect(hasActiveFilters(listApplicationsSchema.parse({ tri: "entreprise", page: "2" }))).toBe(false);
+      for (const params of [{ q: "thal" }, { statut: "REJECTED" }, { contrat: "CDI" }, { source: "APEC" }]) {
+        expect(hasActiveFilters(listApplicationsSchema.parse(params))).toBe(true);
+      }
     });
   });
 });

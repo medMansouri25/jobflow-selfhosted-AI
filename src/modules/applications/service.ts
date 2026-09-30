@@ -262,7 +262,7 @@ export async function getApplication(userId: string, id: string) {
 }
 
 /** Taille d'une page de la liste (FR-001-12, H5 confirmée). */
-export const PAGE_SIZE = 25;
+const PAGE_SIZE = 25;
 
 const ORDER_BY: Record<ListSort, Prisma.ApplicationOrderByWithRelationInput[]> = {
   modifiee: [{ updatedAt: "desc" }],

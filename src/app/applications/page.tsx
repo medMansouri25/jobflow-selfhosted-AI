@@ -4,7 +4,7 @@ import { getCurrentUserId } from "@/lib/current-user";
 import { ApplicationFilters } from "@/modules/applications/components/application-filters";
 import { ApplicationsTable } from "@/modules/applications/components/applications-table";
 import { Pagination } from "@/modules/applications/components/pagination";
-import { listApplicationsSchema } from "@/modules/applications/schemas";
+import { hasActiveFilters, listApplicationsSchema } from "@/modules/applications/schemas";
 import { listApplications } from "@/modules/applications/service";
 
 export const metadata: Metadata = {
@@ -20,9 +20,6 @@ export default async function ApplicationsPage({ searchParams }: PageProps<"/app
     await getCurrentUserId(),
     filters,
   );
-  const filtered = Boolean(
-    filters.q || filters.statuses.length > 0 || filters.contractType || filters.source,
-  );
 
   return (
     <main className="flex flex-col gap-6 px-8 py-8">
@@ -32,7 +29,7 @@ export default async function ApplicationsPage({ searchParams }: PageProps<"/app
       </div>
       <ApplicationFilters filters={filters} />
       <ApplicationsTable
-        filtered={filtered}
+        filtered={hasActiveFilters(filters)}
         applications={applications.map((application) => ({
           ...application,
           companyName: application.company.name,
