@@ -260,10 +260,10 @@ Feuille de route : `docs/roadmaps/phase-1-5-squelette-deploye/roadmap.md`.
 
 | # | Tâche | Branche |
 |---|---|---|
-| [ ] T4.1 | Rédiger SPEC-004 | `docs/spec-004-calendar` |
-| [ ] T4.2 | Vue « prochains entretiens » | `feature/spec-004-upcoming` |
-| [ ] T4.3 | Vue semaine | `feature/spec-004-week-view` |
-| [ ] T4.4 | Vue mois | `feature/spec-004-month-view` |
+| [x] T4.1 | Rédiger SPEC-004 | `docs/spec-004-calendar` |
+| [x] T4.2 | Vue « prochains entretiens » (livrée en SPEC-003 : page Entretiens) | — |
+| [ ] T4.3 | Page Agenda, vue semaine (FR-004-01, 02, 04 à 06) | `feature/spec-004-calendar` |
+| [ ] T4.4 | Vue mois (FR-004-03) | `feature/spec-004-calendar` |
 
 ## Phase 5 — Documents (SPEC-005)
 
