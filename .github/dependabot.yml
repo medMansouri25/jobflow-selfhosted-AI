@@ -13,6 +13,14 @@ updates:
       dependances:
         patterns: ["*"]
         update-types: ["minor", "patch"]
+    ignore:
+      # ESLint 10 casse eslint-config-next 16 (« contextOrFilename.getFilename is not a function ») :
+      # à retirer quand une version d'eslint-config-next le prend en charge.
+      - dependency-name: eslint
+        update-types: ["version-update:semver-major"]
+      # Les types suivent le Node de l'image (24, LTS), pas la dernière version de Node.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: github-actions
     directory: /
