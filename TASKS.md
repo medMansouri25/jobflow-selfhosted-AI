@@ -231,8 +231,8 @@ Feuille de route : `docs/roadmaps/phase-1-5-squelette-deploye/roadmap.md`.
 | [x] T1.5.1 | Rédiger SPEC-010 (Q6 tranchée : ADR 0007, base sur la carte SD de la Pi) | `docs/spec-010-deployment` |
 | [x] T1.5.2 | Dockerfile multi-étapes (sortie `standalone`, utilisateur non-root, `HEALTHCHECK`) | `chore/dockerfile` |
 | [x] T1.5.3 | CI : image multi-arch (`docker buildx`, ARM64) publiée sur GHCR à chaque merge sur `main` | `chore/ci-docker-image` |
-| [ ] T1.5.4 | Préparer la Pi : Tailscale (Pi, PC, téléphone), Docker — procédure dans `docs/runbooks/` | `docs/runbook-pi-setup` |
-| [ ] T1.5.5 | `docker-compose.prod.yml` + `Caddyfile` (HTTPS `*.ts.net`) + migrations au déploiement | `chore/prod-compose` |
+| [x] T1.5.4 | Préparer la Pi : Tailscale (Pi, PC, téléphone), Docker — procédure dans `docs/runbooks/` | `docs/runbook-pi-setup` |
+| [x] T1.5.5 | `docker-compose.prod.yml` + HTTPS `*.ts.net` par `tailscale serve` (pas de Caddy, décision du 2026-10-01) + migrations au déploiement | `chore/prod-compose` |
 | [x] T1.5.6 | Déploiement : mise à jour de l'image sur la Pi (`./deploy.sh` lancé à la main, retour arrière) | `chore/deploy` |
 | [x] T1.5.7 | Sauvegardes : `pg_dump` planifié, récupération par le PC, **restauration testée** | `chore/backups` |
 
@@ -243,18 +243,18 @@ Feuille de route : `docs/roadmaps/phase-1-5-squelette-deploye/roadmap.md`.
 | [x] T2.1 | Rédiger SPEC-002 | `docs/spec-002-dashboard` |
 | [x] T2.2 | Compteurs par statut (livré en SPEC-001 : FR-002-01, 02) | `feature/spec-002-counters` |
 | [x] T2.3 | Candidatures récentes (livré en SPEC-001 : FR-002-03) | `feature/spec-002-recent-applications` |
-| [ ] T2.4 | Statistiques : taux de réponse, taux d'entretien, candidatures par semaine (FR-002-04 à 06) | `feature/spec-002-stats` |
+| [x] T2.4 | Statistiques : taux de réponse, taux d'entretien, candidatures par semaine (FR-002-04 à 06) | `feature/spec-002-stats` |
 
 ## Phase 3 — Entretiens et Contacts (SPEC-003)
 
 | # | Tâche | Branche |
 |---|---|---|
 | [x] T3.1 | Rédiger SPEC-003 | `docs/spec-003-interviews` |
-| [ ] T3.2 | Modèle `Interview` (Contact reporté : Interlocuteur en texte libre, décision du 2026-10-01) | `feature/spec-003-interviews` |
-| [ ] T3.3 | Ajouter / modifier / supprimer un entretien depuis la fiche (FR-003-01 à 04) | `feature/spec-003-interviews` |
-| [ ] T3.4 | Passage automatique de la Candidature en Entretien (FR-003-05) | `feature/spec-003-interviews` |
-| [ ] T3.5 | Page « Entretiens » : à venir, puis passés (FR-003-07) | `feature/spec-003-interviews-views` |
-| [ ] T3.6 | Prochains entretiens sur le dashboard (FR-003-06) | `feature/spec-003-interviews-views` |
+| [x] T3.2 | Modèle `Interview` (Contact reporté : Interlocuteur en texte libre, décision du 2026-10-01) | `feature/spec-003-interviews` |
+| [x] T3.3 | Ajouter / modifier / supprimer un entretien depuis la fiche (FR-003-01 à 04) | `feature/spec-003-interviews` |
+| [x] T3.4 | Passage automatique de la Candidature en Entretien (FR-003-05) | `feature/spec-003-interviews` |
+| [x] T3.5 | Page « Entretiens » : à venir, puis passés (FR-003-07) | `feature/spec-003-interviews-views` |
+| [x] T3.6 | Prochains entretiens sur le dashboard (FR-003-06) | `feature/spec-003-interviews-views` |
 
 ## Phase 4 — Agenda (SPEC-004)
 
@@ -262,8 +262,8 @@ Feuille de route : `docs/roadmaps/phase-1-5-squelette-deploye/roadmap.md`.
 |---|---|---|
 | [x] T4.1 | Rédiger SPEC-004 | `docs/spec-004-calendar` |
 | [x] T4.2 | Vue « prochains entretiens » (livrée en SPEC-003 : page Entretiens) | — |
-| [ ] T4.3 | Page Agenda, vue semaine (FR-004-01, 02, 04 à 06) | `feature/spec-004-calendar` |
-| [ ] T4.4 | Vue mois (FR-004-03) | `feature/spec-004-calendar` |
+| [x] T4.3 | Page Agenda, vue semaine (FR-004-01, 02, 04 à 06) | `feature/spec-004-calendar` |
+| [x] T4.4 | Vue mois (FR-004-03) | `feature/spec-004-calendar` |
 
 ## Phase 5 — Documents (SPEC-005)
 
@@ -278,7 +278,7 @@ Feuille de route : `docs/roadmaps/phase-1-5-squelette-deploye/roadmap.md`.
 | # | Tâche | Branche |
 |---|---|---|
 | [x] T6.1 | Rédiger SPEC-006 (texte libre, décision du 2026-10-01) | `docs/spec-006-profile` |
-| [ ] T6.2 | Page Profil : champs courts et six zones de texte (exemples de textes compris) | `feature/spec-006-profile` |
+| [x] T6.2 | Page Profil : champs courts et six zones de texte (exemples de textes compris) | `feature/spec-006-profile` |
 
 > **Ordre des phases IA (décision du 2026-10-01)** : la lettre de motivation personnalisée par Annonce (SPEC-008) passe **avant** l'analyse d'Annonce (SPEC-007).
 
@@ -296,15 +296,15 @@ Feuille de route : `docs/roadmaps/phase-1-5-squelette-deploye/roadmap.md`.
 | # | Tâche | Branche |
 |---|---|---|
 | [x] T8.1 | Rédiger SPEC-008 | `docs/spec-008-cover-letter` |
-| [ ] T8.2 | Génération et édition d'un brouillon de lettre | `feature/spec-008-cover-letter` |
+| [x] T8.2 | Génération et édition d'un brouillon de lettre | `feature/spec-008-cover-letter` |
 
 ## Phase 9 — IA : préparation d'entretien (SPEC-009)
 
 | # | Tâche | Branche |
 |---|---|---|
 | [x] T9.1 | Rédiger SPEC-009 (fiche de préparation et entraînement, décision du 2026-10-01) | `docs/spec-009-interview-prep` |
-| [ ] T9.2 | A — Fiche de préparation par entretien | `feature/spec-009-interview-prep` |
-| [ ] T9.3 | B — Entraînement : 5 questions, retour par réponse, bilan | `feature/spec-009-interview-practice` |
+| [x] T9.2 | A — Fiche de préparation par entretien | `feature/spec-009-interview-prep` |
+| [x] T9.3 | B — Entraînement : 5 questions, retour par réponse, bilan | `feature/spec-009-interview-practice` |
 
 ## Phase 10 — Observabilité et durcissement (SPEC-012)
 
