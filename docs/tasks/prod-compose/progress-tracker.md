@@ -20,4 +20,4 @@ L'image existe, mais rien ne la fait tourner sur la Pi avec une base de producti
 ## Missions
 - [x] Mission 1: Infra — `deploy/docker-compose.prod.yml`, `deploy/.env.example`, `docs/runbooks/production.md`
 - [x] Mission 2: Vérification — sur la Pi le 2026-10-01 : app et db « healthy », `/api/health` 200, 1 utilisateur et 0 Candidature, port 3000 lié à `127.0.0.1` seulement (PC → `192.168.1.65:3000` et `100.76.35.34:3000` : pas de réponse), aucun port publié pour la base
-- [ ] Mission 3: Manuel — l'utilisateur active HTTPS Certificates et lance `sudo tailscale serve --bg 3000` ; ouverture depuis le téléphone (AC-010-02)
+- [x] Mission 3: Manuel — HTTPS Certificates activé et `sudo tailscale serve --bg 3000` lancé par l'utilisateur le 2026-10-01 ; `https://jobflow.taile9849c.ts.net` : `/api/health` 200 et page d'accueil 200 depuis le PC, certificat valide. Reste à ouvrir depuis le téléphone en 4G (AC-010-02)

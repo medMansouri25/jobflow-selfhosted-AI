@@ -25,9 +25,9 @@ Depuis son téléphone ou son PC, où qu'il soit, l'utilisateur ouvre `https://j
 - [ ] **deploy** — mettre à jour l'application sur la Pi depuis l'image GHCR avec `./deploy.sh` lancé à la main, retour arrière par `./deploy.sh <version>`
       depends-on: [ci-docker-image, prod-compose]
       plan: ⬜ unplanned      status: pending
-- [ ] **backups** — `pg_dump` chaque nuit sur la Pi (7 jours gardés), tâche planifiée Windows qui les récupère via Tailscale, restauration testée
+- [x] **backups** — `pg_dump` chaque nuit sur la Pi (7 jours gardés), tâche planifiée Windows qui les récupère via Tailscale, restauration testée
       depends-on: [prod-compose]
-      plan: ⬜ unplanned      status: pending
+      plan: ✅ planned        status: done
 
 ## Decisions
 - **Q6** — base de production sur la carte SD de la Pi, sauvegardes récupérées par le PC → `docs/adr/0007-base-de-production-sur-la-pi.md`
