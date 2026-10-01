@@ -48,7 +48,7 @@ Une page **Profil** que je remplis une fois (souvent par copier-coller de mon CV
 
 - **BR-006-01** — Un seul profil par utilisateur ; le premier enregistrement le crée, les suivants le remplacent.
 - **BR-006-02** — Un champ vidé est effacé.
-- **BR-006-03** — E-mail : adresse valide. LinkedIn : lien `http(s)://`. Champs courts : 200 caractères max (téléphone 40). Zones de texte : 20 000 caractères max chacune.
+- **BR-006-03** — E-mail : adresse valide. LinkedIn : lien `http(s)://`. Champs courts : 200 caractères max (téléphone 40, lien LinkedIn 2 048 comme le lien d'une Annonce). Zones de texte : 20 000 caractères max chacune.
 - **BR-006-04** — Les textes sont affichés tels quels (texte brut) ; ils ne quittent jamais la Pi tant que l'IA n'est pas branchée.
 
 ## 6. Critères d'acceptation
