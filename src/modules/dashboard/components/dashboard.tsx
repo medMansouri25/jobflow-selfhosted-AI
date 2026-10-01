@@ -11,6 +11,10 @@ import {
   STATUS_DOT_CLASSES,
   StatusBadge,
 } from "@/modules/applications/components/status-badge";
+import {
+  InterviewList,
+  type InterviewListEntry,
+} from "@/modules/applications/components/interview-list";
 import { STATUS_LABELS } from "@/modules/applications/labels";
 import { WEEKS_SHOWN, type WeekCount } from "@/modules/dashboard/domain/stats";
 
@@ -37,10 +41,16 @@ export function Dashboard({
   counts,
   recent,
   stats,
+  upcomingInterviews,
+  upcomingCount,
 }: {
   counts: Record<ApplicationStatus, number>;
   recent: RecentApplication[];
   stats: DashboardStats;
+  /** Les 5 prochains Entretiens (FR-003-06). */
+  upcomingInterviews: InterviewListEntry[];
+  /** Nombre total d'Entretiens à venir. */
+  upcomingCount: number;
 }) {
   const total = Object.values(counts).reduce((sum, n) => sum + n, 0);
 
@@ -51,7 +61,7 @@ export function Dashboard({
           Tableau de bord
         </h1>
         <p className="text-sm text-muted-foreground">
-          {total} candidature(s) · 0 entretien à venir
+          {total} candidature(s) · {upcomingCount} entretien{upcomingCount > 1 ? "s" : ""} à venir
         </p>
       </div>
 
@@ -102,10 +112,18 @@ export function Dashboard({
       <WeeklyChart weeks={stats.weeks} />
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <Panel title="Prochains entretiens">
-          <EmptyState>
-            Aucun entretien prévu. La gestion des entretiens arrive en phase 3.
-          </EmptyState>
+        <Panel
+          title="Prochains entretiens"
+          action={
+            <Link href="/interviews" className="text-sm font-semibold text-primary hover:underline">
+              Tous →
+            </Link>
+          }
+        >
+          <InterviewList
+            interviews={upcomingInterviews}
+            empty="Aucun entretien prévu. Ajoute-en un depuis la fiche d'une candidature."
+          />
         </Panel>
         <Panel
           title="Candidatures récentes"
