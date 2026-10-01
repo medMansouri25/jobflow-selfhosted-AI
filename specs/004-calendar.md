@@ -42,6 +42,7 @@ Une page **Agenda** qui montre mes Entretiens dans une vue **semaine** ou **mois
 | FR-004-03 | **Vue mois** : la grille du mois (semaines du lundi au dimanche) ; un jour qui a des Entretiens porte une pastille avec leur nombre ; choisir un jour affiche ses Entretiens sous la grille. |
 | FR-004-04 | Boutons « Précédent », « Aujourd'hui », « Suivant » (d'une semaine ou d'un mois selon la vue) et choix de la vue. |
 | FR-004-05 | Chaque Entretien mène à la fiche de sa Candidature. |
+| FR-004-07 | Un Entretien dont le lieu est un lien de visio porte un bouton **« Rejoindre sur Teams / Google Meet / Zoom »** (« la visio » pour une autre plateforme), qui ouvre le lien dans un nouvel onglet ; aussi dans « Prochains entretiens » et la page « Entretiens » (demande du 2026-10-01). |
 | FR-004-06 | La vue, la période et le jour choisi sont dans l'URL (`/agenda?vue=mois&date=2026-10-01&jour=2026-10-14`) : un lien ou un rechargement garde l'affichage ; un paramètre invalide revient à la semaine en cours. |
 
 ## 5. Règles
