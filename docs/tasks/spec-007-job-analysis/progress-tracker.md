@@ -22,3 +22,8 @@ Sur la fiche : « Analyser l'annonce » / « Relancer l'analyse » ; l'analyse e
 - [x] Mission 2: Demande et lecture vérifiée de l'analyse + tests (AC-007-02, 04, 05)
 - [x] Mission 3: Colonne `jobAnalysis` + migration ; `analyzeJobPosting` / `readJobAnalysis` + tests d'intégration (AC-007-01, 03, 04, 06)
 - [x] Mission 4: Action, section « Analyse de l'annonce » de la fiche + tests de composant (AC-007-01, 02) ; essai réel
+
+## Review (2026-10-01)
+- Corrigé : clés React par index (l'assistant peut répéter un élément ou une compétence).
+- Corrigé : la consigne fixe les plafonds (30 compétences techniques, 15 savoir-être, chacune une seule fois) que vérifie le schéma : une annonce très longue ne fait plus échouer l'analyse à chaque essai.
+- Corrigé : listes de compétences nommées par leur titre visible (`aria-labelledby`), plus annoncées deux fois.

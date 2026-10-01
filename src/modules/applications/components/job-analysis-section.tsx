@@ -1,7 +1,7 @@
 "use client";
 
 import { CircleAlert, CircleCheck, ScanSearch } from "lucide-react";
-import { useActionState } from "react";
+import { useActionState, useId, type ReactNode } from "react";
 
 import { FormStateMessage } from "@/components/form-state-message";
 import { Button } from "@/components/ui/button";
@@ -76,7 +76,7 @@ export function JobAnalysisSection({
   );
 }
 
-function Block({ title, children }: { title: string; children: React.ReactNode }) {
+function Block({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="flex flex-col gap-2">
       <h3 className="font-semibold">{title}</h3>
@@ -90,8 +90,9 @@ function Bullets({ items }: { items: string[] }) {
     <p className="text-muted-foreground">—</p>
   ) : (
     <ul className="flex list-disc flex-col gap-1 pl-5">
-      {items.map((item) => (
-        <li key={item}>{item}</li>
+      {/* Index en clé : l'assistant peut répéter un élément, et la liste n'est jamais réordonnée. */}
+      {items.map((item, i) => (
+        <li key={i}>{item}</li>
       ))}
     </ul>
   );
@@ -99,15 +100,18 @@ function Bullets({ items }: { items: string[] }) {
 
 /** Compétences : obligatoire / souhaitée, et ✅ dans le profil ou ⚠️ à renforcer (FR-007-03), en texte lisible. */
 function SkillList({ label, skills }: { label: string; skills: Skill[] }) {
+  const labelId = useId();
   return (
     <div className="flex flex-col gap-2">
-      <span className="text-xs font-medium text-muted-foreground">{label}</span>
+      <span id={labelId} className="text-xs font-medium text-muted-foreground">
+        {label}
+      </span>
       {skills.length === 0 ? (
         <p className="text-muted-foreground">—</p>
       ) : (
-        <ul aria-label={label} className="flex flex-col gap-1.5">
-          {skills.map((skill) => (
-            <li key={skill.name} className="flex flex-wrap items-center gap-x-2 gap-y-1">
+        <ul aria-labelledby={labelId} className="flex flex-col gap-1.5">
+          {skills.map((skill, i) => (
+            <li key={`${i}-${skill.name}`} className="flex flex-wrap items-center gap-x-2 gap-y-1">
               {skill.inProfile ? (
                 <CircleCheck aria-hidden className="size-4 shrink-0 text-success" />
               ) : (

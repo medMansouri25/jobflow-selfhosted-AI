@@ -42,7 +42,7 @@ Réponds uniquement par un objet JSON, en français, de cette forme exacte :
 }
 
 Règles :
-- "skills.technical" : langages, outils, méthodes ; "skills.soft" : savoir-être. Toutes les compétences demandées par l'annonce, sans en ajouter.
+- "skills.technical" : langages, outils, méthodes ; "skills.soft" : savoir-être. Les compétences demandées par l'annonce, sans en ajouter : 30 compétences techniques et 15 savoir-être au plus, les plus importantes d'abord, chacune une seule fois.
 - "required" : true si l'annonce la présente comme obligatoire, false si elle est souhaitée ou appréciée.
 - "inProfile" : true seulement si le profil du candidat mentionne cette compétence ; sinon false.
 - N'invente rien : seules l'annonce et le profil comptent ; aucune information extérieure sur l'entreprise.
