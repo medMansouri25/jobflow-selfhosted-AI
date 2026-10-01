@@ -50,7 +50,7 @@ enum AttachmentKind {
   COVER_LETTER
 }
 
-/// L'utilisateur unique (seed). Présent pour ne pas fermer la porte au multi-utilisateur (ADR 0001).
+/// L'utilisateur unique (créé par la migration `single_user`). Présent pour ne pas fermer la porte au multi-utilisateur (ADR 0001).
 model User {
   id           String        @id @default(uuid()) @db.Uuid
   createdAt    DateTime      @default(now()) @db.Timestamptz
