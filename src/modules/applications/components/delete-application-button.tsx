@@ -14,13 +14,13 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { FormStateMessage } from "@/modules/applications/components/form-state-message";
+import { FormStateMessage } from "@/components/form-state-message";
 import {
-  initialApplicationFormState,
-  type ApplicationFormState,
-} from "@/modules/applications/form-state";
+  initialFormState,
+  type FormState,
+} from "@/lib/form-state";
 
-type DeleteAction = (state: ApplicationFormState, formData: FormData) => Promise<ApplicationFormState>;
+type DeleteAction = (state: FormState, formData: FormData) => Promise<FormState>;
 
 /** Bouton « Supprimer » de la fiche : confirmation rappelant le poste et l'Entreprise (FR-001-07). */
 export function DeleteApplicationButton({
@@ -34,7 +34,7 @@ export function DeleteApplicationButton({
 }) {
   // Succès : l'action redirige vers la liste. Avertissement : la Candidature est supprimée mais un
   // fichier reste chez le stockage ; la fenêtre reste ouverte pour le dire.
-  const [state, formAction, pending] = useActionState(action, initialApplicationFormState);
+  const [state, formAction, pending] = useActionState(action, initialFormState);
   const deleted = state.status === "warning";
 
   return (

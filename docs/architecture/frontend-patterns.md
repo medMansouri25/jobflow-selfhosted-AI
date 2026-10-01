@@ -86,6 +86,13 @@ const [state, formAction, pending] = useActionState(createApplicationAction, ini
 - **Référence visuelle** : la maquette `JobFlow AI.html` (fichier local, non versionné).
 - `AppSidebar` (menu latéral, `src/components/`) : logo, Dashboard et Candidatures actifs (`aria-current="page"` sur la page courante), puis les fonctionnalités à venir **affichées sans lien** avec leur phase (`P3`, `P4`…), et le pied « Mon espace · Privé · Tailscale ».
 - `AppTopbar` (barre du haut) : section courante, date du jour calculée **dans le navigateur** (`useSyncExternalStore` : jamais figée dans le HTML du serveur), recherche (`GET /applications?q=`), bouton « Nouvelle candidature ».
+- **Responsive (téléphone d'abord, l'application s'utilise surtout sur iPhone via Tailscale)** :
+  - menu latéral à partir de `lg` seulement ; en dessous, bouton « Menu » (`MobileNav`) qui ouvre le même contenu (`SidebarContent`) en tiroir, refermé au choix d'une page ;
+  - barre du haut : sur téléphone, recherche pleine largeur sur une seconde ligne, date masquée, bouton « Nouvelle candidature » réduit à l'icône (`aria-label` conservé) ;
+  - pages en `px-4 py-6`, `sm:px-8 sm:py-8` ; titres `text-3xl sm:text-4xl` ;
+  - tableaux : les colonnes secondaires sont `hidden md:table-cell` (liste) ou `hidden sm:table-cell` (tableau de bord), conteneur `overflow-x-auto` ;
+  - filtres de la liste : la recherche reste visible, le reste se déplie par une case sans `name` (CSS `peer-has-[:checked]`, aucun JavaScript), dépliée d'office si un filtre détaillé est actif ;
+  - vérifier chaque écran à 375 px de large : aucun défilement horizontal de la page.
 - La création d'une candidature se fait dans une **fenêtre modale** (`NewApplicationDialog`, Dialog shadcn), disponible sur toutes les pages ; `/applications/new` reste accessible par URL.
 
 ## Style
@@ -107,5 +114,10 @@ const [state, formAction, pending] = useActionState(createApplicationAction, ini
 - Champ Entreprise : suggestions natives (`<input list>` + `<datalist>`, prop `companySuggestions` = `listCompanyNames(userId)`), sans JavaScript ; un nouveau nom reste possible (FR-001-04). La fenêtre « Nouvelle candidature » vit dans la barre du haut : c'est le **layout** qui lit ces noms, et il est donc `force-dynamic` (aucune page n'est pré-rendue au build, donc aucune lecture de base au build). Ces suggestions sont facultatives : en cas d'erreur, liste vide, pour que le layout n'échoue jamais (`error.tsx` ne rattrape pas une erreur du layout racine). `listCompanyNames` est enveloppé dans `cache()` de React : une seule lecture par requête.
 - La fiche (`ApplicationDetail`) reçoit ses boutons par un emplacement `actions` et son bloc « Statut » par un emplacement `statusPanel` (`<StatusPanel action={changeStatusAction.bind(null, id)} />`), fournis par la page : le composant reste sans dépendance aux actions serveur.
 - Suppression : `DeleteApplicationButton` (bouton « Supprimer » de la fiche, à côté de « Modifier ») ouvre une `AlertDialog` rappelant le poste et l'Entreprise. La confirmation est un `<Button type="submit">` dans un `<form action>`, **pas** `AlertDialogAction` : celui-ci fermerait la fenêtre avant la réponse du serveur. En cas de succès, l'action redirige ; en cas d'avertissement, la fenêtre reste ouverte, montre le message (`FormStateMessage`) et remplace les boutons par « Retour à la liste ».
-- Composants partagés du module : `FormStateMessage` (message renvoyé par une action : `role="alert"` pour une erreur, `role="status"` pour un avertissement ou un succès, couleurs de statut), utilisé par `ApplicationForm` et `StatusPanel` ; `Section` (carte titrée, `<section aria-labelledby>`) pour les blocs de la fiche.
+- Briques de formulaire communes à tous les modules (Candidatures, Entretiens, Profil) :
+  - `src/lib/form-state.ts` : `FormState` (état renvoyé par une Server Action), `initialFormState`, `FormAction` ;
+  - `src/lib/form-fields.ts` : `emptyToUndefined`, `optionalText` (Zod) et `formValues(formData)` (champs texte d'un envoi) ;
+  - `src/components/form-fields.tsx` : `Field` (libellé, astérisque, aide et erreur reliés au champ) et `SelectField` ;
+  - `src/components/form-state-message.tsx` : `FormStateMessage` (`role="alert"` pour une erreur, `role="status"` pour un avertissement ou un succès).
+- `Section` (carte titrée, `<section aria-labelledby>`, bouton facultatif à droite du titre) pour les blocs de la fiche.
 - Un composant `Field` relie libellé, aide et erreur (`aria-describedby`, `aria-invalid`) ; `SelectField` enveloppe le `Select` shadcn (Radix) avec `name`, soumis nativement, et un `key` dérivé de la valeur renvoyée pour le réinitialiser après une erreur.

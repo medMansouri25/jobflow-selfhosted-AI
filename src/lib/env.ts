@@ -6,6 +6,9 @@ const envSchema = z.object({
     .regex(/^postgres(ql)?:\/\//, "DATABASE_URL doit être une URL postgresql://"),
   // Jeton UploadThing (pièces jointes, ADR 0006) : absent en test et en CI, où le stockage est remplacé par un faux.
   UPLOADTHING_TOKEN: z.string().min(1).optional(),
+  // Assistant IA (ADR 0008) : sans clé, l'assistant est indisponible ; le modèle se change sans toucher au code.
+  GEMINI_API_KEY: z.string().min(1).optional(),
+  GEMINI_MODEL: z.string().min(1).default("gemini-flash-latest"),
 });
 
 export type Env = z.infer<typeof envSchema>;

@@ -1,10 +1,10 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import type { ApplicationFormState } from "@/modules/applications/form-state";
+import type { FormState } from "@/lib/form-state";
 import { EditApplicationDialog } from "@/modules/applications/components/edit-application-dialog";
 
-const saving = async (): Promise<ApplicationFormState> => ({
+const saving = async (): Promise<FormState> => ({
   status: "success",
   message: "Candidature mise à jour.",
 });
@@ -32,7 +32,7 @@ describe("fenêtre de modification d'une Candidature", () => {
   });
 
   it("reste ouverte et affiche l'avertissement quand la modification est faite mais qu'un fichier reste à supprimer", async () => {
-    const savedWithWarning = async (): Promise<ApplicationFormState> => ({
+    const savedWithWarning = async (): Promise<FormState> => ({
       status: "warning",
       message: "Candidature mise à jour. Le fichier « CV_v1.pdf » est resté sur UploadThing : supprime-le depuis ton tableau de bord UploadThing.",
     });

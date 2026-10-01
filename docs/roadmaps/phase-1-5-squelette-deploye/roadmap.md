@@ -1,7 +1,7 @@
 # Roadmap: Phase 1.5 — Squelette déployé (SPEC-010)
 
 **Created**: 2026-09-30
-**Status**: Planning (SPEC-010 validée)
+**Status**: In dev (en ligne depuis le 2026-10-01 ; reste la vérification depuis l'iPhone)
 
 ## Objective
 Depuis son téléphone ou son PC, où qu'il soit, l'utilisateur ouvre `https://jobflow.<tailnet>.ts.net` et utilise JobFlow « pour de vrai » : l'application tourne en permanence sur la Raspberry Pi, avec une base de production séparée de celle de développement, qui démarre vide. Chaque nuit, la base est sauvegardée ; le PC récupère les sauvegardes quand il est allumé, et une restauration a été testée.
@@ -15,19 +15,19 @@ Depuis son téléphone ou son PC, où qu'il soit, l'utilisateur ouvre `https://j
       plan: ✅ planned        status: done
 - [ ] **runbook-pi-setup** — compte Tailscale (créé par l'utilisateur), Tailscale sur la Pi, le PC et le téléphone, vérifications Docker ; procédure dans `docs/runbooks/` (commandes `sudo` lancées par l'utilisateur)
       depends-on: [spec-010-deployment]
-      plan: ⬜ unplanned      status: pending
-- [ ] **ci-docker-image** — CI : image ARM64 (`docker buildx`) publiée sur GHCR à chaque merge sur `main`
+      plan: ✅ planned        status: in-dev (reste : ouverture depuis l'iPhone en 4G)
+- [x] **ci-docker-image** — CI : image ARM64 (`docker buildx`) publiée sur GHCR à chaque merge sur `main`
       depends-on: [dockerfile]
-      plan: ⬜ unplanned      status: pending
+      plan: ✅ planned        status: done
 - [ ] **prod-compose** — `docker-compose.prod.yml` (application + PostgreSQL de production séparé, vide) + Caddy en HTTPS `*.ts.net` + migrations au démarrage ; secrets (`DATABASE_URL`, `UPLOADTHING_TOKEN`, même app UploadThing que le dev) hors du dépôt
       depends-on: [dockerfile, runbook-pi-setup]
-      plan: ⬜ unplanned      status: pending
-- [ ] **deploy** — mettre à jour l'application sur la Pi depuis l'image GHCR avec `./deploy.sh` lancé à la main, retour arrière par `./deploy.sh <version>`
+      plan: ✅ planned        status: in-dev (reste : ouverture depuis l'iPhone en 4G)
+- [x] **deploy** — mettre à jour l'application sur la Pi depuis l'image GHCR avec `./deploy.sh` lancé à la main, retour arrière par `./deploy.sh <version>`
       depends-on: [ci-docker-image, prod-compose]
-      plan: ⬜ unplanned      status: pending
-- [ ] **backups** — `pg_dump` chaque nuit sur la Pi (7 jours gardés), tâche planifiée Windows qui les récupère via Tailscale, restauration testée
+      plan: ✅ planned        status: done
+- [x] **backups** — `pg_dump` chaque nuit sur la Pi (7 jours gardés), tâche planifiée Windows qui les récupère via Tailscale, restauration testée
       depends-on: [prod-compose]
-      plan: ⬜ unplanned      status: pending
+      plan: ✅ planned        status: done
 
 ## Decisions
 - **Q6** — base de production sur la carte SD de la Pi, sauvegardes récupérées par le PC → `docs/adr/0007-base-de-production-sur-la-pi.md`

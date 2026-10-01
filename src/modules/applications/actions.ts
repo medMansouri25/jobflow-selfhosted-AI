@@ -7,7 +7,8 @@ import { z } from "zod";
 import { getCurrentUserId } from "@/lib/current-user";
 import { todayInParis } from "@/lib/dates";
 import { domainErrorToFormState } from "@/lib/errors";
-import type { ApplicationFormState } from "@/modules/applications/form-state";
+import { formValues } from "@/lib/form-fields";
+import type { FormState } from "@/lib/form-state";
 import { STATUS_LABELS } from "@/modules/applications/labels";
 import {
   changeStatusSchema,
@@ -26,16 +27,14 @@ import {
  * au formulaire en cas d'erreur (un fichier ne peut pas l'être, le navigateur l'interdit).
  */
 function readForm(formData: FormData) {
-  const values: Record<string, string> = {};
-  const files: Record<string, File> = {};
-  for (const [key, value] of formData.entries()) {
-    if (typeof value === "string") values[key] = value;
-    else files[key] = value;
-  }
+  const values = formValues(formData);
+  const files = Object.fromEntries(
+    [...formData.entries()].filter((entry): entry is [string, File] => entry[1] instanceof File),
+  );
   return { values, input: { ...values, ...files } };
 }
 
-function invalid(error: z.ZodError, values: Record<string, string>): ApplicationFormState {
+function invalid(error: z.ZodError, values: Record<string, string>): FormState {
   return {
     status: "error",
     message: "Certains champs sont à corriger.",
@@ -45,9 +44,9 @@ function invalid(error: z.ZodError, values: Record<string, string>): Application
 }
 
 export async function createApplicationAction(
-  _previous: ApplicationFormState,
+  _previous: FormState,
   formData: FormData,
-): Promise<ApplicationFormState> {
+): Promise<FormState> {
   const { values, input } = readForm(formData);
   const result = createApplicationSchema(todayInParis()).safeParse(input);
   if (!result.success) return invalid(result.error, values);
@@ -69,9 +68,9 @@ export async function createApplicationAction(
 /** Modification (FR-001-02) ; `id` est lié par la page (`updateApplicationAction.bind(null, id)`). */
 export async function updateApplicationAction(
   id: string,
-  _previous: ApplicationFormState,
+  _previous: FormState,
   formData: FormData,
-): Promise<ApplicationFormState> {
+): Promise<FormState> {
   const { values, input } = readForm(formData);
   const result = updateApplicationSchema(todayInParis()).safeParse(input);
   if (!result.success) return invalid(result.error, values);
@@ -94,9 +93,9 @@ export async function updateApplicationAction(
 /** Changement de statut (FR-001-05) ; `id` est lié par la page. La transition est vérifiée par le service. */
 export async function changeStatusAction(
   id: string,
-  _previous: ApplicationFormState,
+  _previous: FormState,
   formData: FormData,
-): Promise<ApplicationFormState> {
+): Promise<FormState> {
   const result = changeStatusSchema.safeParse({ to: formData.get("to") });
   if (!result.success) return { status: "error", message: "Statut inconnu." };
 
@@ -114,7 +113,7 @@ export async function changeStatusAction(
  * Suppression (FR-001-07) ; `id` est lié par la page. Sans fichier resté chez le stockage, retour
  * à la liste ; sinon la Candidature est supprimée et l'avertissement nomme les fichiers à supprimer.
  */
-export async function deleteApplicationAction(id: string): Promise<ApplicationFormState> {
+export async function deleteApplicationAction(id: string): Promise<FormState> {
   let leftover: string | null;
   try {
     ({ leftover } = await deleteApplication(await getCurrentUserId(), id));
