@@ -119,7 +119,7 @@ Les erreurs inattendues ne sont jamais avalées ni transformées en message mét
 
 ## Utilisateur courant
 
-- `lib/current-user.ts` expose `getCurrentUserId()`, qui renvoie l'utilisateur unique créé par le seed.
+- `lib/current-user.ts` expose `getCurrentUserId()`, qui renvoie l'utilisateur unique. Il est créé par la migration `single_user` (`INSERT … WHERE NOT EXISTS`), donc toute base migrée, même la production vide, en a un ; le seed reste pour le dev.
 - C'est le **seul** endroit qui sait comment l'utilisateur est identifié : l'ajout futur d'une authentification ne modifie que ce fichier.
 - Les services ne l'appellent jamais eux-mêmes : ils reçoivent le `userId`.
 
@@ -130,6 +130,7 @@ Les erreurs inattendues ne sont jamais avalées ni transformées en message mét
 - Horodatages en UTC (`timestamptz`) ; les dates sans heure (`appliedAt`) en type `date`.
 - Suppressions en cascade déclarées dans le schéma (`onDelete: Cascade`) quand la spec l'exige.
 - Retirer une valeur d'un enum PostgreSQL ne se fait pas sans perte par la migration générée : la migration est écrite à la main. Elle convertit d'abord les lignes (tables et historique), crée `<Enum>_new`, bascule les colonnes (`USING col::text::"<Enum>_new"`), supprime l'ancien type puis renomme le nouveau ; `prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma` sur `jobflow_test` doit ensuite renvoyer une migration vide. Exemple : `20260927160000_three_application_statuses`.
+- Les migrations s'appliquent au démarrage du conteneur de production (`docker/app/start.sh`) ; une migration en échec arrête le conteneur (BR-010-05). Une migration ne suppose donc jamais de données de dev : elle doit passer sur la base de production vide comme sur une base remplie.
 
 ## Tests
 
