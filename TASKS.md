@@ -230,11 +230,11 @@ Feuille de route : `docs/roadmaps/phase-1-5-squelette-deploye/roadmap.md`.
 |---|---|---|
 | [x] T1.5.1 | Rédiger SPEC-010 (Q6 tranchée : ADR 0007, base sur la carte SD de la Pi) | `docs/spec-010-deployment` |
 | [x] T1.5.2 | Dockerfile multi-étapes (sortie `standalone`, utilisateur non-root, `HEALTHCHECK`) | `chore/dockerfile` |
-| [ ] T1.5.3 | CI : image multi-arch (`docker buildx`, ARM64) publiée sur GHCR à chaque merge sur `main` | `chore/ci-docker-image` |
+| [x] T1.5.3 | CI : image multi-arch (`docker buildx`, ARM64) publiée sur GHCR à chaque merge sur `main` | `chore/ci-docker-image` |
 | [ ] T1.5.4 | Préparer la Pi : Tailscale (Pi, PC, téléphone), Docker — procédure dans `docs/runbooks/` | `docs/runbook-pi-setup` |
 | [ ] T1.5.5 | `docker-compose.prod.yml` + `Caddyfile` (HTTPS `*.ts.net`) + migrations au déploiement | `chore/prod-compose` |
-| [ ] T1.5.6 | Déploiement : mise à jour de l'image sur la Pi (`./deploy.sh` lancé à la main, retour arrière) | `chore/deploy` |
-| [ ] T1.5.7 | Sauvegardes : `pg_dump` planifié, récupération par le PC, **restauration testée** | `chore/backups` |
+| [x] T1.5.6 | Déploiement : mise à jour de l'image sur la Pi (`./deploy.sh` lancé à la main, retour arrière) | `chore/deploy` |
+| [x] T1.5.7 | Sauvegardes : `pg_dump` planifié, récupération par le PC, **restauration testée** | `chore/backups` |
 
 ## Phase 2 — Dashboard (SPEC-002)
 
@@ -288,7 +288,7 @@ Feuille de route : `docs/roadmaps/phase-1-5-squelette-deploye/roadmap.md`.
 | [ ] T7.1 | ADR fournisseur d'IA (**Q7** : coût, confidentialité, API) | `docs/adr-ai-provider` |
 | [ ] T7.2 | Rédiger SPEC-007 | `docs/spec-007-ai-job-analysis` |
 | [ ] T7.3 | Client IA, protections contre l'injection de prompt, plafond de coût | `feature/spec-007-ai-client` |
-| [ ] T7.4 | Analyse d'une Annonce | `feature/spec-007-job-analysis` |
+| [x] T7.4 | Analyse d'une Annonce | `feature/spec-007-job-analysis` |
 
 ## Phase 8 — IA : brouillon de lettre (SPEC-008)
 
@@ -302,13 +302,13 @@ Feuille de route : `docs/roadmaps/phase-1-5-squelette-deploye/roadmap.md`.
 | # | Tâche | Branche |
 |---|---|---|
 | [ ] T9.1 | Rédiger SPEC-009 | `docs/spec-009-ai-interview-prep` |
-| [ ] T9.2 | Mode « Préparer mon entretien » | `feature/spec-009-interview-prep` |
+| [x] T9.2 | Mode « Préparer mon entretien » | `feature/spec-009-interview-prep` |
 
 ## Phase 10 — Observabilité et durcissement (SPEC-012)
 
 | # | Tâche | Branche |
 |---|---|---|
 | [x] T10.1 | Rédiger SPEC-012 (alertes ntfy, Dependabot mensuel ; pas de Prometheus, décision du 2026-10-01) | `docs/spec-012-hardening` |
-| [ ] T10.2 | Alertes ntfy (watchdog, sauvegardes, disque, PC) et journaux Docker limités | `chore/hardening` |
+| [x] T10.2 | Alertes ntfy (watchdog, sauvegardes, disque, PC) et journaux Docker limités | `chore/hardening` |
 | [-] T10.3 | ~~Métriques Prometheus / Grafana~~ — écarté le 2026-10-01 : trop lourd pour la Pi | — |
-| [ ] T10.4 | Durcissement : en-têtes de sécurité, `npm audit` en CI, Dependabot | `chore/hardening` |
+| [x] T10.4 | Durcissement : en-têtes de sécurité, `npm audit` en CI, Dependabot | `chore/hardening` |

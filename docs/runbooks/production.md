@@ -51,3 +51,14 @@ L'adresse affichée (`https://jobflow.<tailnet>.ts.net`) s'ouvre depuis le PC et
 | `https://jobflow.<tailnet>.ts.net` depuis le téléphone en 4G (Tailscale actif) | le tableau de bord, cadenas valide (AC-010-02) |
 | `curl -m 5 http://192.168.1.65:3000` depuis le PC | aucune réponse (AC-010-03) |
 | liste des Candidatures juste après l'installation | vide (AC-010-04) |
+
+## Mettre à jour
+
+Dans `~/jobflow-prod` (copie de [`deploy/deploy.sh`](../../deploy/deploy.sh), `chmod 700`) :
+
+```bash
+./deploy.sh               # dernière version publiée par la CI (latest)
+./deploy.sh sha-1a2b3c4   # une version précise : retour arrière
+```
+
+Le script télécharge l'image (une version introuvable ne touche à rien), fait une sauvegarde avec `backup.sh` (à copier aussi dans `~/jobflow-prod`), note la version dans `.env`, redémarre l'application et attend qu'elle soit « healthy » ; il retient alors cette version dans `.last-good`. Sinon, il affiche le nom de la sauvegarde faite juste avant et la commande de retour à la dernière version saine, sans revenir en arrière tout seul (BR-010-03). **Si une migration a échoué**, la base est à moitié migrée : restaurer d'abord cette sauvegarde (`backups.md`, « Restaurer »), puis relancer `./deploy.sh <dernière version saine>`. Les versions disponibles sont les étiquettes `sha-…` du paquet sur GHCR (une par merge sur `main`).

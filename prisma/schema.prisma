@@ -45,6 +45,21 @@ enum SalaryPeriod {
   MONTHLY
 }
 
+/// Type d'un Entretien (SPEC-003).
+enum InterviewType {
+  HR
+  TECHNICAL
+  MANAGER
+  FINAL
+  OTHER
+}
+
+enum InterviewFormat {
+  ON_SITE
+  VIDEO
+  PHONE
+}
+
 enum AttachmentKind {
   CV
   COVER_LETTER
@@ -57,6 +72,8 @@ model User {
   companies    Company[]
   applications Application[]
   attachments  Attachment[]
+  interviews   Interview[]
+  profile      Profile?
 }
 
 /// Entreprise — nom unique par utilisateur, sans distinction de casse (BR-001-11).
@@ -76,28 +93,33 @@ model Company {
 
 /// Candidature — porte les champs de son Annonce.
 model Application {
-  id             String                    @id @default(uuid()) @db.Uuid
-  userId         String                    @db.Uuid
-  user           User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  companyId      String                    @db.Uuid
-  company        Company                   @relation(fields: [companyId], references: [id], onDelete: Restrict)
-  status         ApplicationStatus
-  jobTitle       String                    @db.VarChar(200)
-  location       String?                   @db.VarChar(200)
-  contractType   ContractType?
-  jobUrl         String?                   @db.VarChar(2048)
-  source         ApplicationSource?
-  jobDescription String?
-  salaryMin      Int?
-  salaryMax      Int?
-  salaryCurrency String?                   @db.Char(3)
-  salaryPeriod   SalaryPeriod?
-  appliedAt      DateTime?                 @db.Date
-  notes          String?
-  createdAt      DateTime                  @default(now()) @db.Timestamptz
-  updatedAt      DateTime                  @updatedAt @db.Timestamptz
-  statusChanges  ApplicationStatusChange[]
-  attachments    Attachment[]
+  id               String                    @id @default(uuid()) @db.Uuid
+  userId           String                    @db.Uuid
+  user             User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyId        String                    @db.Uuid
+  company          Company                   @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  status           ApplicationStatus
+  jobTitle         String                    @db.VarChar(200)
+  location         String?                   @db.VarChar(200)
+  contractType     ContractType?
+  jobUrl           String?                   @db.VarChar(2048)
+  source           ApplicationSource?
+  jobDescription   String?
+  salaryMin        Int?
+  salaryMax        Int?
+  salaryCurrency   String?                   @db.Char(3)
+  salaryPeriod     SalaryPeriod?
+  appliedAt        DateTime?                 @db.Date
+  notes            String?
+  /// Brouillon de lettre de motivation (SPEC-008), généré puis modifié par l'utilisateur.
+  coverLetterDraft String?
+  /// Analyse de l'Annonce par l'assistant (SPEC-007), au format vérifié par `jobAnalysisSchema`.
+  jobAnalysis      Json?
+  createdAt        DateTime                  @default(now()) @db.Timestamptz
+  updatedAt        DateTime                  @updatedAt @db.Timestamptz
+  statusChanges    ApplicationStatusChange[]
+  attachments      Attachment[]
+  interviews       Interview[]
 
   @@index([userId, status])
   @@index([userId, updatedAt])
@@ -131,4 +153,49 @@ model Attachment {
   createdAt     DateTime       @default(now()) @db.Timestamptz
 
   @@unique([applicationId, kind])
+}
+
+/// Entretien (rendez-vous) d'une Candidature (SPEC-003). L'heure est un instant UTC, saisie et
+/// affichée à l'heure de Paris ; l'Interlocuteur est du texte libre (pas encore de fiche Contact).
+model Interview {
+  id            String          @id @default(uuid()) @db.Uuid
+  userId        String          @db.Uuid
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  applicationId String          @db.Uuid
+  application   Application     @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  scheduledAt   DateTime        @db.Timestamptz
+  type          InterviewType
+  format        InterviewFormat
+  location      String?         @db.VarChar(500)
+  interviewer   String?         @db.VarChar(200)
+  preparation   String?
+  debrief       String?
+  /// Fiche de préparation de l'assistant (SPEC-009), à côté de la Préparation écrite par l'utilisateur.
+  aiPreparation Json?
+  createdAt     DateTime        @default(now()) @db.Timestamptz
+  updatedAt     DateTime        @updatedAt @db.Timestamptz
+
+  @@index([userId, scheduledAt])
+  @@index([applicationId, scheduledAt])
+}
+
+/// Profil (SPEC-006) : ce que l'assistant saura de moi pour écrire mes lettres. Un seul par
+/// utilisateur, en texte libre ; tous les champs sont facultatifs.
+model Profile {
+  id             String   @id @default(uuid()) @db.Uuid
+  userId         String   @unique @db.Uuid
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fullName       String?  @db.VarChar(200)
+  targetRole     String?  @db.VarChar(200)
+  location       String?  @db.VarChar(200)
+  email          String?  @db.VarChar(200)
+  phone          String?  @db.VarChar(40)
+  linkedinUrl    String?  @db.VarChar(2048)
+  about          String?
+  experience     String?
+  projects       String?
+  skills         String?
+  education      String?
+  writingSamples String?
+  updatedAt      DateTime @updatedAt @db.Timestamptz
 }

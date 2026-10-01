@@ -29,7 +29,7 @@ pnpm-debug.log*
 
 # Sauvegardes de base (pg_dump)
 *.dump
-backups/
+/backups/
 
 # Éditeurs / OS
 .vscode/*
