@@ -14,15 +14,10 @@ updates:
         patterns: ["*"]
         update-types: ["minor", "patch"]
     ignore:
-      # ESLint 10 casse eslint-config-next 16 (« contextOrFilename.getFilename is not a function ») :
-      # à retirer quand une version d'eslint-config-next le prend en charge.
-      - dependency-name: eslint
-        update-types: ["version-update:semver-major"]
-      # Les types suivent le Node de l'image (24, LTS), pas la dernière version de Node.
-      - dependency-name: "@types/node"
-        update-types: ["version-update:semver-major"]
-      # TypeScript 7 n'est pas encore pris en charge par typescript-eslint (utilisé par eslint-config-next).
-      - dependency-name: typescript
+      # Aucune version majeure proposée (décision du 2026-10-01) : elles changent le fonctionnement des
+      # outils et cassent souvent la CI (ESLint 10, TypeScript 7…). On les fait à la main, quand on le décide.
+      # Les mises à jour de sécurité de Dependabot ne sont pas concernées par cette règle.
+      - dependency-name: "*"
         update-types: ["version-update:semver-major"]
 
   - package-ecosystem: github-actions
