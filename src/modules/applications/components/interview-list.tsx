@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import type { InterviewFormat, InterviewType } from "@/modules/applications/domain/application";
-import { formatInterviewDate } from "@/modules/applications/components/interviews-section";
+import { formatInterviewDate } from "@/modules/applications/format";
 import { INTERVIEW_FORMAT_LABELS, INTERVIEW_TYPE_LABELS } from "@/modules/applications/labels";
 
 export type InterviewListEntry = {

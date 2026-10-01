@@ -4,30 +4,13 @@ import type { Interview } from "@/generated/prisma/client";
 import type { ApplicationStatus } from "@/modules/applications/domain/application";
 import { isDefinitive } from "@/modules/applications/domain/status";
 import { Section } from "@/modules/applications/components/section";
+import { formatInterviewDate } from "@/modules/applications/format";
 import { INTERVIEW_FORMAT_LABELS, INTERVIEW_TYPE_LABELS } from "@/modules/applications/labels";
 
 export type InterviewItem = Pick<
   Interview,
   "id" | "scheduledAt" | "type" | "format" | "location" | "interviewer" | "preparation" | "debrief"
 >;
-
-// « mer. 14 oct. 2026 · 10:30 », toujours à l'heure de Paris (SPEC-003 §6).
-const dayFormat = new Intl.DateTimeFormat("fr-FR", {
-  weekday: "short",
-  day: "numeric",
-  month: "short",
-  year: "numeric",
-  timeZone: "Europe/Paris",
-});
-const timeFormat = new Intl.DateTimeFormat("fr-FR", {
-  hour: "2-digit",
-  minute: "2-digit",
-  timeZone: "Europe/Paris",
-});
-
-export function formatInterviewDate(instant: Date): string {
-  return `${dayFormat.format(instant)} · ${timeFormat.format(instant)}`;
-}
 
 /**
  * Entretiens d'une Candidature (FR-003-04), dans l'ordre reçu (date croissante). `add` : bouton

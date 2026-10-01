@@ -16,10 +16,8 @@ import {
   DeleteInterviewButton,
   EditInterviewDialog,
 } from "@/modules/applications/components/interview-dialogs";
-import {
-  formatInterviewDate,
-  InterviewsSection,
-} from "@/modules/applications/components/interviews-section";
+import { InterviewsSection } from "@/modules/applications/components/interviews-section";
+import { formatInterviewDate } from "@/modules/applications/format";
 import { StatusPanel } from "@/modules/applications/components/status-panel";
 import {
   addInterviewAction,

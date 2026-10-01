@@ -1,41 +1,46 @@
+import type { Prisma } from "@/generated/prisma/client";
+
 import { db } from "@/lib/db";
 
 // Entretiens toutes Candidatures confondues : tableau de bord (FR-003-06) et page « Entretiens » (FR-003-07).
 
-const WITH_APPLICATION = {
+/** Ce qu'affiche une liste d'Entretiens : ni préparation ni compte rendu. */
+const LIST_FIELDS = {
+  id: true,
+  scheduledAt: true,
+  type: true,
+  format: true,
   application: { select: { id: true, jobTitle: true, company: { select: { name: true } } } },
-} as const;
+} satisfies Prisma.InterviewSelect;
 
-/** Les `limit` prochains Entretiens (après `now`, BR-003-07), du plus proche au plus lointain. */
-export async function listUpcomingInterviews(userId: string, now: Date, limit: number) {
+/** « À venir » = après `now` (BR-003-07). */
+const upcoming = (userId: string, now: Date) => ({ userId, scheduledAt: { gt: now } });
+
+/** Les `limit` prochains Entretiens (tous si `limit` est absent), du plus proche au plus lointain. */
+export async function listUpcomingInterviews(userId: string, now: Date, limit?: number) {
   return db.interview.findMany({
-    where: { userId, scheduledAt: { gt: now } },
-    orderBy: { scheduledAt: "asc" },
+    where: upcoming(userId, now),
+    // `id` départage deux Entretiens à la même heure : l'ordre reste stable d'un chargement à l'autre.
+    orderBy: [{ scheduledAt: "asc" }, { id: "asc" }],
     take: limit,
-    include: WITH_APPLICATION,
+    select: LIST_FIELDS,
   });
 }
 
 /** Tous les Entretiens : à venir (plus proche d'abord), puis passés (plus récent d'abord). */
 export async function listInterviews(userId: string, now: Date) {
-  const [upcoming, past] = await Promise.all([
-    db.interview.findMany({
-      where: { userId, scheduledAt: { gt: now } },
-      orderBy: { scheduledAt: "asc" },
-      include: WITH_APPLICATION,
-    }),
+  const [future, past] = await Promise.all([
+    listUpcomingInterviews(userId, now),
     db.interview.findMany({
       where: { userId, scheduledAt: { lte: now } },
-      orderBy: { scheduledAt: "desc" },
-      include: WITH_APPLICATION,
+      orderBy: [{ scheduledAt: "desc" }, { id: "asc" }],
+      select: LIST_FIELDS,
     }),
   ]);
-  return { upcoming, past };
+  return { upcoming: future, past };
 }
-
-export type InterviewListItem = Awaited<ReturnType<typeof listUpcomingInterviews>>[number];
 
 /** Nombre d'Entretiens à venir (en-tête du tableau de bord). */
 export async function countUpcomingInterviews(userId: string, now: Date) {
-  return db.interview.count({ where: { userId, scheduledAt: { gt: now } } });
+  return db.interview.count({ where: upcoming(userId, now) });
 }
