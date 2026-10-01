@@ -301,8 +301,9 @@ Feuille de route : `docs/roadmaps/phase-1-5-squelette-deploye/roadmap.md`.
 
 | # | Tâche | Branche |
 |---|---|---|
-| [ ] T9.1 | Rédiger SPEC-009 | `docs/spec-009-ai-interview-prep` |
-| [ ] T9.2 | Mode « Préparer mon entretien » | `feature/spec-009-interview-prep` |
+| [x] T9.1 | Rédiger SPEC-009 (fiche de préparation et entraînement, décision du 2026-10-01) | `docs/spec-009-interview-prep` |
+| [ ] T9.2 | A — Fiche de préparation par entretien | `feature/spec-009-interview-prep` |
+| [ ] T9.3 | B — Entraînement : 5 questions, retour par réponse, bilan | `feature/spec-009-interview-practice` |
 
 ## Phase 10 — Observabilité et durcissement (SPEC-012)
 
