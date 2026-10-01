@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { INTERVIEW_FORMATS, INTERVIEW_TYPES } from "@/modules/applications/domain/application";
-import { Field, SelectField } from "@/modules/applications/components/form-fields";
+import { Field, SelectField } from "@/components/form-fields";
 import { FormStateMessage } from "@/modules/applications/components/form-state-message";
 import {
   initialApplicationFormState,

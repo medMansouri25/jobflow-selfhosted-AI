@@ -73,6 +73,7 @@ model User {
   applications Application[]
   attachments  Attachment[]
   interviews   Interview[]
+  profile      Profile?
 }
 
 /// Entreprise — nom unique par utilisateur, sans distinction de casse (BR-001-11).
@@ -170,4 +171,25 @@ model Interview {
 
   @@index([userId, scheduledAt])
   @@index([applicationId, scheduledAt])
+}
+
+/// Profil (SPEC-006) : ce que l'assistant saura de moi pour écrire mes lettres. Un seul par
+/// utilisateur, en texte libre ; tous les champs sont facultatifs.
+model Profile {
+  id             String   @id @default(uuid()) @db.Uuid
+  userId         String   @unique @db.Uuid
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fullName       String?  @db.VarChar(200)
+  targetRole     String?  @db.VarChar(200)
+  location       String?  @db.VarChar(200)
+  email          String?  @db.VarChar(200)
+  phone          String?  @db.VarChar(40)
+  linkedinUrl    String?  @db.VarChar(2048)
+  about          String?
+  experience     String?
+  projects       String?
+  skills         String?
+  education      String?
+  writingSamples String?
+  updatedAt      DateTime @updatedAt @db.Timestamptz
 }

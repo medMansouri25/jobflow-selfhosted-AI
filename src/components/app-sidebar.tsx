@@ -50,6 +50,12 @@ const MAIN_LINKS: NavLink[] = [
     icon: CalendarDays,
     isActive: (pathname) => pathname.startsWith("/agenda"),
   },
+  {
+    label: "Profil",
+    href: "/profile",
+    icon: UserRound,
+    isActive: (pathname) => pathname.startsWith("/profile"),
+  },
 ];
 
 // Pas encore construits : visibles pour donner la direction, mais sans lien.
@@ -59,7 +65,6 @@ const UPCOMING_MAIN: UpcomingItem[] = [
 
 const NEXT_PHASES: UpcomingItem[] = [
   { label: "Documents", icon: FileText, phase: "P5" },
-  { label: "Profil", icon: UserRound, phase: "P6" },
   { label: "Assistant IA", icon: Bot, phase: "P7" },
 ];
 

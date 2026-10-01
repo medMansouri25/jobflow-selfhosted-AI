@@ -51,6 +51,14 @@ describe("menu latéral", () => {
     expect(screen.getByText("P5")).toBeDefined();
   });
 
+  it("FR-006-01 mène au profil", () => {
+    pathname.current = "/profile";
+    render(<AppSidebar />);
+
+    const link = screen.getByRole("link", { name: "Profil" });
+    expect([link.getAttribute("href"), link.getAttribute("aria-current")]).toEqual(["/profile", "page"]);
+  });
+
   it("FR-004-01 mène à l'agenda", () => {
     pathname.current = "/agenda";
     render(<AppSidebar />);

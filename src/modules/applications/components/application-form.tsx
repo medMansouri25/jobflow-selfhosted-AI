@@ -19,7 +19,7 @@ import {
 } from "@/modules/applications/form-state";
 import type { AttachmentKind } from "@/modules/applications/domain/application";
 import { FormStateMessage } from "@/modules/applications/components/form-state-message";
-import { Field, SelectField } from "@/modules/applications/components/form-fields";
+import { Field, SelectField } from "@/components/form-fields";
 import { formatFileSize } from "@/modules/applications/format";
 import { MAX_ATTACHMENT_LABEL } from "@/modules/applications/schemas";
 import {

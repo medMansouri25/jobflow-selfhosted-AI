@@ -2,7 +2,8 @@ import { z } from "zod";
 
 import { parisLocalToUtc, utcToParisLocal } from "@/lib/dates";
 import { INTERVIEW_FORMATS, INTERVIEW_TYPES } from "@/modules/applications/domain/application";
-import { emptyToUndefined, optionalText, required } from "@/modules/applications/schemas";
+import { emptyToUndefined, optionalText } from "@/lib/form-fields";
+import { required } from "@/modules/applications/schemas";
 
 /** Champ `datetime-local` (AAAA-MM-JJTHH:MM), saisi à l'heure de Paris → instant UTC (SPEC-003 §6). */
 const parisDateTime = z.preprocess(
