@@ -269,17 +269,18 @@ Feuille de route : `docs/roadmaps/phase-1-5-squelette-deploye/roadmap.md`.
 
 | # | Tâche | Branche |
 |---|---|---|
-| [ ] T5.1 | Rédiger SPEC-005 ; ADR sur le stockage des fichiers | `docs/spec-005-documents` |
-| [ ] T5.2 | Stockage et téléversement de fichiers | `feature/spec-005-upload` |
-| [ ] T5.3 | Rattacher CV et lettre à une Candidature | `feature/spec-005-attach` |
+| [-] T5.1 | ~~Rédiger SPEC-005~~ — **abandonnée le 2026-10-01** : une pièce jointe par Candidature suffit (ADR 0006) | — |
+| [-] T5.2 | ~~Stockage et téléversement~~ — livré en SPEC-001 (pièces jointes UploadThing) | — |
+| [-] T5.3 | ~~Rattacher CV et lettre~~ — livré en SPEC-001 | — |
 
 ## Phase 6 — Profil (SPEC-006)
 
 | # | Tâche | Branche |
 |---|---|---|
-| [ ] T6.1 | Rédiger SPEC-006 | `docs/spec-006-profile` |
-| [ ] T6.2 | Profil : informations, expériences, projets, compétences, formations | `feature/spec-006-profile` |
-| [ ] T6.3 | Exemples de textes personnels | `feature/spec-006-writing-samples` |
+| [x] T6.1 | Rédiger SPEC-006 (texte libre, décision du 2026-10-01) | `docs/spec-006-profile` |
+| [ ] T6.2 | Page Profil : champs courts et six zones de texte (exemples de textes compris) | `feature/spec-006-profile` |
+
+> **Ordre des phases IA (décision du 2026-10-01)** : la lettre de motivation personnalisée par Annonce (SPEC-008) passe **avant** l'analyse d'Annonce (SPEC-007).
 
 ## Phase 7 — IA : analyse d'une Annonce (SPEC-007)
 
