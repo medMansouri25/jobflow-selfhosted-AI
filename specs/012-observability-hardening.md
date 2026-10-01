@@ -45,7 +45,7 @@ JobFlow tourne seul sur la Pi. Si l'application s'arrête, si la sauvegarde de l
 | FR-012-05 | Les journaux des conteneurs de production sont limités (3 fichiers de 10 Mo par conteneur). |
 | FR-012-06 | Chaque page porte des en-têtes de sécurité : politique de contenu (CSP) limitant scripts, styles, images et connexions à JobFlow, interdiction d'être affichée dans un autre site, `nosniff`, politique de référent, permissions désactivées (caméra, micro, géolocalisation), HSTS. |
 | FR-012-07 | La CI échoue si une dépendance de production a une faille connue de gravité haute ou critique. |
-| FR-012-08 | Dependabot propose chaque mois une PR regroupant les mises à jour mineures et correctifs (npm, actions GitHub, images Docker) ; une version majeure arrive dans sa propre PR ; les alertes de sécurité restent immédiates. |
+| FR-012-08 | Dependabot propose chaque mois une PR regroupant les mises à jour mineures et correctifs (npm, actions GitHub, images Docker) ; **aucune version majeure n'est proposée** (décision du 2026-10-01 : elles se font à la main) ; les mises à jour de sécurité restent immédiates. |
 
 ## 5. Règles
 
