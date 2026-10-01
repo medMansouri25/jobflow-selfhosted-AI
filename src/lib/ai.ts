@@ -75,9 +75,13 @@ export function createGeminiGenerator({
         throw new AiError(`L'assistant IA a renvoyé une erreur (${response.status}). Réessaie plus tard.`);
       }
 
-      const data = (await response.json()) as {
-        candidates?: { content?: { parts?: { text?: string }[] } }[];
-      };
+      let data: { candidates?: { content?: { parts?: { text?: string }[] } }[] };
+      try {
+        data = await response.json();
+      } catch {
+        // Corps interrompu (délai dépassé) ou illisible : même message qu'une absence de réponse.
+        throw new AiError("L'assistant IA ne répond pas. Réessaie dans un instant.");
+      }
       const text = (data.candidates?.[0]?.content?.parts ?? [])
         .map((part) => part.text ?? "")
         .join("")

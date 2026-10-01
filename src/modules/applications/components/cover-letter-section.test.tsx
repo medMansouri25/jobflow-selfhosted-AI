@@ -64,4 +64,13 @@ describe("section Lettre de motivation", () => {
     await waitFor(() => expect(writeText).toHaveBeenCalledWith("Ma lettre corrigée"));
     expect(await screen.findByRole("button", { name: "Copié !" })).toBeDefined();
   });
+
+  it("sélectionne le texte et le dit quand la copie est impossible", async () => {
+    Object.assign(navigator, { clipboard: undefined });
+    render(<CoverLetterSection generateAction={noop} saveAction={noop} draft="Ma lettre" hasPosting />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Copier" }));
+
+    expect(await screen.findByText(/Copie impossible/)).toBeDefined();
+  });
 });

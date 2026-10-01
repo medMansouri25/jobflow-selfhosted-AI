@@ -72,4 +72,14 @@ describe("générateur Gemini", () => {
 
     await expect(generator.generate(REQUEST)).rejects.toThrow(/surchargé/);
   });
+
+  it("AC-008-07 transforme une réponse illisible ou interrompue en message", async () => {
+    const generator = createGeminiGenerator({
+      apiKey: "k",
+      model: "m",
+      fetch: vi.fn<typeof globalThis.fetch>().mockResolvedValue(new Response("<html>erreur</html>", { status: 200 })),
+    });
+
+    await expect(generator.generate(REQUEST)).rejects.toThrow(/ne répond pas/);
+  });
 });

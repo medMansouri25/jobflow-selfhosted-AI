@@ -41,12 +41,18 @@ export function CoverLetterSection({
   const instructionsId = useId();
   const draftId = useId();
   const draftRef = useRef<HTMLTextAreaElement>(null);
-  const [copied, setCopied] = useState(false);
+  const [copy, setCopy] = useState<"idle" | "copied" | "failed">("idle");
 
-  async function copy() {
-    await navigator.clipboard.writeText(draftRef.current?.value ?? "");
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  async function copyDraft() {
+    try {
+      // Absent hors d'un contexte sécurisé (HTTP sur le réseau local) : même message qu'un refus.
+      await navigator.clipboard.writeText(draftRef.current?.value ?? "");
+      setCopy("copied");
+    } catch {
+      draftRef.current?.select();
+      setCopy("failed");
+    }
+    setTimeout(() => setCopy("idle"), 3000);
   }
 
   return (
@@ -107,10 +113,15 @@ export function CoverLetterSection({
             <Button type="submit" disabled={saving}>
               Enregistrer
             </Button>
-            <Button type="button" variant="outline" onClick={copy}>
+            <Button type="button" variant="outline" onClick={copyDraft}>
               <Copy aria-hidden />
-              {copied ? "Copié !" : "Copier"}
+              {copy === "copied" ? "Copié !" : "Copier"}
             </Button>
+            {copy === "failed" && (
+              <p role="status" className="self-center text-sm text-muted-foreground">
+                Copie impossible : le texte est sélectionné, copie-le à la main.
+              </p>
+            )}
           </div>
         </form>
       )}

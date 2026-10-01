@@ -23,3 +23,8 @@ Sur la fiche : consignes facultatives, rappel de ce qui part chez Google, bouton
 - [x] Mission 2: Demande et en-tête, en pur + tests (AC-008-01, 02, 06)
 - [x] Mission 3: Colonne `coverLetterDraft` + migration ; `generateCoverLetter` / `saveCoverLetterDraft` + tests d'intégration avec un faux générateur (AC-008-01, 03 à 05, 07, 08)
 - [x] Mission 4: Actions, section « Lettre de motivation » de la fiche + tests de composant (AC-008-01, 05) ; essai réel avec la clé
+
+## Review (2026-10-01)
+- Corrigé : une réponse de Gemini illisible ou interrompue (corps au-delà du délai, page HTML) faisait planter la page → message « ne répond pas ».
+- Corrigé : la délimitation pouvait être contournée (balise imbriquée `</ann</annonce>once>`, espace, attributs) et l'Entreprise et le poste étaient hors bloc → tout « < » d'une donnée devient « ‹ », et l'Entreprise et le poste sont dans `<annonce>`.
+- Corrigé : « Copier » sans presse-papiers (HTTP sur le réseau local, refus) ne disait rien → le texte est sélectionné et un message invite à copier à la main.
