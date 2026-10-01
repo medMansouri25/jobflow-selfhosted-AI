@@ -21,3 +21,9 @@ Page « Agenda » (menu) : vue semaine (par défaut) et vue mois (pastilles, jou
 - [x] Mission 2: `listInterviewsByDay` + tests d'intégration (AC-004-02, 06, 08)
 - [x] Mission 3: Lien de visio (`meetingLink`, `JoinButton`) + tests (FR-004-07)
 - [x] Mission 4: Vues semaine et mois, page `/agenda`, menu + tests de composant (AC-004-02 à 05)
+
+## Review (2026-10-01)
+- Corrigé : un jour choisi hors de la grille affichée (`?vue=mois&date=2026-10-01&jour=2026-12-25`) disait « aucun entretien » à tort → ignoré.
+- Corrigé : années hors 1900–2999 (`0050`, `0000`, `9999-12-31`) acceptées, calendrier faussé → refusées, retour à la semaine en cours (AC-004-07).
+- Corrigé : `aria-current="date"` désigne aujourd'hui dans les deux vues ; le jour choisi est `aria-current="true"`.
+- Corrigé : grille du mois en `role="table"` / `cell` au lieu de `grid` (pas de navigation par flèches promise).

@@ -21,7 +21,8 @@ export function firstOfMonth(day: string, months = 0): string {
   return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + months, 1)).toISOString().slice(0, 10);
 }
 
-/** Vrai pour un jour AAAA-MM-JJ qui existe (pas de 30 février). */
+/** Vrai pour un jour AAAA-MM-JJ qui existe (pas de 30 février), entre 1900 et 2999 : hors de là, `Date.UTC`
+ * lit 0050 comme 1950 et l'an 0 ou 10 000 sortent du format. */
 export function isValidDay(value: string): boolean {
-  return /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(toUtc(value).getTime()) && toUtc(value).toISOString().startsWith(value);
+  return /^(19|2\d)\d{2}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(toUtc(value).getTime()) && toUtc(value).toISOString().startsWith(value);
 }

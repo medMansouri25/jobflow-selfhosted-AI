@@ -170,7 +170,8 @@ function MonthView({ date, day, today, byDay }: { date: string; day?: string; to
 
   return (
     <div className="flex flex-col gap-6">
-      <div role="grid" aria-label={title} className="overflow-hidden rounded-lg border bg-card">
+      {/* Tableau, pas « grid » : pas de navigation au clavier par flèches, chaque jour est un lien. */}
+      <div role="table" aria-label={title} className="overflow-hidden rounded-lg border bg-card">
         <div role="row" className="grid grid-cols-7 border-b bg-muted text-center text-xs font-bold text-foreground/60">
           {WEEKDAY_HEADERS.map((label, i) => (
             <span key={i} role="columnheader" className="py-2">
@@ -183,11 +184,12 @@ function MonthView({ date, day, today, byDay }: { date: string; day?: string; to
             {week.map((cell) => {
               const count = byDay[cell]?.length ?? 0;
               return (
-                <div key={cell} role="gridcell" className="border-r last:border-r-0">
+                <div key={cell} role="cell" className="border-r last:border-r-0">
                   <Link
                     href={agendaHref({ view: "mois", date, day: cell })}
                     aria-label={`${dayShort.format(asDate(cell))} : ${countLabel(count)}`}
-                    aria-current={cell === day ? "date" : undefined}
+                    // « date » = aujourd'hui (comme la vue semaine) ; le jour choisi est « true ».
+                    aria-current={cell === today ? "date" : cell === day ? "true" : undefined}
                     className={cn(
                       "flex h-14 flex-col items-center justify-center gap-1 text-sm hover:bg-muted sm:h-20",
                       !cell.startsWith(month) && "text-muted-foreground/60",

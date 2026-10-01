@@ -19,6 +19,8 @@ export default async function AgendaPage({ searchParams }: PageProps<"/agenda">)
   const { view, date, day } = parseAgendaParams(await searchParams, today);
   const days = view === "semaine" ? weekDays(date) : monthGrid(date).flat();
   const byDay = await listInterviewsByDay(await getCurrentUserId(), days[0], days.at(-1)!);
+  // Un jour choisi hors de la grille affichée n'a pas été lu : il dirait « aucun entretien » à tort.
+  const shownDay = day && days.includes(day) ? day : undefined;
 
-  return <Agenda view={view} date={date} day={day} today={today} byDay={byDay} />;
+  return <Agenda view={view} date={date} day={shownDay} today={today} byDay={byDay} />;
 }

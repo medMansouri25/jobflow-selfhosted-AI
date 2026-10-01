@@ -47,7 +47,14 @@ describe("calendrier", () => {
   });
 
   it("AC-004-07 revient à la semaine en cours pour des paramètres invalides", () => {
-    for (const params of [{ vue: "nimporte", date: "pas-une-date" }, { date: "2026-02-30" }, {}]) {
+    for (const params of [
+      { vue: "nimporte", date: "pas-une-date" },
+      { date: "2026-02-30" },
+      { date: "0050-03-10" },
+      { date: "0000-01-01" },
+      { date: "9999-12-31" },
+      {},
+    ]) {
       expect(parseAgendaParams(params, "2026-10-14")).toEqual({ view: "semaine", date: "2026-10-14", day: undefined });
     }
     expect(parseAgendaParams({ vue: ["mois", "semaine"] }, "2026-10-14").view).toBe("mois");

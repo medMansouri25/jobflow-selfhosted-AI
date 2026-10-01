@@ -68,9 +68,9 @@ describe("agenda", () => {
 
   it("AC-004-04 vue mois : semaines complètes et pastille du nombre d'Entretiens", () => {
     render(<Agenda view="mois" date="2026-10-01" today="2026-10-14" byDay={BY_DAY} />);
-    const grid = screen.getByRole("grid", { name: "Octobre 2026" });
+    const grid = screen.getByRole("table", { name: "Octobre 2026" });
 
-    expect(within(grid).getAllByRole("gridcell")).toHaveLength(35);
+    expect(within(grid).getAllByRole("cell")).toHaveLength(35);
     expect(within(grid).getByRole("link", { name: "mer. 14 oct. : 2 entretiens" }).getAttribute("href")).toBe(
       "/agenda?vue=mois&date=2026-10-01&jour=2026-10-14",
     );
