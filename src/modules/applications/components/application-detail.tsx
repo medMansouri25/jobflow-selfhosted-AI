@@ -83,13 +83,13 @@ export function ApplicationDetail({
   ].filter(Boolean);
 
   return (
-    <main className="flex flex-col gap-8 px-8 py-8">
+    <main className="flex flex-col gap-8 px-4 py-6 sm:px-8 sm:py-8">
       <div className="flex flex-col gap-2">
         <Link href="/applications" className="text-sm text-muted-foreground hover:text-foreground">
           ← Candidatures
         </Link>
         <div className="flex flex-wrap items-center gap-3">
-          <h1 className="font-heading text-4xl font-extrabold tracking-tight">
+          <h1 className="font-heading text-3xl font-extrabold tracking-tight sm:text-4xl">
             {application.jobTitle}
           </h1>
           <StatusBadge status={application.status} />
@@ -152,7 +152,7 @@ export function ApplicationDetail({
       <Section title="Historique des statuts">
         <ol className="flex flex-col">
           {application.statusChanges.map((change) => (
-            <li key={change.id} className="grid grid-cols-[9rem_0.75rem_1fr] gap-3 pb-4 last:pb-0">
+            <li key={change.id} className="grid grid-cols-[6.5rem_0.75rem_1fr] gap-3 pb-4 last:pb-0 sm:grid-cols-[9rem_0.75rem_1fr]">
               <span className="text-xs text-muted-foreground">
                 {changeDayFormat.format(change.changedAt)} · {changeTimeFormat.format(change.changedAt)}
               </span>

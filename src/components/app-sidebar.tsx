@@ -53,13 +53,24 @@ const NEXT_PHASES: UpcomingItem[] = [
   { label: "Assistant IA", icon: Bot, phase: "P7" },
 ];
 
+/** Menu latéral des grands écrans ; sur téléphone, le même contenu s'ouvre depuis `MobileNav`. */
 export function AppSidebar() {
+  return (
+    <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r bg-card lg:flex">
+      <SidebarContent />
+    </aside>
+  );
+}
+
+/** Logo, navigation et pied du menu. `onNavigate` : appelé au choix d'une page (ferme le menu sur téléphone). */
+export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
 
   return (
-    <aside className="sticky top-0 flex h-screen w-60 shrink-0 flex-col border-r bg-card">
+    <>
       <Link
         href="/"
+        onClick={onNavigate}
         aria-label="JobFlow AI — accueil"
         className="flex items-center gap-3 px-5 py-5"
       >
@@ -87,6 +98,7 @@ export function AppSidebar() {
               <li key={href}>
                 <Link
                   href={href}
+                  onClick={onNavigate}
                   aria-current={active ? "page" : undefined}
                   className={cn(
                     "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
@@ -130,7 +142,7 @@ export function AppSidebar() {
           <span className="text-xs text-muted-foreground">Privé · Tailscale</span>
         </span>
       </div>
-    </aside>
+    </>
   );
 }
 

@@ -31,6 +31,7 @@ export type DashboardStats = {
 const dateFormat = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" });
 // Les semaines sont des jours AAAA-MM-JJ : formatées en UTC pour ne jamais changer de jour.
 const weekFormat = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", timeZone: "UTC" });
+const shortWeekFormat = new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "2-digit", timeZone: "UTC" });
 
 export function Dashboard({
   counts,
@@ -44,9 +45,9 @@ export function Dashboard({
   const total = Object.values(counts).reduce((sum, n) => sum + n, 0);
 
   return (
-    <main className="flex flex-col gap-8 px-8 py-8">
+    <main className="flex flex-col gap-8 px-4 py-6 sm:px-8 sm:py-8">
       <div className="flex flex-wrap items-end justify-between gap-2">
-        <h1 className="font-heading text-4xl font-extrabold tracking-tight">
+        <h1 className="font-heading text-3xl font-extrabold tracking-tight sm:text-4xl">
           Tableau de bord
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -56,7 +57,7 @@ export function Dashboard({
 
       <section
         aria-label="Indicateurs"
-        className="grid overflow-hidden rounded-lg border bg-card sm:grid-cols-2 lg:grid-cols-4"
+        className="grid grid-cols-2 overflow-hidden rounded-lg border bg-card lg:grid-cols-4"
       >
         <Kpi label="Candidatures" value={total} hint="Tous statuts confondus" highlight />
         <Kpi label="Entretiens" value={counts.INTERVIEW} hint="Candidatures au statut Entretien" />
@@ -83,9 +84,9 @@ export function Dashboard({
               />
             ))}
         </div>
-        <ul className="grid overflow-hidden rounded-lg border bg-card sm:grid-cols-3">
+        <ul className="grid grid-cols-3 overflow-hidden rounded-lg border bg-card">
           {APPLICATION_STATUSES.map((status) => (
-            <li key={status} className="flex flex-col gap-1 border-r border-b p-4 last:border-r-0">
+            <li key={status} className="flex flex-col gap-1 border-r p-3 last:border-r-0 sm:p-4">
               <span className="flex items-center gap-2 text-xs text-muted-foreground">
                 <span aria-hidden className={cn("size-2 rounded-sm", STATUS_DOT_CLASSES[status])} />
                 {STATUS_LABELS[status]}
@@ -124,7 +125,14 @@ export function Dashboard({
               <thead className="bg-muted">
                 <tr>
                   {["Entreprise", "Poste", "Statut", "Modifiée"].map((column) => (
-                    <th key={column} scope="col" className="px-4 py-2 text-left text-[11px] font-bold tracking-wider text-foreground/60 uppercase">
+                    <th
+                      key={column}
+                      scope="col"
+                      className={cn(
+                        "px-4 py-2 text-left text-[11px] font-bold tracking-wider text-foreground/60 uppercase",
+                        column === "Modifiée" && "hidden sm:table-cell",
+                      )}
+                    >
                       {column}
                     </th>
                   ))}
@@ -140,7 +148,7 @@ export function Dashboard({
                     <td className="px-4 py-2.5">
                       <StatusBadge status={application.status} />
                     </td>
-                    <td className="px-4 py-2.5 text-muted-foreground">
+                    <td className="hidden px-4 py-2.5 text-muted-foreground sm:table-cell">
                       {dateFormat.format(application.updatedAt)}
                     </td>
                   </tr>
@@ -166,13 +174,13 @@ function Kpi({
   highlight?: boolean;
 }) {
   return (
-    <div className="flex flex-col gap-1 border-b p-5 sm:border-r lg:border-b-0 last:border-r-0">
+    <div className="flex flex-col gap-1 border-r border-b p-4 even:border-r-0 sm:p-5 lg:border-b-0 lg:even:border-r lg:last:border-r-0">
       <span className="text-xs font-medium tracking-wider text-muted-foreground uppercase">
         {label}
       </span>
       <span
         className={cn(
-          "font-heading text-4xl font-extrabold",
+          "font-heading text-3xl font-extrabold sm:text-4xl",
           highlight && "text-primary",
         )}
       >
@@ -198,7 +206,7 @@ function Panel({
         <h2 className="font-heading font-bold">{title}</h2>
         {action}
       </div>
-      <div className="rounded-lg border bg-card">{children}</div>
+      <div className="overflow-x-auto rounded-lg border bg-card">{children}</div>
     </section>
   );
 }
@@ -224,18 +232,19 @@ function WeeklyChart({ weeks }: { weeks: WeekCount[] }) {
           {WEEKS_SHOWN} dernières semaines, d&apos;après la date de candidature
         </p>
       </div>
-      <div className="rounded-lg border bg-card p-5">
+      <div className="rounded-lg border bg-card p-3 sm:p-5">
         {max === 0 && (
           <p className="pb-3 text-center text-sm text-muted-foreground">
             Aucune candidature sur les {WEEKS_SHOWN} dernières semaines.
           </p>
         )}
         <ul
-          className="grid h-40 items-end gap-2"
+          className="grid h-40 items-end gap-1 sm:gap-2"
           style={{ gridTemplateColumns: `repeat(${WEEKS_SHOWN}, minmax(0, 1fr))` }}
         >
           {weeks.map((week) => {
-            const label = weekFormat.format(new Date(`${week.weekStart}T00:00:00Z`));
+            const monday = new Date(`${week.weekStart}T00:00:00Z`);
+            const label = weekFormat.format(monday);
             return (
               <li
                 key={week.weekStart}
@@ -251,8 +260,9 @@ function WeeklyChart({ weeks }: { weeks: WeekCount[] }) {
                     style={{ height: max > 0 ? `${(week.count / max) * 100}%` : 0 }}
                   />
                 </span>
-                <span aria-hidden className="text-[11px] whitespace-nowrap text-muted-foreground">
-                  {label}
+                <span aria-hidden className="text-[10px] whitespace-nowrap text-muted-foreground sm:text-[11px]">
+                  <span className="sm:hidden">{shortWeekFormat.format(monday)}</span>
+                  <span className="hidden sm:inline">{label}</span>
                 </span>
               </li>
             );

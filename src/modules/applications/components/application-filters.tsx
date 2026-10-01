@@ -37,7 +37,17 @@ export function ApplicationFilters({ filters }: { filters: ListApplicationsInput
         <Input name="q" defaultValue={filters.q} placeholder="Rechercher entreprise ou poste…" />
       </label>
 
-      <div className="grid gap-4 sm:grid-cols-4">
+      {/* Sur téléphone, les filtres détaillés se déplient (case sans `name` : jamais envoyée) ;
+          ils restent dépliés quand l'un d'eux est actif. Toujours visibles sur grand écran. */}
+      <label className="peer flex items-center gap-2 text-sm font-medium text-primary sm:hidden">
+        <input
+          type="checkbox"
+          defaultChecked={hasDetailedFilters(filters)}
+          className="size-4"
+        />
+        Plus de filtres et tri
+      </label>
+      <div className="hidden gap-4 peer-has-[:checked]:grid sm:grid sm:grid-cols-4">
         <fieldset className="flex flex-col gap-1.5">
           <legend className="text-xs font-medium text-foreground/80">Statut</legend>
           <div className="flex flex-wrap gap-x-4 gap-y-1 pt-1.5 text-sm">
@@ -88,6 +98,10 @@ export function ApplicationFilters({ filters }: { filters: ListApplicationsInput
       </div>
     </form>
   );
+}
+
+function hasDetailedFilters(filters: ListApplicationsInput): boolean {
+  return filters.statuses.length > 0 || Boolean(filters.contractType || filters.source) || filters.sort !== LIST_SORTS[0];
 }
 
 function FilterSelect({

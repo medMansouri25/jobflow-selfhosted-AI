@@ -86,6 +86,13 @@ const [state, formAction, pending] = useActionState(createApplicationAction, ini
 - **Référence visuelle** : la maquette `JobFlow AI.html` (fichier local, non versionné).
 - `AppSidebar` (menu latéral, `src/components/`) : logo, Dashboard et Candidatures actifs (`aria-current="page"` sur la page courante), puis les fonctionnalités à venir **affichées sans lien** avec leur phase (`P3`, `P4`…), et le pied « Mon espace · Privé · Tailscale ».
 - `AppTopbar` (barre du haut) : section courante, date du jour calculée **dans le navigateur** (`useSyncExternalStore` : jamais figée dans le HTML du serveur), recherche (`GET /applications?q=`), bouton « Nouvelle candidature ».
+- **Responsive (téléphone d'abord, l'application s'utilise surtout sur iPhone via Tailscale)** :
+  - menu latéral à partir de `lg` seulement ; en dessous, bouton « Menu » (`MobileNav`) qui ouvre le même contenu (`SidebarContent`) en tiroir, refermé au choix d'une page ;
+  - barre du haut : sur téléphone, recherche pleine largeur sur une seconde ligne, date masquée, bouton « Nouvelle candidature » réduit à l'icône (`aria-label` conservé) ;
+  - pages en `px-4 py-6`, `sm:px-8 sm:py-8` ; titres `text-3xl sm:text-4xl` ;
+  - tableaux : les colonnes secondaires sont `hidden md:table-cell` (liste) ou `hidden sm:table-cell` (tableau de bord), conteneur `overflow-x-auto` ;
+  - filtres de la liste : la recherche reste visible, le reste se déplie par une case sans `name` (CSS `peer-has-[:checked]`, aucun JavaScript), dépliée d'office si un filtre détaillé est actif ;
+  - vérifier chaque écran à 375 px de large : aucun défilement horizontal de la page.
 - La création d'une candidature se fait dans une **fenêtre modale** (`NewApplicationDialog`, Dialog shadcn), disponible sur toutes les pages ; `/applications/new` reste accessible par URL.
 
 ## Style
