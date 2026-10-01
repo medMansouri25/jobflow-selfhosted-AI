@@ -7,7 +7,7 @@ import { useSyncExternalStore } from "react";
 import { MobileNav } from "@/components/mobile-nav";
 import { Input } from "@/components/ui/input";
 import { NewApplicationDialog } from "@/modules/applications/components/new-application-dialog";
-import type { FormAction } from "@/modules/applications/form-state";
+import type { FormAction } from "@/lib/form-state";
 
 
 function sectionOf(pathname: string) {

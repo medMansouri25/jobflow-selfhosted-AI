@@ -21,13 +21,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { FormStateMessage } from "@/modules/applications/components/form-state-message";
+import { FormStateMessage } from "@/components/form-state-message";
 import { InterviewForm } from "@/modules/applications/components/interview-form";
 import {
-  initialApplicationFormState,
-  type ApplicationFormState,
+  initialFormState,
+  type FormState,
   type FormAction,
-} from "@/modules/applications/form-state";
+} from "@/lib/form-state";
 
 
 /** Fenêtre du formulaire d'Entretien : se ferme après un enregistrement réussi, garde la saisie sinon. */
@@ -117,13 +117,13 @@ export function EditInterviewDialog({
 /** Suppression d'un Entretien après confirmation (FR-003-03) ; `label` le décrit (type et date). */
 export function DeleteInterviewButton({ action, label }: { action: FormAction; label: string }) {
   const [open, setOpen] = useState(false);
-  const [state, formAction, pending] = useActionState<ApplicationFormState, FormData>(
+  const [state, formAction, pending] = useActionState<FormState, FormData>(
     async (previous, formData) => {
       const next = await action(previous, formData);
       if (next.status === "success") setOpen(false);
       return next;
     },
-    initialApplicationFormState,
+    initialFormState,
   );
 
   return (

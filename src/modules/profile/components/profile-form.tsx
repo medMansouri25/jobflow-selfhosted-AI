@@ -6,8 +6,8 @@ import { Field } from "@/components/form-fields";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { FormStateMessage } from "@/modules/applications/components/form-state-message";
-import { initialApplicationFormState, type FormAction } from "@/modules/applications/form-state";
+import { FormStateMessage } from "@/components/form-state-message";
+import { initialFormState, type FormAction } from "@/lib/form-state";
 
 const SHORT_FIELDS = [
   { name: "fullName", label: "Nom complet", maxLength: 200 },
@@ -40,7 +40,7 @@ export function ProfileForm({
   /** Profil enregistré ; après un envoi, la saisie renvoyée par le serveur prime. */
   initialValues?: Partial<Record<string, string>>;
 }) {
-  const [state, formAction, pending] = useActionState(action, initialApplicationFormState);
+  const [state, formAction, pending] = useActionState(action, initialFormState);
   const values = state.values ?? initialValues;
   const error = (name: string) => state.fieldErrors?.[name]?.[0];
 

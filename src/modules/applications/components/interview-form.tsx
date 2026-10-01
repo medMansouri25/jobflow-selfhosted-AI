@@ -7,11 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { INTERVIEW_FORMATS, INTERVIEW_TYPES } from "@/modules/applications/domain/application";
 import { Field, SelectField } from "@/components/form-fields";
-import { FormStateMessage } from "@/modules/applications/components/form-state-message";
+import { FormStateMessage } from "@/components/form-state-message";
 import {
-  initialApplicationFormState,
+  initialFormState,
   type FormAction,
-} from "@/modules/applications/form-state";
+} from "@/lib/form-state";
 import { INTERVIEW_FORMAT_LABELS, INTERVIEW_TYPE_LABELS } from "@/modules/applications/labels";
 
 
@@ -28,7 +28,7 @@ export function InterviewForm({
   /** Valeurs de départ (modification) ; après une erreur, la saisie renvoyée par le serveur prime. */
   initialValues?: Partial<Record<string, string>>;
 }) {
-  const [state, formAction, pending] = useActionState(action, initialApplicationFormState);
+  const [state, formAction, pending] = useActionState(action, initialFormState);
   const values = state.values ?? initialValues;
   const error = (name: string) => state.fieldErrors?.[name]?.[0];
 

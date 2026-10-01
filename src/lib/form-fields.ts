@@ -9,3 +9,10 @@ export const emptyToUndefined = (value: unknown) =>
 /** Texte facultatif, nettoyé, limité à `max` caractères. */
 export const optionalText = (max: number) =>
   z.preprocess(emptyToUndefined, z.string().trim().max(max, `${max} caractères maximum`).optional());
+
+/** Champs texte d'un envoi de formulaire (les fichiers sont laissés de côté). */
+export function formValues(formData: FormData): Record<string, string> {
+  return Object.fromEntries(
+    [...formData.entries()].filter((entry): entry is [string, string] => typeof entry[1] === "string"),
+  );
+}

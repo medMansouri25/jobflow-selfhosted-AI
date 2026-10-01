@@ -14,11 +14,11 @@ import {
   SALARY_PERIODS,
 } from "@/modules/applications/domain/application";
 import {
-  initialApplicationFormState,
+  initialFormState,
   type FormAction,
-} from "@/modules/applications/form-state";
+} from "@/lib/form-state";
 import type { AttachmentKind } from "@/modules/applications/domain/application";
-import { FormStateMessage } from "@/modules/applications/components/form-state-message";
+import { FormStateMessage } from "@/components/form-state-message";
 import { Field, SelectField } from "@/components/form-fields";
 import { formatFileSize } from "@/modules/applications/format";
 import { MAX_ATTACHMENT_LABEL } from "@/modules/applications/schemas";
@@ -54,7 +54,7 @@ export function ApplicationForm({
 }) {
   const [state, formAction, pending] = useActionState(
     action,
-    initialApplicationFormState,
+    initialFormState,
   );
   const values = state.values ?? initialValues;
   // Date du jour lue dans le navigateur (fuseau de l'utilisateur), jamais figée dans le HTML du serveur.

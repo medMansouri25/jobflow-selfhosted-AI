@@ -1,10 +1,10 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import type { ApplicationFormState } from "@/modules/applications/form-state";
+import type { FormState } from "@/lib/form-state";
 import { InterviewForm } from "@/modules/applications/components/interview-form";
 
-const noop = async (state: ApplicationFormState) => state;
+const noop = async (state: FormState) => state;
 
 describe("formulaire d'Entretien", () => {
   it("demande la date et l'heure, le type et le format, puis les champs facultatifs", () => {
@@ -33,7 +33,7 @@ describe("formulaire d'Entretien", () => {
   });
 
   it("AC-003-04 affiche l'erreur du serveur sous le champ et garde la saisie", async () => {
-    const rejecting = async (): Promise<ApplicationFormState> => ({
+    const rejecting = async (): Promise<FormState> => ({
       status: "error",
       message: "Certains champs sont à corriger.",
       fieldErrors: { type: ["Le type est obligatoire"] },

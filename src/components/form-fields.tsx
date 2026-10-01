@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
-// Briques des formulaires (Candidature, Entretien) : libellé, astérisque, aide et erreur reliés au champ.
+// Briques des formulaires (Candidature, Entretien, Profil) : libellé, astérisque, aide et erreur reliés au champ.
 
 export type ControlProps = {
   id: string;

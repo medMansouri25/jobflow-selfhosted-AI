@@ -20,3 +20,9 @@ Page « Profil » (menu) : 6 champs courts (nom, poste recherché, localisation,
 - [x] Mission 1: Modèle `Profile` + migration `profile`, schéma Zod + tests (AC-006-04)
 - [x] Mission 2: `getProfile` / `saveProfile` + tests d'intégration (AC-006-01 à 03, 05)
 - [x] Mission 3: Action, formulaire, page `/profile`, menu + tests de composant (AC-006-01, 02, 04)
+
+## Review (2026-10-01)
+- Corrigé : le Profil ne dépend plus du module Candidatures pour ses formulaires : `FormState` / `initialFormState` / `FormAction` dans `src/lib/form-state.ts`, `FormStateMessage` dans `src/components/` (renommage mécanique dans tout le code).
+- Corrigé : `formValues(formData)` (`src/lib/form-fields.ts`) remplace trois copies de l'extraction des champs texte.
+- Corrigé : commentaire de `form-fields.tsx` à jour ; `frontend-patterns.md` décrit les briques de formulaire communes.
+- SPEC-006 amendée (BR-006-03) : le lien LinkedIn est limité à 2 048 caractères, comme le lien d'une Annonce, et non à 200.

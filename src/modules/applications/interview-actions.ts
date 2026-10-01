@@ -5,20 +5,19 @@ import { z } from "zod";
 
 import { getCurrentUserId } from "@/lib/current-user";
 import { domainErrorToFormState } from "@/lib/errors";
-import type { ApplicationFormState } from "@/modules/applications/form-state";
+import { formValues } from "@/lib/form-fields";
+import type { FormState } from "@/lib/form-state";
 import { interviewSchema } from "@/modules/applications/interview-schemas";
 import { addInterview, deleteInterview, updateInterview } from "@/modules/applications/interviews";
 import { INTERVIEW_TYPE_LABELS } from "@/modules/applications/labels";
 
 function readInterviewForm(formData: FormData) {
-  const values = Object.fromEntries(
-    [...formData.entries()].filter((entry): entry is [string, string] => typeof entry[1] === "string"),
-  );
+  const values = formValues(formData);
   const result = interviewSchema.safeParse(values);
   return { values, result };
 }
 
-function invalid(error: z.ZodError, values: Record<string, string>): ApplicationFormState {
+function invalid(error: z.ZodError, values: Record<string, string>): FormState {
   return {
     status: "error",
     message: "Certains champs sont à corriger.",
@@ -30,9 +29,9 @@ function invalid(error: z.ZodError, values: Record<string, string>): Application
 /** Ajout d'un Entretien (FR-003-01) ; `applicationId` est lié par la page. */
 export async function addInterviewAction(
   applicationId: string,
-  _previous: ApplicationFormState,
+  _previous: FormState,
   formData: FormData,
-): Promise<ApplicationFormState> {
+): Promise<FormState> {
   const { values, result } = readInterviewForm(formData);
   if (!result.success) return invalid(result.error, values);
 
@@ -49,9 +48,9 @@ export async function addInterviewAction(
 /** Modification d'un Entretien (FR-003-02) ; `id` est lié par la page. */
 export async function updateInterviewAction(
   id: string,
-  _previous: ApplicationFormState,
+  _previous: FormState,
   formData: FormData,
-): Promise<ApplicationFormState> {
+): Promise<FormState> {
   const { values, result } = readInterviewForm(formData);
   if (!result.success) return invalid(result.error, values);
 
@@ -66,7 +65,7 @@ export async function updateInterviewAction(
 }
 
 /** Suppression d'un Entretien (FR-003-03) ; `id` est lié par la page. */
-export async function deleteInterviewAction(id: string): Promise<ApplicationFormState> {
+export async function deleteInterviewAction(id: string): Promise<FormState> {
   try {
     await deleteInterview(await getCurrentUserId(), id);
   } catch (error) {

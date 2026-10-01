@@ -1,14 +1,14 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import type { ApplicationFormState } from "@/modules/applications/form-state";
+import type { FormState } from "@/lib/form-state";
 import {
   AddInterviewDialog,
   DeleteInterviewButton,
   EditInterviewDialog,
 } from "@/modules/applications/components/interview-dialogs";
 
-const success = async (): Promise<ApplicationFormState> => ({ status: "success", message: "OK" });
+const success = async (): Promise<FormState> => ({ status: "success", message: "OK" });
 
 describe("fenêtres d'Entretien", () => {
   it("FR-003-01 ouvre « Ajouter un entretien » et se ferme après un enregistrement réussi", async () => {

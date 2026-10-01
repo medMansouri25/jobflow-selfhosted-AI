@@ -1,8 +1,8 @@
 import { cn } from "@/lib/utils";
-import type { ApplicationFormState } from "@/modules/applications/form-state";
+import type { FormState } from "@/lib/form-state";
 
 /** Message renvoyé par une action : erreur (alerte), avertissement ou succès (statut). */
-export function FormStateMessage({ state }: { state: ApplicationFormState }) {
+export function FormStateMessage({ state }: { state: FormState }) {
   if (state.status === "idle" || !state.message) return null;
   return (
     <p
