@@ -309,6 +309,6 @@ Feuille de route : `docs/roadmaps/phase-1-5-squelette-deploye/roadmap.md`.
 | # | Tâche | Branche |
 |---|---|---|
 | [ ] T10.1 | Rédiger SPEC-012 | `docs/spec-012-observability` |
-| [ ] T10.2 | Logs structurés et supervision du healthcheck | `chore/observability-logs` |
+| [x] T10.2 | Logs structurés et supervision du healthcheck | `chore/observability-logs` |
 | [ ] T10.3 | Métriques (Prometheus / Grafana si justifié) | `chore/observability-metrics` |
-| [ ] T10.4 | Durcissement : dépendances, en-têtes de sécurité, revue des sauvegardes | `chore/hardening` |
+| [x] T10.4 | Durcissement : dépendances, en-têtes de sécurité, revue des sauvegardes | `chore/hardening` |

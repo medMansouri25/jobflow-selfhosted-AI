@@ -24,5 +24,23 @@ try {
 }
 catch {
     Add-Content -Encoding UTF8 $journal "$(Get-Date -Format s) ERREUR : $_"
+    # Alerte sur le téléphone (SPEC-012, FR-012-04) si le canal ntfy est configuré ; jamais de donnée personnelle.
+    $canal = Join-Path $env:USERPROFILE 'JobFlow\ntfy-topic.txt'
+    if (Test-Path $canal) {
+        $alerte = @{
+            topic    = (Get-Content $canal -TotalCount 1).Trim()
+            title    = 'Sauvegardes JobFlow non récupérées'
+            message  = "Le PC n'a pas pu récupérer les sauvegardes de la Pi : $_"
+            priority = 4
+            tags     = @('warning')
+        } | ConvertTo-Json -Compress
+        try {
+            Invoke-RestMethod -Method Post -Uri 'https://ntfy.sh' -ContentType 'application/json; charset=utf-8' `
+                -Body ([Text.Encoding]::UTF8.GetBytes($alerte)) -TimeoutSec 15 | Out-Null
+        }
+        catch {
+            Add-Content -Encoding UTF8 $journal "$(Get-Date -Format s) envoi de l'alerte impossible"
+        }
+    }
     exit 1
 }

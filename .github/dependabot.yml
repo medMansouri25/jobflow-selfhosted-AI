@@ -1,0 +1,25 @@
+# Mises à jour des dépendances (SPEC-012, FR-012-08) : une fois par mois, regroupées en une seule PR
+# par écosystème, testées par la CI avant fusion. Les alertes de sécurité restent immédiates.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3
+    groups:
+      dependances:
+        patterns: ["*"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ["*"]
+
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: monthly
