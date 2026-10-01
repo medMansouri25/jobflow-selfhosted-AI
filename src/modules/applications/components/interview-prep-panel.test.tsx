@@ -17,14 +17,14 @@ const PREP = {
 
 describe("fiche de préparation sous un entretien", () => {
   it("FR-009-01 propose de préparer l'entretien avec l'IA", () => {
-    render(<InterviewPrepPanel action={noop} prep={null} />);
+    render(<InterviewPrepPanel action={noop} prep={null} label="Entretien RH" />);
 
     expect(screen.getByRole("button", { name: "Préparer avec l'IA" })).toBeDefined();
     expect(screen.getByText(/envoyés à Google Gemini/)).toBeDefined();
   });
 
   it("AC-009-01 affiche les questions avec leurs pistes, les points à mettre en avant et les questions à poser", () => {
-    render(<InterviewPrepPanel action={noop} prep={PREP} />);
+    render(<InterviewPrepPanel action={noop} prep={PREP} label="Entretien RH" />);
 
     expect(screen.getByText("Parlez-moi d'un pipeline CI.")).toBeDefined();
     expect(screen.getByText("Citer un incident résolu")).toBeDefined();
