@@ -234,7 +234,7 @@ Feuille de route : `docs/roadmaps/phase-1-5-squelette-deploye/roadmap.md`.
 | [ ] T1.5.4 | Préparer la Pi : Tailscale (Pi, PC, téléphone), Docker — procédure dans `docs/runbooks/` | `docs/runbook-pi-setup` |
 | [ ] T1.5.5 | `docker-compose.prod.yml` + `Caddyfile` (HTTPS `*.ts.net`) + migrations au déploiement | `chore/prod-compose` |
 | [ ] T1.5.6 | Déploiement : mise à jour de l'image sur la Pi (procédure manuelle, puis automatisée) | `chore/deploy` |
-| [ ] T1.5.7 | Sauvegardes : `pg_dump` planifié, récupération par le PC, **restauration testée** | `chore/backups` |
+| [x] T1.5.7 | Sauvegardes : `pg_dump` planifié, récupération par le PC, **restauration testée** | `chore/backups` |
 
 ## Phase 2 — Dashboard (SPEC-002)
 
