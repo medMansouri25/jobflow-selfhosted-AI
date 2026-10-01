@@ -85,7 +85,6 @@ export function ApplicationDetail({
   coverLetter?: ReactNode;
 }) {
   const meta = [
-    application.company.name,
     application.location,
     application.contractType && CONTRACT_TYPE_LABELS[application.contractType],
     application.appliedAt && `Postulée le ${dayFormat.format(application.appliedAt)}`,
@@ -104,7 +103,15 @@ export function ApplicationDetail({
           <StatusBadge status={application.status} />
           {actions && <div className="ml-auto flex gap-2">{actions}</div>}
         </div>
-        <p className="text-muted-foreground">{meta.join(" · ")}</p>
+        <p className="text-muted-foreground">
+          <Link
+            href={`/companies/${application.company.id}`}
+            className="font-medium text-foreground underline-offset-4 hover:underline"
+          >
+            {application.company.name}
+          </Link>
+          {meta.map((item) => ` · ${item}`)}
+        </p>
       </div>
 
       {statusPanel}
