@@ -18,7 +18,7 @@ import type {
   UpdateApplicationInput,
 } from "@/modules/applications/schemas";
 import { canTransition } from "@/modules/applications/domain/status";
-import { toColumns } from "@/modules/applications/form-values";
+import { columnToDateOnly, dateOnlyToColumn, toColumns } from "@/modules/applications/form-values";
 import { STATUS_LABELS } from "@/modules/applications/labels";
 import { findOrCreateCompany } from "@/modules/companies/service";
 
@@ -342,7 +342,7 @@ export async function getApplicationStats(userId: string, appliedSince: string) 
       where: { userId, statusChanges: { some: { toStatus: "INTERVIEW" } } },
     }),
     db.application.findMany({
-      where: { userId, appliedAt: { gte: new Date(`${appliedSince}T00:00:00Z`) } },
+      where: { userId, appliedAt: { gte: dateOnlyToColumn(appliedSince) } },
       select: { appliedAt: true },
     }),
   ]);
@@ -351,7 +351,7 @@ export async function getApplicationStats(userId: string, appliedSince: string) 
     responded,
     interviewed,
     appliedDates: recent.flatMap(({ appliedAt }) =>
-      appliedAt ? [appliedAt.toISOString().slice(0, 10)] : [],
+      appliedAt ? [columnToDateOnly(appliedAt)] : [],
     ),
   };
 }

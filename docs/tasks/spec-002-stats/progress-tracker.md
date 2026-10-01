@@ -20,3 +20,6 @@ Deux indicateurs de plus (Taux de réponse, Taux d'entretien) et un graphique «
 - [x] Mission 1: Domaine — `rate`, `weeklyCounts`, `oldestWeekShown` + tests (AC-002-01, 02, 04, 05)
 - [x] Mission 2: Backend — `getApplicationStats(userId, appliedSince)` + tests d'intégration (AC-002-02, 03, 05, 06)
 - [x] Mission 3: Frontend — indicateurs et graphique hebdomadaire, page d'accueil branchée + tests de composant (AC-002-01, 02, 05)
+
+## Review (2026-10-01)
+Aucun défaut par rapport à SPEC-002. Deux nettoyages appliqués : `getApplicationStats` réutilise `dateOnlyToColumn` / `columnToDateOnly` (exportés de `form-values.ts`) au lieu de reconvertir les dates ; la grille du graphique suit `WEEKS_SHOWN` au lieu d'un `grid-cols-8` codé en dur.

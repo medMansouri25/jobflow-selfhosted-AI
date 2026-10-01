@@ -4,10 +4,10 @@
 import type { CreateApplicationInput } from "@/modules/applications/schemas";
 
 /** Date sans heure (AAAA-MM-JJ) ↔ colonne `date`, stockée à minuit UTC. */
-function dateOnlyToColumn(value: string): Date {
+export function dateOnlyToColumn(value: string): Date {
   return new Date(`${value}T00:00:00Z`);
 }
-function columnToDateOnly(date: Date): string {
+export function columnToDateOnly(date: Date): string {
   return date.toISOString().slice(0, 10);
 }
 

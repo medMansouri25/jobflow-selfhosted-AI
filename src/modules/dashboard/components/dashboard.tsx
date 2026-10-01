@@ -230,7 +230,10 @@ function WeeklyChart({ weeks }: { weeks: WeekCount[] }) {
             Aucune candidature sur les {WEEKS_SHOWN} dernières semaines.
           </p>
         )}
-        <ul className="grid h-40 grid-cols-8 items-end gap-2">
+        <ul
+          className="grid h-40 items-end gap-2"
+          style={{ gridTemplateColumns: `repeat(${WEEKS_SHOWN}, minmax(0, 1fr))` }}
+        >
           {weeks.map((week) => {
             const label = weekFormat.format(new Date(`${week.weekStart}T00:00:00Z`));
             return (
