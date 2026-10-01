@@ -1,6 +1,6 @@
 # Task: Déploiement (T1.5.6)
 
-**Status**: In dev
+**Status**: Completed
 **Type**: Infra
 **Created**: 2026-10-01
 **Roadmap**: phase-1-5-squelette-deploye (tâche `deploy`)
@@ -19,7 +19,7 @@ Mettre à jour la production demande aujourd'hui plusieurs commandes à la main,
 
 ## Missions
 - [x] Mission 1: Infra — `deploy/deploy.sh`, section « Mettre à jour » de `docs/runbooks/production.md` ; vérifié : version introuvable → code 1, `.env` et conteneurs inchangés
-- [ ] Mission 2: Vérification — après la première publication GHCR : `./deploy.sh` (latest) → healthy (AC-010-05) ; `./deploy.sh sha-<précédente>` → retour arrière, données intactes (AC-010-06)
+- [x] Mission 2: Vérification sur la Pi le 2026-10-01, image GHCR (paquet déjà public : `docker pull` sans connexion) : `./deploy.sh` (latest) → healthy, ligne temporaire `JOBFLOW_IMAGE` retirée ; `./deploy.sh sha-34c6632` → retour arrière healthy, puis `./deploy.sh latest` → `sha-72a26fe` retenu dans `.last-good` ; utilisateur unique inchangé, HTTPS 200 (AC-010-05, AC-010-06)
 
 ## Review (2026-10-01)
 - Corrigé : la version est écrite dans `.env` par `sed` seul (un `.env` sans retour à la ligne final cassait `UPLOADTHING_TOKEN`) — vérifié.
@@ -29,3 +29,4 @@ Mettre à jour la production demande aujourd'hui plusieurs commandes à la main,
 - Corrigé (doc + message) : après une migration en échec, le retour arrière seul ne suffit pas (Prisma P3009) : le script affiche la sauvegarde faite juste avant, à restaurer d'abord.
 - Accepté : au premier déploiement depuis l'image locale `jobflow:test`, aucune version saine n'est connue (pas de label de révision) ; aucune commande de retour n'est proposée.
 - `deploy.sh` appelle `backup.sh` : la branche contient celle des sauvegardes (fusionner #22, #23 puis #24).
+- Corrigé après le premier vrai déploiement : `sed '$a …'` ne s'exécutait pas quand la dernière ligne de `.env` était justement celle supprimée → `JOBFLOW_VERSION` disparaissait (compose retombait sur `latest`). Suppression, retour à la ligne final, puis `echo >>` séparés.

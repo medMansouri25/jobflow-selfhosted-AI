@@ -18,8 +18,9 @@ docker pull "$IMAGE:$VERSION"
 BACKUP=$(./backup.sh | sed -n 's/.* sauvegarde \([^ ]*\) .*/\1/p')
 
 # La version choisie est gardée dans .env : un redémarrage de la Pi relance la même.
-# Tout passe par sed : un .env sans retour à la ligne final ne se recolle pas à la ligne ajoutée.
-sed -i "/^JOBFLOW_IMAGE=/d; /^JOBFLOW_VERSION=/d; \$a JOBFLOW_VERSION=$VERSION" .env
+sed -i '/^JOBFLOW_IMAGE=/d; /^JOBFLOW_VERSION=/d; /^# Temporaire/d' .env
+sed -i '$a\' .env  # retour à la ligne final s'il manque : la ligne ajoutée ne se recolle pas à la précédente
+echo "JOBFLOW_VERSION=$VERSION" >> .env
 docker compose up -d app || true
 
 echo "Démarrage de $VERSION…"
