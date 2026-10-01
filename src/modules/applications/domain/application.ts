@@ -39,3 +39,10 @@ export type Currency = (typeof CURRENCIES)[number];
 
 export const SALARY_PERIODS = ["YEARLY", "MONTHLY"] as const;
 export type SalaryPeriod = (typeof SALARY_PERIODS)[number];
+
+/** Type et format d'un Entretien (rendez-vous, SPEC-003). */
+export const INTERVIEW_TYPES = ["HR", "TECHNICAL", "MANAGER", "FINAL", "OTHER"] as const;
+export type InterviewType = (typeof INTERVIEW_TYPES)[number];
+
+export const INTERVIEW_FORMATS = ["ON_SITE", "VIDEO", "PHONE"] as const;
+export type InterviewFormat = (typeof INTERVIEW_FORMATS)[number];

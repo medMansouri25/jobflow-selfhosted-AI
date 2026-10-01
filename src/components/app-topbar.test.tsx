@@ -2,12 +2,12 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import { AppTopbar } from "@/components/app-topbar";
-import type { ApplicationFormState } from "@/modules/applications/form-state";
+import type { FormState } from "@/lib/form-state";
 
 const pathname = vi.hoisted(() => ({ current: "/" }));
 vi.mock("next/navigation", () => ({ usePathname: () => pathname.current }));
 
-const noop = async (state: ApplicationFormState) => state;
+const noop = async (state: FormState) => state;
 
 describe("barre du haut", () => {
   it.each([

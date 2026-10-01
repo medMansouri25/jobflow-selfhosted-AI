@@ -1,10 +1,10 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import type { ApplicationFormState } from "@/modules/applications/form-state";
+import type { FormState } from "@/lib/form-state";
 import { NewApplicationDialog } from "@/modules/applications/components/new-application-dialog";
 
-const noop = async (state: ApplicationFormState) => state;
+const noop = async (state: FormState) => state;
 
 describe("fenêtre de nouvelle candidature", () => {
   it("s'ouvre depuis le bouton Nouvelle candidature et se ferme avec Annuler", () => {
@@ -19,7 +19,7 @@ describe("fenêtre de nouvelle candidature", () => {
   });
 
   it("se ferme après un enregistrement réussi", async () => {
-    const savingAction = async (): Promise<ApplicationFormState> => ({
+    const savingAction = async (): Promise<FormState> => ({
       status: "success",
       message: "Candidature enregistrée.",
     });
@@ -32,7 +32,7 @@ describe("fenêtre de nouvelle candidature", () => {
   });
 
   it("reste ouverte quand le serveur renvoie une erreur", async () => {
-    const rejectingAction = async (): Promise<ApplicationFormState> => ({
+    const rejectingAction = async (): Promise<FormState> => ({
       status: "error",
       message: "Certains champs sont à corriger.",
     });

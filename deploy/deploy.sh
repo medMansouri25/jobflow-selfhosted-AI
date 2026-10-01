@@ -15,7 +15,9 @@ PREVIOUS=$(cat .last-good 2>/dev/null || true)
 docker pull "$IMAGE:$VERSION"
 
 # Sauvegarde avant les éventuelles migrations de la nouvelle version.
-BACKUP=$(./backup.sh | sed -n 's/.* sauvegarde \([^ ]*\) .*/\1/p')
+# Affectation seule : si la sauvegarde échoue, `set -e` arrête le déploiement (un tube masquerait l'échec).
+BACKUP_OUTPUT=$(./backup.sh)
+BACKUP=$(printf '%s\n' "$BACKUP_OUTPUT" | sed -n 's/.* sauvegarde \(jobflow-[^ ]*\.dump\) .*/\1/p')
 
 # La version choisie est gardée dans .env : un redémarrage de la Pi relance la même.
 sed -i '/^JOBFLOW_IMAGE=/d; /^JOBFLOW_VERSION=/d; /^# Temporaire/d' .env

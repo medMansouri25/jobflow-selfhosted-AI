@@ -34,9 +34,12 @@ function application(overrides: Partial<ApplicationDetailData> = {}): Applicatio
     salaryPeriod: null,
     appliedAt: new Date("2026-09-27T00:00:00Z"),
     notes: null,
+    coverLetterDraft: null,
+    jobAnalysis: null,
     createdAt: new Date("2026-09-27T14:21:35Z"),
     updatedAt: new Date("2026-09-27T14:21:35Z"),
     attachments: [],
+    interviews: [],
     statusChanges: [
       {
         id: "h1",

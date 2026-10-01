@@ -13,21 +13,21 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { FormStateMessage } from "@/modules/applications/components/form-state-message";
+import { FormStateMessage } from "@/components/form-state-message";
 import { Section } from "@/modules/applications/components/section";
 import type { ApplicationStatus } from "@/modules/applications/domain/application";
 import { allowedTransitions, isDefinitive } from "@/modules/applications/domain/status";
 import {
-  initialApplicationFormState,
-  type ApplicationFormState,
-} from "@/modules/applications/form-state";
+  initialFormState,
+  type FormState,
+} from "@/lib/form-state";
 import { STATUS_LABELS, TRANSITION_LABELS } from "@/modules/applications/labels";
 
-type StatusAction = (state: ApplicationFormState, formData: FormData) => Promise<ApplicationFormState>;
+type StatusAction = (state: FormState, formData: FormData) => Promise<FormState>;
 
 /** Bloc « Statut » de la fiche : un bouton par transition autorisée (FR-001-05). */
 export function StatusPanel({ status, action }: { status: ApplicationStatus; action: StatusAction }) {
-  const [state, formAction, pending] = useActionState(action, initialApplicationFormState);
+  const [state, formAction, pending] = useActionState(action, initialFormState);
 
   return (
     <Section title="Statut">
