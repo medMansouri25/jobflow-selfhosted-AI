@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Bot,
   Briefcase,
   Building2,
   CalendarDays,
@@ -22,8 +21,6 @@ type NavLink = {
   isActive: (pathname: string) => boolean;
 };
 
-type UpcomingItem = { label: string; icon: LucideIcon; phase: string };
-
 const MAIN_LINKS: NavLink[] = [
   {
     label: "Dashboard",
@@ -36,6 +33,12 @@ const MAIN_LINKS: NavLink[] = [
     href: "/applications",
     icon: Briefcase,
     isActive: (pathname) => pathname.startsWith("/applications"),
+  },
+  {
+    label: "Entreprises",
+    href: "/companies",
+    icon: Building2,
+    isActive: (pathname) => pathname.startsWith("/companies"),
   },
   {
     label: "Entretiens",
@@ -55,15 +58,6 @@ const MAIN_LINKS: NavLink[] = [
     icon: UserRound,
     isActive: (pathname) => pathname.startsWith("/profile"),
   },
-];
-
-// Pas encore construits : visibles pour donner la direction, mais sans lien.
-const UPCOMING_MAIN: UpcomingItem[] = [
-  { label: "Entreprises", icon: Building2, phase: "P1" },
-];
-
-const NEXT_PHASES: UpcomingItem[] = [
-  { label: "Assistant IA", icon: Bot, phase: "P7" },
 ];
 
 /** Menu latéral des grands écrans ; sur téléphone, le même contenu s'ouvre depuis `MobileNav`. */
@@ -126,21 +120,7 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
               </li>
             );
           })}
-          {UPCOMING_MAIN.map((item) => (
-            <UpcomingEntry key={item.label} {...item} />
-          ))}
         </ul>
-
-        <div className="flex flex-col gap-2">
-          <p className="px-3 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
-            Phases suivantes
-          </p>
-          <ul className="flex flex-col gap-1">
-            {NEXT_PHASES.map((item) => (
-              <UpcomingEntry key={item.label} {...item} />
-            ))}
-          </ul>
-        </div>
       </nav>
 
       <div className="flex items-center gap-3 border-t px-5 py-4">
@@ -156,18 +136,5 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         </span>
       </div>
     </>
-  );
-}
-
-function UpcomingEntry({ label, icon: Icon, phase }: UpcomingItem) {
-  return (
-    <li
-      title="Pas encore disponible"
-      className="flex cursor-default items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground"
-    >
-      <Icon aria-hidden className="size-4" />
-      <span className="flex-1">{label}</span>
-      <span className="rounded border px-1.5 text-[10px] font-medium">{phase}</span>
-    </li>
   );
 }

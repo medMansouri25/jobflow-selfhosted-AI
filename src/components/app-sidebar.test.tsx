@@ -43,12 +43,14 @@ describe("menu latéral", () => {
     ).toBeNull();
   });
 
-  it("affiche les fonctionnalités à venir sans lien, avec leur phase", () => {
+  it("mène à la page des entreprises, sans emplacement réservé restant", () => {
+    pathname.current = "/companies/c1";
     render(<AppSidebar />);
 
-    expect(screen.queryByRole("link", { name: /Assistant IA/ })).toBeNull();
-    expect(screen.getByText("Assistant IA")).toBeDefined();
-    expect(screen.getByText("P7")).toBeDefined();
+    const link = screen.getByRole("link", { name: "Entreprises" });
+    expect([link.getAttribute("href"), link.getAttribute("aria-current")]).toEqual(["/companies", "page"]);
+    expect(screen.queryByText("Assistant IA")).toBeNull();
+    expect(screen.queryByText(/^P\d$/)).toBeNull();
   });
 
   it("FR-006-01 mène au profil", () => {

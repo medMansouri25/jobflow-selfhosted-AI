@@ -59,9 +59,9 @@ describe("fiche d'une Candidature", () => {
 
     const heading = screen.getByRole("heading", { level: 1, name: "Ingénieur SI" });
     expect(heading.parentElement?.textContent).toContain("Postulée");
-    expect(
-      screen.getByText("Sanofi · Le Mans · CDI · Postulée le 27 sept. 2026"),
-    ).toBeDefined();
+    const company = screen.getByRole("link", { name: "Sanofi" });
+    expect(company.getAttribute("href")).toBe("/companies/c1");
+    expect(company.parentElement?.textContent).toBe("Sanofi · Le Mans · CDI · Postulée le 27 sept. 2026");
   });
 
   it("AC-001-19 affiche la description de l'Annonce en texte brut, retours à la ligne compris", () => {
