@@ -71,3 +71,13 @@ export async function debriefPractice(
   if (!points) throw new AiError(BAD_FORMAT);
   return points;
 }
+
+/** L'Entretien et sa Candidature, pour l'en-tête de la page d'entraînement. */
+export async function getPracticeInterview(userId: string, interviewId: string) {
+  const interview = await findOwnedInterview(db, userId, interviewId);
+  const application = await db.application.findUniqueOrThrow({
+    where: { id: interview.applicationId },
+    select: { id: true, jobTitle: true, company: { select: { name: true } } },
+  });
+  return { interview, application };
+}

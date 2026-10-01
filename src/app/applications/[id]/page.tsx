@@ -80,6 +80,7 @@ export default async function ApplicationPage({ params }: PageProps<"/applicatio
               action={prepareInterviewAction.bind(null, interview.id)}
               prep={readInterviewPrep(interview.aiPreparation)}
               label={interviewLabel(interview)}
+              practiceHref={`/interviews/${interview.id}/practice`}
             />
           )}
           actionsFor={(interview) => {

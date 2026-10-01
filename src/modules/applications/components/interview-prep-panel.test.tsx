@@ -32,4 +32,10 @@ describe("fiche de préparation sous un entretien", () => {
     expect(screen.getByText("Quels outils d'observabilité ?")).toBeDefined();
     expect(screen.getByRole("button", { name: "Refaire la fiche" })).toBeDefined();
   });
+
+  it("FR-009-04 mène à l'entraînement de l'entretien", () => {
+    render(<InterviewPrepPanel action={noop} prep={null} label="Entretien RH" practiceHref="/interviews/i1/practice" />);
+
+    expect(screen.getByRole("link", { name: "M'entraîner" }).getAttribute("href")).toBe("/interviews/i1/practice");
+  });
 });

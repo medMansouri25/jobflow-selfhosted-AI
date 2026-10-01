@@ -1,6 +1,7 @@
 "use client";
 
-import { Sparkles } from "lucide-react";
+import { Dumbbell, Sparkles } from "lucide-react";
+import Link from "next/link";
 import { useActionState } from "react";
 
 import { FormStateMessage } from "@/components/form-state-message";
@@ -13,9 +14,12 @@ export function InterviewPrepPanel({
   action,
   prep,
   label,
+  practiceHref,
 }: {
   action: FormAction;
   prep: InterviewPrep | null;
+  /** Page d'entraînement de l'Entretien (SPEC-009, B). */
+  practiceHref?: string;
   /** Décrit l'Entretien (type et date) : nom distinct du formulaire quand la fiche en liste plusieurs. */
   label: string;
 }) {
@@ -30,6 +34,14 @@ export function InterviewPrepPanel({
             <Sparkles aria-hidden />
             {pending ? "Préparation en cours…" : prep ? "Refaire la fiche" : "Préparer avec l'IA"}
           </Button>
+          {practiceHref && (
+            <Button asChild size="sm" variant="outline">
+              <Link href={practiceHref}>
+                <Dumbbell aria-hidden />
+                M&apos;entraîner
+              </Link>
+            </Button>
+          )}
           <span className="text-xs text-muted-foreground">
             L&apos;annonce et ton profil (sans e-mail ni téléphone) seront envoyés à Google Gemini, offre gratuite.
           </span>
