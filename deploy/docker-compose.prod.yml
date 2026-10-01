@@ -1,0 +1,38 @@
+# Production de JobFlow sur la Raspberry Pi (SPEC-010, ADR 0007).
+# Copié sur la Pi dans ~/jobflow-prod/ avec un fichier .env (modèle : .env.example), jamais commité.
+#
+# L'application n'écoute que sur la Pi elle-même (127.0.0.1:3000) : le HTTPS et l'accès viennent de
+# `tailscale serve`, donc seuls les appareils du tailnet y arrivent (ADR 0001, FR-010-03).
+name: jobflow-prod
+
+services:
+  app:
+    image: ${JOBFLOW_IMAGE:-ghcr.io/medmansouri25/jobflow-selfhosted-ai}:${JOBFLOW_VERSION:-latest}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://jobflow:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD manque dans .env}@db:5432/jobflow
+      UPLOADTHING_TOKEN: ${UPLOADTHING_TOKEN:-}
+    ports:
+      - "127.0.0.1:3000:3000"
+
+  # Base de production : distincte de jobflow_dev / jobflow_test (FR-010-04), aucun port publié.
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: jobflow
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD manque dans .env}
+      POSTGRES_DB: jobflow
+    volumes:
+      - db-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jobflow -d jobflow"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  db-data:
