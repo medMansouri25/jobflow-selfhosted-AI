@@ -27,7 +27,7 @@ Monolithe modulaire : une application, un conteneur, une base (ADR `0004`).
 | Conteneurs | Docker, Docker Compose | — | Base de dev/test ; image de production multi-arch |
 | Reverse proxy | Caddy | — | HTTPS automatique, certificat `*.ts.net` via Tailscale |
 | Accès réseau | Tailscale | — | ADR `0001` |
-| CI/CD | GitHub Actions, images publiées sur GHCR | — | Build ARM64 en CI, jamais sur la Pi |
+| CI/CD | GitHub Actions, images publiées sur GHCR | — | Build ARM64 en CI (machine `ubuntu-24.04-arm`, workflow `docker-image.yml`), jamais sur la Pi en production |
 
 ## Points d'entrée
 
