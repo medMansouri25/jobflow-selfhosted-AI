@@ -46,9 +46,9 @@ describe("menu latéral", () => {
   it("affiche les fonctionnalités à venir sans lien, avec leur phase", () => {
     render(<AppSidebar />);
 
-    expect(screen.queryByRole("link", { name: /Documents/ })).toBeNull();
-    expect(screen.getByText("Documents")).toBeDefined();
-    expect(screen.getByText("P5")).toBeDefined();
+    expect(screen.queryByRole("link", { name: /Assistant IA/ })).toBeNull();
+    expect(screen.getByText("Assistant IA")).toBeDefined();
+    expect(screen.getByText("P7")).toBeDefined();
   });
 
   it("FR-006-01 mène au profil", () => {

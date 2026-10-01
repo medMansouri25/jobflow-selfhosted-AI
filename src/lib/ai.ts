@@ -9,6 +9,8 @@ export type GenerationRequest = {
   system: string;
   /** La demande, avec ses données délimitées. */
   prompt: string;
+  /** Réponse attendue en JSON (l'analyse d'une Annonce), plutôt qu'en texte libre. */
+  json?: boolean;
 };
 
 export interface TextGenerator {
@@ -39,7 +41,7 @@ export function createGeminiGenerator({
   fallbackModel?: string;
   fetch?: typeof globalThis.fetch;
 }): TextGenerator {
-  async function call(modelName: string, { system, prompt }: GenerationRequest): Promise<Response> {
+  async function call(modelName: string, { system, prompt, json }: GenerationRequest): Promise<Response> {
     try {
       return await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(modelName)}:generateContent`,
@@ -50,7 +52,7 @@ export function createGeminiGenerator({
           body: JSON.stringify({
             systemInstruction: { parts: [{ text: system }] },
             contents: [{ role: "user", parts: [{ text: prompt }] }],
-            generationConfig: { temperature: 0.7 },
+            generationConfig: { temperature: 0.7, ...(json && { responseMimeType: "application/json" }) },
           }),
           signal: AbortSignal.timeout(TIMEOUT_MS),
         },

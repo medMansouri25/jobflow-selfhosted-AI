@@ -26,6 +26,21 @@ describe("générateur Gemini", () => {
     expect(body.contents[0].parts[0].text).toBe("Écris la lettre.");
   });
 
+  it("demande une réponse JSON quand on le précise", async () => {
+    const fetch = vi
+      .fn<typeof globalThis.fetch>()
+      .mockImplementation(async () =>
+        new Response(JSON.stringify({ candidates: [{ content: { parts: [{ text: "{}" }] } }] }), { status: 200 }),
+      );
+    const generator = createGeminiGenerator({ apiKey: "k", model: "m", fetch });
+
+    await generator.generate({ ...REQUEST, json: true });
+    await generator.generate(REQUEST);
+
+    const configs = fetch.mock.calls.map(([, init]) => JSON.parse(String(init?.body)).generationConfig);
+    expect(configs.map((c) => c.responseMimeType)).toEqual(["application/json", undefined]);
+  });
+
   it("AC-008-07 dit que la limite gratuite est atteinte (429)", async () => {
     const generator = createGeminiGenerator({ apiKey: "k", model: "m", fetch: reply(429, {}) });
 

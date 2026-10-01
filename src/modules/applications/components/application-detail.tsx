@@ -69,6 +69,7 @@ export function ApplicationDetail({
   actions,
   statusPanel,
   interviews,
+  jobAnalysis,
   coverLetter,
 }: {
   application: ApplicationDetailData;
@@ -78,6 +79,8 @@ export function ApplicationDetail({
   statusPanel?: ReactNode;
   /** Bloc « Entretiens » (SPEC-003), fourni par la page. */
   interviews?: ReactNode;
+  /** Bloc « Analyse de l'annonce » (SPEC-007), fourni par la page. */
+  jobAnalysis?: ReactNode;
   /** Bloc « Lettre de motivation » (SPEC-008), fourni par la page. */
   coverLetter?: ReactNode;
 }) {
@@ -107,6 +110,8 @@ export function ApplicationDetail({
       {statusPanel}
 
       {interviews}
+
+      {jobAnalysis}
 
       {coverLetter}
 

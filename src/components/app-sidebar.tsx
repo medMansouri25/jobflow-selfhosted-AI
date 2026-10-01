@@ -5,7 +5,6 @@ import {
   Briefcase,
   Building2,
   CalendarDays,
-  FileText,
   LayoutDashboard,
   MessagesSquare,
   UserRound,
@@ -64,7 +63,6 @@ const UPCOMING_MAIN: UpcomingItem[] = [
 ];
 
 const NEXT_PHASES: UpcomingItem[] = [
-  { label: "Documents", icon: FileText, phase: "P5" },
   { label: "Assistant IA", icon: Bot, phase: "P7" },
 ];
 

@@ -17,6 +17,9 @@ import {
   EditInterviewDialog,
 } from "@/modules/applications/components/interview-dialogs";
 import { CoverLetterSection } from "@/modules/applications/components/cover-letter-section";
+import { JobAnalysisSection } from "@/modules/applications/components/job-analysis-section";
+import { readJobAnalysis } from "@/modules/applications/job-analysis";
+import { analyzeJobPostingAction } from "@/modules/applications/job-analysis-actions";
 import { InterviewsSection } from "@/modules/applications/components/interviews-section";
 import { generateCoverLetterAction, saveCoverLetterAction } from "@/modules/applications/cover-letter-actions";
 import { formatInterviewDate } from "@/modules/applications/format";
@@ -49,6 +52,13 @@ export default async function ApplicationPage({ params }: PageProps<"/applicatio
   return (
     <ApplicationDetail
       application={application}
+      jobAnalysis={
+        <JobAnalysisSection
+          action={analyzeJobPostingAction.bind(null, application.id)}
+          analysis={readJobAnalysis(application.jobAnalysis)}
+          hasPosting={Boolean(application.jobDescription?.trim())}
+        />
+      }
       coverLetter={
         <CoverLetterSection
           generateAction={generateCoverLetterAction.bind(null, application.id)}

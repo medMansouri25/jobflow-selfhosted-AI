@@ -288,7 +288,7 @@ Feuille de route : `docs/roadmaps/phase-1-5-squelette-deploye/roadmap.md`.
 | [ ] T7.1 | ADR fournisseur d'IA (**Q7** : coût, confidentialité, API) | `docs/adr-ai-provider` |
 | [ ] T7.2 | Rédiger SPEC-007 | `docs/spec-007-ai-job-analysis` |
 | [ ] T7.3 | Client IA, protections contre l'injection de prompt, plafond de coût | `feature/spec-007-ai-client` |
-| [ ] T7.4 | Analyse d'une Annonce | `feature/spec-007-job-analysis` |
+| [x] T7.4 | Analyse d'une Annonce | `feature/spec-007-job-analysis` |
 
 ## Phase 8 — IA : brouillon de lettre (SPEC-008)
 

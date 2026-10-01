@@ -113,6 +113,8 @@ model Application {
   notes            String?
   /// Brouillon de lettre de motivation (SPEC-008), généré puis modifié par l'utilisateur.
   coverLetterDraft String?
+  /// Analyse de l'Annonce par l'assistant (SPEC-007), au format vérifié par `jobAnalysisSchema`.
+  jobAnalysis      Json?
   createdAt        DateTime                  @default(now()) @db.Timestamptz
   updatedAt        DateTime                  @updatedAt @db.Timestamptz
   statusChanges    ApplicationStatusChange[]
