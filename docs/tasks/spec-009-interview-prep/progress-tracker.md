@@ -20,3 +20,7 @@ Sous chaque Entretien de la fiche : « Préparer avec l'IA » / « Refaire la fi
 - [x] Mission 1: `parseAssistantJson` commun ; demande et lecture de la fiche + tests (AC-009-02, 04)
 - [x] Mission 2: Colonne `aiPreparation` + migration ; `prepareInterview` / `readInterviewPrep` + tests d'intégration (AC-009-01, 03, 04, 08)
 - [x] Mission 3: Action, `InterviewPrepPanel` sous chaque Entretien (`assistantFor`) + tests de composant (AC-009-01) ; essai réel
+
+## Review (2026-10-01)
+- Corrigé : formulaire de chaque fiche nommé par son Entretien (« Préparer : Entretien Technique du … ») au lieu d'un nom identique répété ; libellé construit une fois (`interviewLabel`) sur la page.
+- Corrigé : `readStoredJson` commun relit l'analyse et la fiche enregistrées.

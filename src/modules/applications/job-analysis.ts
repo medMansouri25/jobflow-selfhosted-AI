@@ -1,6 +1,7 @@
 import type { TextGenerator } from "@/lib/ai";
 import { AiError } from "@/lib/ai";
 import { db } from "@/lib/db";
+import { readStoredJson } from "@/modules/applications/assistant-data";
 import { loadAssistantInputs } from "@/modules/applications/assistant-inputs";
 import {
   buildJobAnalysisRequest,
@@ -31,6 +32,5 @@ export async function analyzeJobPosting(
 
 /** L'analyse enregistrée (colonne JSON), ou `null` si absente ou d'un format dépassé. */
 export function readJobAnalysis(stored: unknown): JobAnalysis | null {
-  const result = jobAnalysisSchema.safeParse(stored);
-  return result.success ? result.data : null;
+  return readStoredJson(stored, jobAnalysisSchema);
 }

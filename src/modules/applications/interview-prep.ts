@@ -1,5 +1,6 @@
 import { AiError, type TextGenerator } from "@/lib/ai";
 import { db } from "@/lib/db";
+import { readStoredJson } from "@/modules/applications/assistant-data";
 import { loadAssistantInputs } from "@/modules/applications/assistant-inputs";
 import {
   buildInterviewPrepRequest,
@@ -32,6 +33,5 @@ export async function prepareInterview(
 
 /** La fiche enregistrée (colonne JSON), ou `null` si absente ou d'un format dépassé. */
 export function readInterviewPrep(stored: unknown): InterviewPrep | null {
-  const result = interviewPrepSchema.safeParse(stored);
-  return result.success ? result.data : null;
+  return readStoredJson(stored, interviewPrepSchema);
 }

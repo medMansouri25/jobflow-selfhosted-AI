@@ -79,10 +79,11 @@ export default async function ApplicationPage({ params }: PageProps<"/applicatio
             <InterviewPrepPanel
               action={prepareInterviewAction.bind(null, interview.id)}
               prep={readInterviewPrep(interview.aiPreparation)}
+              label={interviewLabel(interview)}
             />
           )}
           actionsFor={(interview) => {
-            const label = `Entretien ${INTERVIEW_TYPE_LABELS[interview.type]} du ${formatInterviewDate(interview.scheduledAt)}`;
+            const label = interviewLabel(interview);
             return (
               <div className="flex gap-1">
                 <EditInterviewDialog
@@ -120,4 +121,9 @@ export default async function ApplicationPage({ params }: PageProps<"/applicatio
       }
     />
   );
+}
+
+/** « Entretien Technique du mer. 14 oct. 2026 · 10:30 » : nomme les boutons et formulaires d'un Entretien. */
+function interviewLabel(interview: { type: keyof typeof INTERVIEW_TYPE_LABELS; scheduledAt: Date }): string {
+  return `Entretien ${INTERVIEW_TYPE_LABELS[interview.type]} du ${formatInterviewDate(interview.scheduledAt)}`;
 }

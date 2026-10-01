@@ -9,12 +9,21 @@ import { initialFormState, type FormAction } from "@/lib/form-state";
 import type { InterviewPrep } from "@/modules/applications/interview-prep-request";
 
 /** Fiche de préparation d'un Entretien (SPEC-009, A) : bouton, puis questions, pistes et points clés. */
-export function InterviewPrepPanel({ action, prep }: { action: FormAction; prep: InterviewPrep | null }) {
+export function InterviewPrepPanel({
+  action,
+  prep,
+  label,
+}: {
+  action: FormAction;
+  prep: InterviewPrep | null;
+  /** Décrit l'Entretien (type et date) : nom distinct du formulaire quand la fiche en liste plusieurs. */
+  label: string;
+}) {
   const [state, prepare, pending] = useActionState(action, initialFormState);
 
   return (
     <div className="flex flex-col gap-2 rounded-md border border-dashed p-3">
-      <form action={prepare} aria-label="Préparer l'entretien" className="flex flex-col gap-2">
+      <form action={prepare} aria-label={`Préparer : ${label}`} className="flex flex-col gap-2">
         <FormStateMessage state={state} />
         <div className="flex flex-wrap items-center gap-2">
           <Button type="submit" size="sm" variant={prep ? "outline" : "default"} disabled={pending}>

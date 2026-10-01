@@ -67,3 +67,9 @@ export function parseAssistantJson<T>(answer: string, schema: z.ZodType<T>): T |
     return null;
   }
 }
+
+/** Valeur enregistrée (colonne JSON) relue avec `schema`, ou `null` si absente ou d'un format dépassé. */
+export function readStoredJson<T>(stored: unknown, schema: z.ZodType<T>): T | null {
+  const result = schema.safeParse(stored);
+  return result.success ? result.data : null;
+}
