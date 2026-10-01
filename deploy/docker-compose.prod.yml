@@ -5,8 +5,16 @@
 # `tailscale serve`, donc seuls les appareils du tailnet y arrivent (ADR 0001, FR-010-03).
 name: jobflow-prod
 
+# Journaux limités à 3 fichiers de 10 Mo par conteneur : la carte SD ne se remplit pas (FR-012-05).
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
   app:
+    logging: *logging
     image: ${JOBFLOW_IMAGE:-ghcr.io/medmansouri25/jobflow-selfhosted-ai}:${JOBFLOW_VERSION:-latest}
     restart: unless-stopped
     depends_on:
@@ -15,11 +23,13 @@ services:
     environment:
       DATABASE_URL: postgresql://jobflow:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD manque dans .env}@db:5432/jobflow
       UPLOADTHING_TOKEN: ${UPLOADTHING_TOKEN:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
     ports:
       - "127.0.0.1:3000:3000"
 
   # Base de production : distincte de jobflow_dev / jobflow_test (FR-010-04), aucun port publié.
   db:
+    logging: *logging
     image: postgres:18-alpine
     restart: unless-stopped
     environment:

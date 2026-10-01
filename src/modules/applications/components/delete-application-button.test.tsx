@@ -1,12 +1,12 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import type { ApplicationFormState } from "@/modules/applications/form-state";
+import type { FormState } from "@/lib/form-state";
 import { DeleteApplicationButton } from "@/modules/applications/components/delete-application-button";
 
 function recording() {
   const calls: number[] = [];
-  const action = async (state: ApplicationFormState) => {
+  const action = async (state: FormState) => {
     calls.push(1);
     return state;
   };
@@ -31,7 +31,7 @@ describe("bouton Supprimer de la fiche", () => {
 
   it("supprime après confirmation, et garde la fenêtre ouverte pour dire quel fichier reste chez UploadThing", async () => {
     const calls: number[] = [];
-    const deletedWithWarning = async (): Promise<ApplicationFormState> => {
+    const deletedWithWarning = async (): Promise<FormState> => {
       calls.push(1);
       return {
         status: "warning",

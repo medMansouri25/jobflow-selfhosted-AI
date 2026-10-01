@@ -16,7 +16,7 @@ export default function ErrorPage({
   }, [error]);
 
   return (
-    <main className="flex flex-1 flex-col items-start justify-center gap-4 px-8 py-24">
+    <main className="flex flex-1 flex-col items-start justify-center gap-4 px-4 py-24 sm:px-8">
       <h1 className="text-3xl font-semibold tracking-tight">
         Une erreur est survenue
       </h1>
