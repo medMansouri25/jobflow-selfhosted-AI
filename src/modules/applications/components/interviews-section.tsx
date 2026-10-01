@@ -9,23 +9,26 @@ import { INTERVIEW_FORMAT_LABELS, INTERVIEW_TYPE_LABELS } from "@/modules/applic
 
 export type InterviewItem = Pick<
   Interview,
-  "id" | "scheduledAt" | "type" | "format" | "location" | "interviewer" | "preparation" | "debrief"
+  "id" | "scheduledAt" | "type" | "format" | "location" | "interviewer" | "preparation" | "debrief" | "aiPreparation"
 >;
 
 /**
  * Entretiens d'une Candidature (FR-003-04), dans l'ordre reçu (date croissante). `add` : bouton
- * d'ajout, masqué pour une Candidature Refusée (BR-003-03) ; `actionsFor` : boutons d'un Entretien.
+ * d'ajout, masqué pour une Candidature Refusée (BR-003-03) ; `actionsFor` : boutons d'un Entretien ;
+ * `assistantFor` : bloc de l'assistant sous un Entretien (fiche de préparation, SPEC-009).
  */
 export function InterviewsSection({
   status,
   interviews,
   add,
   actionsFor,
+  assistantFor,
 }: {
   status: ApplicationStatus;
   interviews: InterviewItem[];
   add?: ReactNode;
   actionsFor?: (interview: InterviewItem) => ReactNode;
+  assistantFor?: (interview: InterviewItem) => ReactNode;
 }) {
   return (
     <Section title="Entretiens" action={isDefinitive(status) ? undefined : add}>
@@ -50,6 +53,7 @@ export function InterviewsSection({
               {interview.location && <Location value={interview.location} />}
               {interview.preparation && <Note title="Préparation" text={interview.preparation} />}
               {interview.debrief && <Note title="Compte rendu" text={interview.debrief} />}
+              {assistantFor?.(interview)}
             </li>
           ))}
         </ul>

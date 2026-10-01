@@ -8,6 +8,7 @@ import {
   type AssistantPosting,
   type AssistantProfile,
   DATA_RULE,
+  parseAssistantJson,
   postingBlock,
   profileBlock,
 } from "@/modules/applications/assistant-data";
@@ -60,11 +61,5 @@ export function buildJobAnalysisRequest(posting: AssistantPosting, profile: Assi
 
 /** L'analyse lue dans la réponse, ou `null` si elle n'a pas la forme attendue (BR-007-04). */
 export function parseJobAnalysis(answer: string): JobAnalysis | null {
-  const json = answer.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
-  try {
-    const result = jobAnalysisSchema.safeParse(JSON.parse(json));
-    return result.success ? result.data : null;
-  } catch {
-    return null;
-  }
+  return parseAssistantJson(answer, jobAnalysisSchema);
 }

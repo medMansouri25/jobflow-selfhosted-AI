@@ -25,7 +25,7 @@ function toColumns(input: InterviewInput) {
 }
 
 /** L'Entretien `id` de l'utilisateur, ou `NotFoundError` (même règle que `findOwnedApplication`). */
-async function findOwnedInterview(client: Prisma.TransactionClient, userId: string, id: string) {
+export async function findOwnedInterview(client: Prisma.TransactionClient, userId: string, id: string) {
   const interview = z.uuid().safeParse(id).success
     ? await client.interview.findFirst({ where: { id, userId } })
     : null;

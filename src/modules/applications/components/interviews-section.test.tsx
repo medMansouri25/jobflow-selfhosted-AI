@@ -16,6 +16,7 @@ function interview(overrides: Partial<InterviewItem> = {}): InterviewItem {
     interviewer: null,
     preparation: null,
     debrief: null,
+    aiPreparation: null,
     ...overrides,
   };
 }

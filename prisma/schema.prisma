@@ -170,6 +170,8 @@ model Interview {
   interviewer   String?         @db.VarChar(200)
   preparation   String?
   debrief       String?
+  /// Fiche de préparation de l'assistant (SPEC-009), à côté de la Préparation écrite par l'utilisateur.
+  aiPreparation Json?
   createdAt     DateTime        @default(now()) @db.Timestamptz
   updatedAt     DateTime        @updatedAt @db.Timestamptz
 

@@ -1,6 +1,8 @@
 // Données envoyées à l'assistant IA (ADR 0008), communes à la lettre (SPEC-008) et à l'analyse (SPEC-007).
 // Seul le nécessaire part (BR-008-03) ; chaque donnée est enfermée dans un bloc qu'elle ne peut pas quitter (BR-008-05).
 
+import type { z } from "zod";
+
 /** Ce que l'assistant peut lire du Profil : ni e-mail, ni téléphone, ni LinkedIn. */
 export type AssistantProfile = {
   fullName: string | null;
@@ -53,4 +55,15 @@ export function profileBlock(profile: AssistantProfile): string {
       ...section("Exemples de textes écrits par le candidat (pour le style)", profile.writingSamples),
     ].join("\n"),
   );
+}
+
+/** Réponse JSON de l'assistant lue et vérifiée par `schema`, ou `null` si elle n'a pas la forme attendue. */
+export function parseAssistantJson<T>(answer: string, schema: z.ZodType<T>): T | null {
+  const json = answer.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
+  try {
+    const result = schema.safeParse(JSON.parse(json));
+    return result.success ? result.data : null;
+  } catch {
+    return null;
+  }
 }

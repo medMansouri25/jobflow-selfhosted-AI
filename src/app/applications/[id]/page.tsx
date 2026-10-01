@@ -20,7 +20,10 @@ import { CoverLetterSection } from "@/modules/applications/components/cover-lett
 import { JobAnalysisSection } from "@/modules/applications/components/job-analysis-section";
 import { readJobAnalysis } from "@/modules/applications/job-analysis";
 import { analyzeJobPostingAction } from "@/modules/applications/job-analysis-actions";
+import { InterviewPrepPanel } from "@/modules/applications/components/interview-prep-panel";
 import { InterviewsSection } from "@/modules/applications/components/interviews-section";
+import { readInterviewPrep } from "@/modules/applications/interview-prep";
+import { prepareInterviewAction } from "@/modules/applications/interview-prep-actions";
 import { generateCoverLetterAction, saveCoverLetterAction } from "@/modules/applications/cover-letter-actions";
 import { formatInterviewDate } from "@/modules/applications/format";
 import { StatusPanel } from "@/modules/applications/components/status-panel";
@@ -72,6 +75,12 @@ export default async function ApplicationPage({ params }: PageProps<"/applicatio
           status={application.status}
           interviews={application.interviews}
           add={<AddInterviewDialog action={addInterviewAction.bind(null, application.id)} />}
+          assistantFor={(interview) => (
+            <InterviewPrepPanel
+              action={prepareInterviewAction.bind(null, interview.id)}
+              prep={readInterviewPrep(interview.aiPreparation)}
+            />
+          )}
           actionsFor={(interview) => {
             const label = `Entretien ${INTERVIEW_TYPE_LABELS[interview.type]} du ${formatInterviewDate(interview.scheduledAt)}`;
             return (
