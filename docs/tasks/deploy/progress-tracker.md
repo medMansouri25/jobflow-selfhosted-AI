@@ -20,3 +20,12 @@ Mettre à jour la production demande aujourd'hui plusieurs commandes à la main,
 ## Missions
 - [x] Mission 1: Infra — `deploy/deploy.sh`, section « Mettre à jour » de `docs/runbooks/production.md` ; vérifié : version introuvable → code 1, `.env` et conteneurs inchangés
 - [ ] Mission 2: Vérification — après la première publication GHCR : `./deploy.sh` (latest) → healthy (AC-010-05) ; `./deploy.sh sha-<précédente>` → retour arrière, données intactes (AC-010-06)
+
+## Review (2026-10-01)
+- Corrigé : la version est écrite dans `.env` par `sed` seul (un `.env` sans retour à la ligne final cassait `UPLOADTHING_TOKEN`) — vérifié.
+- Corrigé : `docker compose up` en échec n'interrompt plus le script avant le message de retour arrière.
+- Corrigé : sortie anticipée sur `State.Status` (en boucle de redémarrage, `Running` reste vrai) au lieu d'attendre 180 s.
+- Corrigé : la version proposée est la **dernière saine** (`.last-good`, écrite quand le conteneur devient « healthy », révision vérifiée en hexadécimal), plus celle qui tourne, peut-être cassée.
+- Corrigé (doc + message) : après une migration en échec, le retour arrière seul ne suffit pas (Prisma P3009) : le script affiche la sauvegarde faite juste avant, à restaurer d'abord.
+- Accepté : au premier déploiement depuis l'image locale `jobflow:test`, aucune version saine n'est connue (pas de label de révision) ; aucune commande de retour n'est proposée.
+- `deploy.sh` appelle `backup.sh` : la branche contient celle des sauvegardes (fusionner #22, #23 puis #24).
