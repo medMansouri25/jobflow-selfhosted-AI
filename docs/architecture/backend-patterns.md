@@ -119,13 +119,13 @@ Les erreurs inattendues ne sont jamais avalées ni transformées en message mét
 
 ## Utilisateur courant
 
-- `lib/current-user.ts` expose `getCurrentUserId()`, qui renvoie l'utilisateur unique. Il est créé par la migration `single_user` (`INSERT … WHERE NOT EXISTS`), donc toute base migrée, même la production vide, en a un ; le seed reste pour le dev.
+- `lib/current-user.ts` expose `getCurrentUserId()`, qui renvoie l'utilisateur unique. Il est créé par la migration `single_user` (`INSERT … WHERE NOT EXISTS`), donc toute base migrée, même la production vide, en a un (le seed a été supprimé le 2026-10-01).
 - C'est le **seul** endroit qui sait comment l'utilisateur est identifié : l'ajout futur d'une authentification ne modifie que ce fichier.
 - Les services ne l'appellent jamais eux-mêmes : ils reçoivent le `userId`.
 
 ## Base de données
 
-- Schéma, migrations et seed dans `prisma/`. Toute modification du schéma passe par une migration versionnée (`prisma migrate dev`), jamais par `db push` sur une base partagée.
+- Schéma et migrations dans `prisma/` (pas de seed : l'utilisateur unique vient de la migration `single_user`). Toute modification du schéma passe par une migration versionnée (`prisma migrate dev`), jamais par `db push` sur une base partagée.
 - Noms de modèles et de champs en anglais (`Application`, `appliedAt`) ; libellés français uniquement dans l'UI.
 - Horodatages en UTC (`timestamptz`) ; les dates sans heure (`appliedAt`) en type `date`.
 - Suppressions en cascade déclarées dans le schéma (`onDelete: Cascade`) quand la spec l'exige.
