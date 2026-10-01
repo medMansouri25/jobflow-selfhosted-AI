@@ -14,7 +14,11 @@ import {
   SOURCE_LABELS,
   STATUS_LABELS,
 } from "@/modules/applications/labels";
-import { LIST_SORTS, type ListApplicationsInput } from "@/modules/applications/schemas";
+import {
+  DEFAULT_LIST_SORT,
+  LIST_SORTS,
+  type ListApplicationsInput,
+} from "@/modules/applications/schemas";
 
 const selectClass =
   "h-9 w-full rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
@@ -101,7 +105,7 @@ export function ApplicationFilters({ filters }: { filters: ListApplicationsInput
 }
 
 function hasDetailedFilters(filters: ListApplicationsInput): boolean {
-  return filters.statuses.length > 0 || Boolean(filters.contractType || filters.source) || filters.sort !== LIST_SORTS[0];
+  return filters.statuses.length > 0 || Boolean(filters.contractType || filters.source) || filters.sort !== DEFAULT_LIST_SORT;
 }
 
 function FilterSelect({

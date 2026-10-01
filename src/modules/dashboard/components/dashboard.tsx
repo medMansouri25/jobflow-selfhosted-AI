@@ -174,7 +174,7 @@ function Kpi({
   highlight?: boolean;
 }) {
   return (
-    <div className="flex flex-col gap-1 border-r border-b p-4 even:border-r-0 sm:p-5 lg:border-b-0 lg:even:border-r lg:last:border-r-0">
+    <div className="flex flex-col gap-1 border-b p-4 odd:border-r sm:p-5 lg:border-r lg:border-b-0 lg:last:border-r-0">
       <span className="text-xs font-medium tracking-wider text-muted-foreground uppercase">
         {label}
       </span>

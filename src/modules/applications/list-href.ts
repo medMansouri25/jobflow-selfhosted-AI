@@ -1,4 +1,4 @@
-import type { ListApplicationsInput } from "@/modules/applications/schemas";
+import { DEFAULT_LIST_SORT, type ListApplicationsInput } from "@/modules/applications/schemas";
 
 /**
  * Adresse de la liste pour ces filtres (inverse de `listApplicationsSchema`) : sert aux liens de
@@ -14,7 +14,7 @@ export function listHref(
   for (const status of statuses) params.append("statut", status);
   if (contractType) params.set("contrat", contractType);
   if (source) params.set("source", source);
-  if (sort !== "modifiee") params.set("tri", sort);
+  if (sort !== DEFAULT_LIST_SORT) params.set("tri", sort);
   if (page > 1) params.set("page", String(page));
   const query = params.toString();
   return query ? `/applications?${query}` : "/applications";

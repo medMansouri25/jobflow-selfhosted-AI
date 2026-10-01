@@ -170,6 +170,8 @@ export const changeStatusSchema = z.object({
 
 /** Tris de la liste (FR-001-11) ; `modifiee` = dernière modification, du plus récent au plus ancien. */
 export const LIST_SORTS = ["modifiee", "candidature", "entreprise"] as const;
+/** Tri appliqué quand l'URL n'en donne pas (FR-001-11). */
+export const DEFAULT_LIST_SORT = "modifiee" satisfies (typeof LIST_SORTS)[number];
 export type ListSort = (typeof LIST_SORTS)[number];
 
 /** Valeur de `values`, ou `undefined` : un paramètre d'adresse inconnu est ignoré, jamais une erreur. */
@@ -201,7 +203,7 @@ export const listApplicationsSchema = z
       statuses,
       contractType: oneOf(CONTRACT_TYPES, raw.contrat),
       source: oneOf(APPLICATION_SOURCES, raw.source),
-      sort: oneOf(LIST_SORTS, raw.tri) ?? "modifiee",
+      sort: oneOf(LIST_SORTS, raw.tri) ?? DEFAULT_LIST_SORT,
       page: Number.isInteger(page) && page >= 1 ? page : 1,
     };
   });
