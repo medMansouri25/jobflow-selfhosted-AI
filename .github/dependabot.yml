@@ -21,6 +21,9 @@ updates:
       # Les types suivent le Node de l'image (24, LTS), pas la dernière version de Node.
       - dependency-name: "@types/node"
         update-types: ["version-update:semver-major"]
+      # TypeScript 7 n'est pas encore pris en charge par typescript-eslint (utilisé par eslint-config-next).
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: github-actions
     directory: /
