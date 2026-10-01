@@ -310,7 +310,7 @@ Feuille de route : `docs/roadmaps/phase-1-5-squelette-deploye/roadmap.md`.
 
 | # | Tâche | Branche |
 |---|---|---|
-| [ ] T10.1 | Rédiger SPEC-012 | `docs/spec-012-observability` |
-| [x] T10.2 | Logs structurés et supervision du healthcheck | `chore/observability-logs` |
-| [ ] T10.3 | Métriques (Prometheus / Grafana si justifié) | `chore/observability-metrics` |
-| [x] T10.4 | Durcissement : dépendances, en-têtes de sécurité, revue des sauvegardes | `chore/hardening` |
+| [x] T10.1 | Rédiger SPEC-012 (alertes ntfy, Dependabot mensuel ; pas de Prometheus, décision du 2026-10-01) | `docs/spec-012-hardening` |
+| [x] T10.2 | Alertes ntfy (watchdog, sauvegardes, disque, PC) et journaux Docker limités | `chore/hardening` |
+| [-] T10.3 | ~~Métriques Prometheus / Grafana~~ — écarté le 2026-10-01 : trop lourd pour la Pi | — |
+| [x] T10.4 | Durcissement : en-têtes de sécurité, `npm audit` en CI, Dependabot | `chore/hardening` |
