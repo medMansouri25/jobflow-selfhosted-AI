@@ -6,7 +6,6 @@ import { CompaniesList } from "@/modules/companies/components/companies-list";
 const COMPANY = {
   id: "c1",
   name: "Thales",
-  website: null,
   total: 3,
   counts: { APPLIED: 1, INTERVIEW: 1, REJECTED: 1 },
   lastActivity: new Date("2026-09-30T10:00:00Z"),

@@ -18,3 +18,8 @@ Le menu montrait encore deux emplacements réservés sans lien : « Entreprises 
 ## Missions
 - [x] Mission 1: `listCompanyOverviews` / `getCompanyOverview` + tests d'intégration
 - [x] Mission 2: `CompaniesList`, pages `/companies` et `/companies/[id]`, lien depuis la fiche d'une Candidature, menu + tests
+
+## Review (2026-10-01)
+- Corrigé : la fiche d'une Entreprise est un composant du module (`CompanyDetail`, testé) ; la page ne fait que l'assembler. Les Entretiens sont lus et triés par une seule requête dans `getCompanyOverview`.
+- Corrigé : plus de marges négatives autour de la liste d'Entretiens (même présentation que la page « Entretiens »).
+- Retiré : le site web de l'Entreprise, que rien ne permet de saisir (code jamais atteint) ; à rajouter avec un formulaire d'Entreprise si besoin.

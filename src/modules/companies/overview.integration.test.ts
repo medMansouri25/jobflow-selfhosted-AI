@@ -62,9 +62,8 @@ describe("vue des entreprises", () => {
     const overview = await getCompanyOverview(user.id, company.id);
 
     expect(overview.name).toBe("Thales");
-    expect(overview.applications.map((a) => [a.jobTitle, a.status, a.interviews.length])).toEqual([
-      ["Ingénieur DevOps", "INTERVIEW", 1],
-    ]);
+    expect(overview.applications.map((a) => [a.jobTitle, a.status])).toEqual([["Ingénieur DevOps", "INTERVIEW"]]);
+    expect(overview.interviews.map((i) => [i.type, i.application.company.name])).toEqual([["HR", "Thales"]]);
   });
 
   it("ignore les Entreprises d'un autre utilisateur et traite leur fiche comme introuvable", async () => {
