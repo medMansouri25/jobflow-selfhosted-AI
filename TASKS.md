@@ -230,11 +230,11 @@ Feuille de route : `docs/roadmaps/phase-1-5-squelette-deploye/roadmap.md`.
 |---|---|---|
 | [x] T1.5.1 | Rédiger SPEC-010 (Q6 tranchée : ADR 0007, base sur la carte SD de la Pi) | `docs/spec-010-deployment` |
 | [x] T1.5.2 | Dockerfile multi-étapes (sortie `standalone`, utilisateur non-root, `HEALTHCHECK`) | `chore/dockerfile` |
-| [ ] T1.5.3 | CI : image multi-arch (`docker buildx`, ARM64) publiée sur GHCR à chaque merge sur `main` | `chore/ci-docker-image` |
+| [x] T1.5.3 | CI : image multi-arch (`docker buildx`, ARM64) publiée sur GHCR à chaque merge sur `main` | `chore/ci-docker-image` |
 | [ ] T1.5.4 | Préparer la Pi : Tailscale (Pi, PC, téléphone), Docker — procédure dans `docs/runbooks/` | `docs/runbook-pi-setup` |
 | [ ] T1.5.5 | `docker-compose.prod.yml` + `Caddyfile` (HTTPS `*.ts.net`) + migrations au déploiement | `chore/prod-compose` |
-| [ ] T1.5.6 | Déploiement : mise à jour de l'image sur la Pi (`./deploy.sh` lancé à la main, retour arrière) | `chore/deploy` |
-| [ ] T1.5.7 | Sauvegardes : `pg_dump` planifié, récupération par le PC, **restauration testée** | `chore/backups` |
+| [x] T1.5.6 | Déploiement : mise à jour de l'image sur la Pi (`./deploy.sh` lancé à la main, retour arrière) | `chore/deploy` |
+| [x] T1.5.7 | Sauvegardes : `pg_dump` planifié, récupération par le PC, **restauration testée** | `chore/backups` |
 
 ## Phase 2 — Dashboard (SPEC-002)
 
