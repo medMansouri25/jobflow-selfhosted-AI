@@ -93,29 +93,31 @@ model Company {
 
 /// Candidature — porte les champs de son Annonce.
 model Application {
-  id             String                    @id @default(uuid()) @db.Uuid
-  userId         String                    @db.Uuid
-  user           User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  companyId      String                    @db.Uuid
-  company        Company                   @relation(fields: [companyId], references: [id], onDelete: Restrict)
-  status         ApplicationStatus
-  jobTitle       String                    @db.VarChar(200)
-  location       String?                   @db.VarChar(200)
-  contractType   ContractType?
-  jobUrl         String?                   @db.VarChar(2048)
-  source         ApplicationSource?
-  jobDescription String?
-  salaryMin      Int?
-  salaryMax      Int?
-  salaryCurrency String?                   @db.Char(3)
-  salaryPeriod   SalaryPeriod?
-  appliedAt      DateTime?                 @db.Date
-  notes          String?
-  createdAt      DateTime                  @default(now()) @db.Timestamptz
-  updatedAt      DateTime                  @updatedAt @db.Timestamptz
-  statusChanges  ApplicationStatusChange[]
-  attachments    Attachment[]
-  interviews     Interview[]
+  id               String                    @id @default(uuid()) @db.Uuid
+  userId           String                    @db.Uuid
+  user             User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyId        String                    @db.Uuid
+  company          Company                   @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  status           ApplicationStatus
+  jobTitle         String                    @db.VarChar(200)
+  location         String?                   @db.VarChar(200)
+  contractType     ContractType?
+  jobUrl           String?                   @db.VarChar(2048)
+  source           ApplicationSource?
+  jobDescription   String?
+  salaryMin        Int?
+  salaryMax        Int?
+  salaryCurrency   String?                   @db.Char(3)
+  salaryPeriod     SalaryPeriod?
+  appliedAt        DateTime?                 @db.Date
+  notes            String?
+  /// Brouillon de lettre de motivation (SPEC-008), généré puis modifié par l'utilisateur.
+  coverLetterDraft String?
+  createdAt        DateTime                  @default(now()) @db.Timestamptz
+  updatedAt        DateTime                  @updatedAt @db.Timestamptz
+  statusChanges    ApplicationStatusChange[]
+  attachments      Attachment[]
+  interviews       Interview[]
 
   @@index([userId, status])
   @@index([userId, updatedAt])

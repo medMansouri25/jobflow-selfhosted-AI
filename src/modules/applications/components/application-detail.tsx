@@ -69,6 +69,7 @@ export function ApplicationDetail({
   actions,
   statusPanel,
   interviews,
+  coverLetter,
 }: {
   application: ApplicationDetailData;
   /** Boutons de la fiche (ex. « Modifier »), fournis par la page. */
@@ -77,6 +78,8 @@ export function ApplicationDetail({
   statusPanel?: ReactNode;
   /** Bloc « Entretiens » (SPEC-003), fourni par la page. */
   interviews?: ReactNode;
+  /** Bloc « Lettre de motivation » (SPEC-008), fourni par la page. */
+  coverLetter?: ReactNode;
 }) {
   const meta = [
     application.company.name,
@@ -104,6 +107,8 @@ export function ApplicationDetail({
       {statusPanel}
 
       {interviews}
+
+      {coverLetter}
 
       <Section title="Annonce">
         <dl className="grid gap-x-6 gap-y-2 text-sm sm:grid-cols-[max-content_1fr]">

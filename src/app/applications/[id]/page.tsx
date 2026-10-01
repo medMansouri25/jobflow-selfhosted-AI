@@ -16,7 +16,9 @@ import {
   DeleteInterviewButton,
   EditInterviewDialog,
 } from "@/modules/applications/components/interview-dialogs";
+import { CoverLetterSection } from "@/modules/applications/components/cover-letter-section";
 import { InterviewsSection } from "@/modules/applications/components/interviews-section";
+import { generateCoverLetterAction, saveCoverLetterAction } from "@/modules/applications/cover-letter-actions";
 import { formatInterviewDate } from "@/modules/applications/format";
 import { StatusPanel } from "@/modules/applications/components/status-panel";
 import {
@@ -47,6 +49,14 @@ export default async function ApplicationPage({ params }: PageProps<"/applicatio
   return (
     <ApplicationDetail
       application={application}
+      coverLetter={
+        <CoverLetterSection
+          generateAction={generateCoverLetterAction.bind(null, application.id)}
+          saveAction={saveCoverLetterAction.bind(null, application.id)}
+          draft={application.coverLetterDraft}
+          hasPosting={Boolean(application.jobDescription?.trim())}
+        />
+      }
       interviews={
         <InterviewsSection
           status={application.status}
