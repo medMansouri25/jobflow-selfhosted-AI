@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { emptyToUndefined, optionalText } from "@/lib/form-fields";
+
 import {
   APPLICATION_SOURCES,
   APPLICATION_STATUSES,
@@ -8,15 +10,6 @@ import {
   SALARY_PERIODS,
 } from "@/modules/applications/domain/application";
 
-// Un champ de formulaire vide arrive sous forme de chaîne vide : on le traite comme absent.
-const emptyToUndefined = (value: unknown) =>
-  typeof value === "string" && value.trim() === "" ? undefined : value;
-
-const optionalText = (max: number) =>
-  z.preprocess(
-    emptyToUndefined,
-    z.string().trim().max(max, `${max} caractères maximum`).optional(),
-  );
 
 const optionalEnum = <T extends readonly [string, ...string[]]>(values: T) =>
   z.preprocess(emptyToUndefined, z.enum(values).optional());
@@ -59,7 +52,7 @@ const pdfAttachment = (label: string) =>
   );
 
 /** Champ obligatoire : vide ou absent → message nommant le champ (BR-001-02). */
-const required = <T extends z.ZodType<unknown, string>>(schema: T, label: string) =>
+export const required = <T extends z.ZodType<unknown, string>>(schema: T, label: string) =>
   z.preprocess(
     (value) => emptyToUndefined(value) ?? "",
     z.string().trim().min(1, `${label} est obligatoire`).pipe(schema),
@@ -170,6 +163,8 @@ export const changeStatusSchema = z.object({
 
 /** Tris de la liste (FR-001-11) ; `modifiee` = dernière modification, du plus récent au plus ancien. */
 export const LIST_SORTS = ["modifiee", "candidature", "entreprise"] as const;
+/** Tri appliqué quand l'URL n'en donne pas (FR-001-11). */
+export const DEFAULT_LIST_SORT = "modifiee" satisfies (typeof LIST_SORTS)[number];
 export type ListSort = (typeof LIST_SORTS)[number];
 
 /** Valeur de `values`, ou `undefined` : un paramètre d'adresse inconnu est ignoré, jamais une erreur. */
@@ -201,7 +196,7 @@ export const listApplicationsSchema = z
       statuses,
       contractType: oneOf(CONTRACT_TYPES, raw.contrat),
       source: oneOf(APPLICATION_SOURCES, raw.source),
-      sort: oneOf(LIST_SORTS, raw.tri) ?? "modifiee",
+      sort: oneOf(LIST_SORTS, raw.tri) ?? DEFAULT_LIST_SORT,
       page: Number.isInteger(page) && page >= 1 ? page : 1,
     };
   });

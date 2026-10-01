@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { RowLink } from "@/components/row-link";
+import { cn } from "@/lib/utils";
 import type {
   ApplicationSource,
   ApplicationStatus,
@@ -20,7 +21,17 @@ export type ApplicationRow = {
   status: ApplicationStatus;
 };
 
-const COLUMNS = ["Entreprise", "Poste", "Localisation", "Contrat", "Source", "Candidature", "Statut"];
+// Sur téléphone, seules l'Entreprise, le poste et le statut restent : le détail est à un toucher.
+const SECONDARY = "hidden md:table-cell";
+const COLUMNS = [
+  { label: "Entreprise" },
+  { label: "Poste" },
+  { label: "Localisation", className: SECONDARY },
+  { label: "Contrat", className: SECONDARY },
+  { label: "Source", className: SECONDARY },
+  { label: "Candidature", className: SECONDARY },
+  { label: "Statut" },
+];
 const dateFormat = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", timeZone: "UTC" });
 
 export function ApplicationsTable({
@@ -38,11 +49,14 @@ export function ApplicationsTable({
           <tr>
             {COLUMNS.map((column) => (
               <th
-                key={column}
+                key={column.label}
                 scope="col"
-                className="px-4 py-2 text-left text-[11px] font-bold tracking-wider text-foreground/60 uppercase"
+                className={cn(
+                  "px-4 py-2 text-left text-[11px] font-bold tracking-wider text-foreground/60 uppercase",
+                  column.className,
+                )}
               >
-                {column}
+                {column.label}
               </th>
             ))}
           </tr>
@@ -79,14 +93,14 @@ export function ApplicationsTable({
                   <RowLink href={`/applications/${application.id}`}>{application.companyName}</RowLink>
                 </th>
                 <td className="px-4 py-3">{application.jobTitle}</td>
-                <td className="px-4 py-3">{application.location ?? "—"}</td>
-                <td className="px-4 py-3">
+                <td className={cn("px-4 py-3", SECONDARY)}>{application.location ?? "—"}</td>
+                <td className={cn("px-4 py-3", SECONDARY)}>
                   {application.contractType ? CONTRACT_TYPE_LABELS[application.contractType] : "—"}
                 </td>
-                <td className="px-4 py-3">
+                <td className={cn("px-4 py-3", SECONDARY)}>
                   {application.source ? SOURCE_LABELS[application.source] : "—"}
                 </td>
-                <td className="px-4 py-3 text-muted-foreground">
+                <td className={cn("px-4 py-3 text-muted-foreground", SECONDARY)}>
                   {application.appliedAt ? dateFormat.format(application.appliedAt) : "—"}
                 </td>
                 <td className="px-4 py-3">

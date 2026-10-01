@@ -1,10 +1,10 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import type { ApplicationFormState } from "@/modules/applications/form-state";
+import type { FormState } from "@/lib/form-state";
 import { StatusPanel } from "@/modules/applications/components/status-panel";
 
-const noop = async (state: ApplicationFormState) => state;
+const noop = async (state: FormState) => state;
 
 describe("bloc Statut de la fiche", () => {
   it("propose depuis Postulée les seules transitions autorisées", () => {
@@ -27,7 +27,7 @@ describe("bloc Statut de la fiche", () => {
 
   it("envoie « Passer en Entretien » tout de suite, mais demande confirmation avant « Refusée » (statut définitif)", async () => {
     const sent: string[] = [];
-    const recording = async (state: ApplicationFormState, formData: FormData) => {
+    const recording = async (state: FormState, formData: FormData) => {
       sent.push(String(formData.get("to")));
       return state;
     };
@@ -46,7 +46,7 @@ describe("bloc Statut de la fiche", () => {
   });
 
   it("affiche le refus du serveur (ex. onglet pas à jour)", async () => {
-    const refusing = async (): Promise<ApplicationFormState> => ({
+    const refusing = async (): Promise<FormState> => ({
       status: "error",
       message: "Le statut a changé entre-temps (la candidature est maintenant Refusée). Recharge la page.",
     });
@@ -58,7 +58,7 @@ describe("bloc Statut de la fiche", () => {
   });
 
   it("confirme le changement enregistré", async () => {
-    const saving = async (): Promise<ApplicationFormState> => ({ status: "success", message: "Statut : Entretien." });
+    const saving = async (): Promise<FormState> => ({ status: "success", message: "Statut : Entretien." });
     render(<StatusPanel status="APPLIED" action={saving} />);
 
     fireEvent.click(screen.getByRole("button", { name: "Passer en Entretien" }));

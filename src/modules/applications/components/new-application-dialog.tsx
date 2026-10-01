@@ -17,8 +17,8 @@ export function NewApplicationDialog({
       title="Nouvelle candidature"
       description="Enregistre une candidature envoyée à une entreprise."
       trigger={
-        <Button className="font-bold">
-          Nouvelle candidature
+        <Button className="font-bold" aria-label="Nouvelle candidature">
+          <span className="hidden sm:inline">Nouvelle candidature</span>
           <Plus aria-hidden />
         </Button>
       }
