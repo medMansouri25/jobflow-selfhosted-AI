@@ -23,3 +23,9 @@ Alertes ntfy sur l'iPhone (Pi : watchdog, sauvegarde, disque ; PC : récupérati
 - [x] Mission 1: `notify.sh`, `watchdog.sh`, `daily-check.sh`, alerte de `backup.sh`, alerte du PC ; journaux Docker limités ; procédure `docs/runbooks/alerts.md` ; installation et essais sur la Pi
 - [x] Mission 2: En-têtes de sécurité (`security-headers.ts` + tests) ; vérification en production locale
 - [x] Mission 3: `npm audit` en CI, `overrides` corrigeant Prisma (+ Dockerfile), Dependabot
+
+## Review (2026-10-01)
+- Corrigé : une sauvegarde ratée pendant `./deploy.sh` était masquée par le tube (`backup.sh | sed`) ; le déploiement continuait et annonçait une fausse sauvegarde (« nocturne », pris dans le texte de l'alerte). Désormais l'échec arrête le déploiement, et seul un nom `jobflow-….dump` est reconnu. Vérifié sur la Pi : base arrêtée → déploiement interrompu (code 1), application inchangée.
+- Message d'alerte de sauvegarde neutre (« sauvegarde de la base »), puisqu'il sert aussi avant un déploiement.
+- Dependabot : mineures et correctifs groupés ; une version majeure arrive dans sa propre PR ; Node reste en LTS (pas de saut de version majeure de l'image).
+- SPEC-012 amendée : l'alerte « ne répond plus » part au 2ᵉ échec de suite (10 min), pour ne rien déclencher pendant un déploiement.

@@ -10,7 +10,7 @@ FILE="$DIR/jobflow-$(date +%Y-%m-%d_%H%M).dump"
 
 # Une sauvegarde en échec prévient le téléphone (SPEC-012, FR-012-02) et ne laisse pas de fichier partiel.
 ALERT="$(cd "$(dirname "$0")" && pwd)/notify.sh"
-trap 'status=$?; if [ "$status" -ne 0 ]; then rm -f "$FILE.partial"; "$ALERT" "Sauvegarde JobFlow échouée" "La sauvegarde nocturne de la Pi a échoué (code $status). Voir ~/jobflow-backups/backup.log."; fi' EXIT
+trap 'status=$?; if [ "$status" -ne 0 ]; then rm -f "$FILE.partial"; "$ALERT" "Sauvegarde JobFlow échouée" "La sauvegarde de la base sur la Pi a échoué (code $status). Voir ~/jobflow-backups/backup.log."; fi' EXIT
 
 cd "$HOME/jobflow-prod"
 # Écrite sous un nom temporaire : une sauvegarde interrompue n'est jamais prise pour une bonne.

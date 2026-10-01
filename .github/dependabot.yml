@@ -8,8 +8,11 @@ updates:
       interval: monthly
     open-pull-requests-limit: 3
     groups:
+      # Mineures et correctifs ensemble ; une version majeure (ex. Next 17) arrive dans sa propre PR,
+      # pour ne pas bloquer les correctifs du mois si elle casse la CI.
       dependances:
         patterns: ["*"]
+        update-types: ["minor", "patch"]
 
   - package-ecosystem: github-actions
     directory: /
@@ -23,3 +26,7 @@ updates:
     directory: /
     schedule:
       interval: monthly
+    # Node reste sur sa version LTS (24) : pas de saut vers une version impaire.
+    ignore:
+      - dependency-name: node
+        update-types: ["version-update:semver-major"]
