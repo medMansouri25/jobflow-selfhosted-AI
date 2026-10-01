@@ -44,12 +44,17 @@ const MAIN_LINKS: NavLink[] = [
     icon: MessagesSquare,
     isActive: (pathname) => pathname.startsWith("/interviews"),
   },
+  {
+    label: "Agenda",
+    href: "/agenda",
+    icon: CalendarDays,
+    isActive: (pathname) => pathname.startsWith("/agenda"),
+  },
 ];
 
 // Pas encore construits : visibles pour donner la direction, mais sans lien.
 const UPCOMING_MAIN: UpcomingItem[] = [
   { label: "Entreprises", icon: Building2, phase: "P1" },
-  { label: "Agenda", icon: CalendarDays, phase: "P4" },
 ];
 
 const NEXT_PHASES: UpcomingItem[] = [

@@ -1,5 +1,7 @@
 // Statistiques du tableau de bord (SPEC-002), en TypeScript pur : les dates sont des jours AAAA-MM-JJ.
 
+import { addDays, mondayOf } from "@/lib/days";
+
 /** Nombre de semaines affichées, semaine en cours comprise (FR-002-06). */
 export const WEEKS_SHOWN = 8;
 
@@ -27,20 +29,4 @@ export function weeklyCounts(appliedDates: string[], today: string): WeekCount[]
     if (week) week.count++;
   }
   return weeks;
-}
-
-function mondayOf(day: string): string {
-  const daysSinceMonday = (toUtc(day).getUTCDay() + 6) % 7;
-  return addDays(day, -daysSinceMonday);
-}
-
-function addDays(day: string, days: number): string {
-  const date = toUtc(day);
-  date.setUTCDate(date.getUTCDate() + days);
-  return date.toISOString().slice(0, 10);
-}
-
-// Calcul sur des jours calendaires en UTC : aucun décalage horaire ne peut changer de jour.
-function toUtc(day: string): Date {
-  return new Date(`${day}T00:00:00Z`);
 }

@@ -116,6 +116,7 @@ describe("tableau de bord", () => {
             scheduledAt: new Date("2026-10-14T08:30:00Z"),
             type: "HR",
             format: "PHONE",
+            location: null,
             application: { id: "a1", jobTitle: "Ingénieur", company: { name: "Airbus" } },
           },
         ]}

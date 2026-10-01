@@ -13,6 +13,7 @@ import type { FormAction } from "@/modules/applications/form-state";
 function sectionOf(pathname: string) {
   if (pathname.startsWith("/applications")) return "Candidatures";
   if (pathname.startsWith("/interviews")) return "Entretiens";
+  if (pathname.startsWith("/agenda")) return "Agenda";
   return "Dashboard";
 }
 

@@ -46,9 +46,17 @@ describe("menu latéral", () => {
   it("affiche les fonctionnalités à venir sans lien, avec leur phase", () => {
     render(<AppSidebar />);
 
-    expect(screen.queryByRole("link", { name: /Agenda/ })).toBeNull();
-    expect(screen.getByText("Agenda")).toBeDefined();
-    expect(screen.getByText("P4")).toBeDefined();
+    expect(screen.queryByRole("link", { name: /Documents/ })).toBeNull();
+    expect(screen.getByText("Documents")).toBeDefined();
+    expect(screen.getByText("P5")).toBeDefined();
+  });
+
+  it("FR-004-01 mène à l'agenda", () => {
+    pathname.current = "/agenda";
+    render(<AppSidebar />);
+
+    const link = screen.getByRole("link", { name: "Agenda" });
+    expect([link.getAttribute("href"), link.getAttribute("aria-current")]).toEqual(["/agenda", "page"]);
   });
 
   it("FR-003-07 mène à la page des entretiens", () => {

@@ -8,6 +8,7 @@ const ENTRY: InterviewListEntry = {
   scheduledAt: new Date("2026-10-14T08:30:00Z"),
   type: "TECHNICAL",
   format: "VIDEO",
+  location: null,
   application: { id: "a1", jobTitle: "Ingénieur logiciel", company: { name: "Airbus" } },
 };
 
@@ -25,5 +26,25 @@ describe("liste d'entretiens", () => {
     render(<InterviewList interviews={[]} empty="Aucun entretien prévu." />);
 
     expect(screen.getByText("Aucun entretien prévu.")).toBeDefined();
+  });
+
+  it("FR-004-07 propose de rejoindre la visio depuis son lien Teams, sans bouton pour une adresse", () => {
+    render(
+      <InterviewList
+        empty="Aucun"
+        interviews={[
+          { ...ENTRY, location: "https://teams.microsoft.com/l/meetup-join/abc" },
+          { ...ENTRY, id: "i2", format: "ON_SITE", location: "12 rue de la Paix, Paris" },
+        ]}
+      />,
+    );
+
+    const join = screen.getByRole("link", { name: "Rejoindre sur Teams" });
+    expect([join.getAttribute("href"), join.getAttribute("target"), join.getAttribute("rel")]).toEqual([
+      "https://teams.microsoft.com/l/meetup-join/abc",
+      "_blank",
+      "noopener noreferrer",
+    ]);
+    expect(screen.getAllByRole("link", { name: /Rejoindre/ })).toHaveLength(1);
   });
 });
