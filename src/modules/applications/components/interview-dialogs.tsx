@@ -26,9 +26,9 @@ import { InterviewForm } from "@/modules/applications/components/interview-form"
 import {
   initialApplicationFormState,
   type ApplicationFormState,
+  type FormAction,
 } from "@/modules/applications/form-state";
 
-type FormAction = (state: ApplicationFormState, formData: FormData) => Promise<ApplicationFormState>;
 
 /** Fenêtre du formulaire d'Entretien : se ferme après un enregistrement réussi, garde la saisie sinon. */
 function InterviewFormDialog({
@@ -92,9 +92,12 @@ export function AddInterviewDialog({ action }: { action: FormAction }) {
 export function EditInterviewDialog({
   action,
   initialValues,
+  label,
 }: {
   action: FormAction;
   initialValues: Partial<Record<string, string>>;
+  /** Décrit l'Entretien (type et date) : nom distinct du bouton quand la fiche en liste plusieurs. */
+  label: string;
 }) {
   return (
     <InterviewFormDialog
@@ -103,7 +106,7 @@ export function EditInterviewDialog({
       label="Modifier l'entretien"
       initialValues={initialValues}
       trigger={
-        <Button variant="ghost" size="icon-sm" aria-label="Modifier l'entretien">
+        <Button variant="ghost" size="icon-sm" aria-label={`Modifier : ${label}`}>
           <Pencil aria-hidden />
         </Button>
       }
@@ -126,7 +129,7 @@ export function DeleteInterviewButton({ action, label }: { action: FormAction; l
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
-        <Button variant="ghost" size="icon-sm" aria-label="Supprimer l'entretien" className="text-destructive">
+        <Button variant="ghost" size="icon-sm" aria-label={`Supprimer : ${label}`} className="text-destructive">
           <Trash2 aria-hidden />
         </Button>
       </AlertDialogTrigger>

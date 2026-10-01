@@ -26,9 +26,8 @@ import {
   deleteInterviewAction,
   updateInterviewAction,
 } from "@/modules/applications/interview-actions";
-import { toInterviewFormValues } from "@/modules/applications/form-values";
 import { INTERVIEW_TYPE_LABELS } from "@/modules/applications/labels";
-import { toFormValues } from "@/modules/applications/form-values";
+import { toFormValues, toInterviewFormValues } from "@/modules/applications/form-values";
 import { getApplication } from "@/modules/applications/service";
 import { listCompanyNames } from "@/modules/companies/service";
 
@@ -55,18 +54,19 @@ export default async function ApplicationPage({ params }: PageProps<"/applicatio
           status={application.status}
           interviews={application.interviews}
           add={<AddInterviewDialog action={addInterviewAction.bind(null, application.id)} />}
-          actionsFor={(interview) => (
-            <div className="flex gap-1">
-              <EditInterviewDialog
-                action={updateInterviewAction.bind(null, interview.id)}
-                initialValues={toInterviewFormValues(interview)}
-              />
-              <DeleteInterviewButton
-                action={deleteInterviewAction.bind(null, interview.id)}
-                label={`Entretien ${INTERVIEW_TYPE_LABELS[interview.type]} du ${formatInterviewDate(interview.scheduledAt)}`}
-              />
-            </div>
-          )}
+          actionsFor={(interview) => {
+            const label = `Entretien ${INTERVIEW_TYPE_LABELS[interview.type]} du ${formatInterviewDate(interview.scheduledAt)}`;
+            return (
+              <div className="flex gap-1">
+                <EditInterviewDialog
+                  action={updateInterviewAction.bind(null, interview.id)}
+                  initialValues={toInterviewFormValues(interview)}
+                  label={label}
+                />
+                <DeleteInterviewButton action={deleteInterviewAction.bind(null, interview.id)} label={label} />
+              </div>
+            );
+          }}
         />
       }
       statusPanel={

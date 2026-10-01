@@ -11,3 +11,6 @@ export type ApplicationFormState = {
 export const initialApplicationFormState: ApplicationFormState = {
   status: "idle",
 };
+
+/** Server Action de formulaire, telle que la reçoivent les composants (`useActionState`). */
+export type FormAction = (state: ApplicationFormState, formData: FormData) => Promise<ApplicationFormState>;
