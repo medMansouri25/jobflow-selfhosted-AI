@@ -35,7 +35,8 @@ describe("section Lettre de motivation", () => {
     await waitFor(() =>
       expect((screen.getByLabelText("Brouillon") as HTMLTextAreaElement).value).toBe("Mohammed M.\n\nMadame, Monsieur,"),
     );
-    expect(screen.getByRole("button", { name: "Régénérer" })).toBeDefined();
+    // Le libellé « Régénérer » n'apparaît qu'à la fin de la transition : on l'attend.
+    expect(await screen.findByRole("button", { name: "Régénérer" })).toBeDefined();
   });
 
   it("AC-008-05 enregistre la version modifiée", async () => {
