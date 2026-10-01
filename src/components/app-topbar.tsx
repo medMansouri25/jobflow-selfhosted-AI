@@ -11,7 +11,9 @@ import type { FormAction } from "@/modules/applications/form-state";
 
 
 function sectionOf(pathname: string) {
-  return pathname.startsWith("/applications") ? "Candidatures" : "Dashboard";
+  if (pathname.startsWith("/applications")) return "Candidatures";
+  if (pathname.startsWith("/interviews")) return "Entretiens";
+  return "Dashboard";
 }
 
 const subscribeNever = () => () => {};

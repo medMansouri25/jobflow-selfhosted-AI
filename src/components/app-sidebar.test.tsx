@@ -46,8 +46,16 @@ describe("menu latéral", () => {
   it("affiche les fonctionnalités à venir sans lien, avec leur phase", () => {
     render(<AppSidebar />);
 
-    expect(screen.queryByRole("link", { name: /Entretiens/ })).toBeNull();
-    expect(screen.getByText("Entretiens")).toBeDefined();
-    expect(screen.getByText("P3")).toBeDefined();
+    expect(screen.queryByRole("link", { name: /Agenda/ })).toBeNull();
+    expect(screen.getByText("Agenda")).toBeDefined();
+    expect(screen.getByText("P4")).toBeDefined();
+  });
+
+  it("FR-003-07 mène à la page des entretiens", () => {
+    pathname.current = "/interviews";
+    render(<AppSidebar />);
+
+    const link = screen.getByRole("link", { name: "Entretiens" });
+    expect([link.getAttribute("href"), link.getAttribute("aria-current")]).toEqual(["/interviews", "page"]);
   });
 });

@@ -250,11 +250,11 @@ Feuille de route : `docs/roadmaps/phase-1-5-squelette-deploye/roadmap.md`.
 | # | Tâche | Branche |
 |---|---|---|
 | [ ] T3.1 | Rédiger SPEC-003 | `docs/spec-003-interviews` |
-| [ ] T3.2 | Modèle `Interview` et `Contact` | `feature/spec-003-data-model` |
-| [ ] T3.3 | Ajouter / modifier / supprimer un entretien | `feature/spec-003-interview-crud` |
-| [ ] T3.4 | Passage automatique de la Candidature en Entretien | `feature/spec-003-auto-status` |
-| [ ] T3.5 | Contacts d'une Entreprise, interlocuteur d'un entretien | `feature/spec-003-contacts` |
-| [ ] T3.6 | Prochains entretiens sur le dashboard | `feature/spec-003-dashboard-upcoming` |
+| [x] T3.2 | Modèle `Interview` et `Contact` | `feature/spec-003-data-model` |
+| [x] T3.3 | Ajouter / modifier / supprimer un entretien | `feature/spec-003-interview-crud` |
+| [x] T3.4 | Passage automatique de la Candidature en Entretien | `feature/spec-003-auto-status` |
+| [x] T3.5 | Contacts d'une Entreprise, interlocuteur d'un entretien | `feature/spec-003-contacts` |
+| [x] T3.6 | Prochains entretiens sur le dashboard | `feature/spec-003-dashboard-upcoming` |
 
 ## Phase 4 — Agenda (SPEC-004)
 
