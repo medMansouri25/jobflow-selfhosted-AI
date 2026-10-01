@@ -21,3 +21,9 @@ Lien « M'entraîner » sous chaque Entretien → page `/interviews/[id]/practic
 - [x] Mission 1: Demandes et lectures vérifiées (questions, retour, bilan) + tests (FR-009-05 à 07, AC-009-06)
 - [x] Mission 2: `startPractice` / `givePracticeFeedback` / `debriefPractice` + tests d'intégration (AC-009-05 à 08)
 - [x] Mission 3: Actions, `PracticeSession` (déroulé complet), page `/interviews/[id]/practice`, lien « M'entraîner » + tests de composant (AC-009-05 à 07) ; essai réel
+
+## Review (2026-10-01)
+- Corrigé : une coupure réseau pendant la séance renvoyait vers la page d'erreur et perdait la séance → message « Connexion perdue… », séance et saisie conservées (choix assumé : côté client, une panne réseau devient un message plutôt qu'une page d'erreur).
+- Corrigé : focus placé à chaque étape (zone de réponse, retour, bilan) : le clavier et le lecteur d'écran suivent la séance.
+- Corrigé : au moins 5 questions et 3 points de bilan exigés, le surplus ignoré, au lieu d'un nombre exact qui faisait échouer la séance.
+- Corrigé : tableau d'échanges borné dans l'action avant toute copie ; bilan sans échange refusé ; `MAX_QUESTION` au lieu de 1 500 répété ; erreurs converties par `domainErrorToFormState`.

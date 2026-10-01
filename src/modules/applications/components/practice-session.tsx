@@ -3,6 +3,9 @@
 import { CircleAlert, CircleCheck, Play, RotateCcw, Send } from "lucide-react";
 import { useId, useState, useTransition } from "react";
 
+/** Place le focus sur l'élément dès qu'il apparaît : chaque étape de la séance remplace la précédente. */
+const focusOnMount = (node: HTMLElement | null) => node?.focus();
+
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -39,7 +42,14 @@ export function PracticeSession({
   function run<T>(call: () => Promise<PracticeResult<T>>, then: (data: T) => void) {
     setError(null);
     startTransition(async () => {
-      const result = await call();
+      let result: PracticeResult<T>;
+      try {
+        result = await call();
+      } catch {
+        // Réseau coupé, Pi redémarrée… : la séance (jamais enregistrée) reste à l'écran, on peut réessayer.
+        setError("Connexion perdue avec JobFlow. Vérifie ta connexion et réessaie.");
+        return;
+      }
       if (result.ok) then(result.data);
       else setError(result.message);
     });
@@ -111,6 +121,7 @@ export function PracticeSession({
                 Ta réponse
               </Label>
               <Textarea
+                ref={focusOnMount}
                 id={answerId}
                 rows={7}
                 maxLength={MAX_ANSWER}
@@ -137,7 +148,9 @@ export function PracticeSession({
 
       {step.kind === "debrief" && (
         <div className="flex flex-col gap-3 rounded-lg border bg-card p-4 sm:p-6">
-          <h2 className="font-heading text-lg font-bold">Bilan de la séance</h2>
+          <h2 ref={focusOnMount} tabIndex={-1} className="font-heading text-lg font-bold outline-none">
+            Bilan de la séance
+          </h2>
           <ol className="flex list-decimal flex-col gap-1.5 pl-5 text-sm">
             {step.points.map((point, i) => (
               <li key={i}>{point}</li>
@@ -167,7 +180,7 @@ function FeedbackView({
   onNext: () => void;
 }) {
   return (
-    <div className="flex flex-col gap-3 text-sm">
+    <div ref={focusOnMount} tabIndex={-1} aria-label="Retour sur ta réponse" className="flex flex-col gap-3 text-sm outline-none">
       <FeedbackList title="Ce qui est bien" items={feedback.good} good />
       <FeedbackList title="À améliorer" items={feedback.improve} />
       <div className="flex flex-col gap-1 rounded-md bg-accent/60 p-3">

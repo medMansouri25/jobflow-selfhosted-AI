@@ -10,6 +10,7 @@ import {
   type Exchange,
   type Feedback,
   MAX_ANSWER,
+  MAX_QUESTION,
   parseDebrief,
   parseFeedback,
   parsePracticeQuestions,
@@ -50,7 +51,7 @@ export async function givePracticeFeedback(
   }
   const { interview, posting, profile } = await inputs(userId, interviewId);
   const feedback = parseFeedback(
-    await generator.generate(buildFeedbackRequest(interview, posting, profile, question.slice(0, 1_500), answer)),
+    await generator.generate(buildFeedbackRequest(interview, posting, profile, question.slice(0, MAX_QUESTION), answer)),
   );
   if (!feedback) throw new AiError(BAD_FORMAT);
   return feedback;
@@ -64,9 +65,10 @@ export async function debriefPractice(
   generator: TextGenerator,
 ): Promise<string[]> {
   const interview = await findOwnedInterview(db, userId, interviewId);
+  if (exchanges.length === 0) throw new DomainError("PRACTICE_NO_EXCHANGE", "Réponds au moins à une question avant le bilan.");
   const kept = exchanges
     .slice(0, PRACTICE_QUESTIONS)
-    .map(({ question, answer }) => ({ question: question.slice(0, 1_500), answer: answer.slice(0, MAX_ANSWER) }));
+    .map(({ question, answer }) => ({ question: question.slice(0, MAX_QUESTION), answer: answer.slice(0, MAX_ANSWER) }));
   const points = parseDebrief(await generator.generate(buildDebriefRequest(interview, kept)));
   if (!points) throw new AiError(BAD_FORMAT);
   return points;

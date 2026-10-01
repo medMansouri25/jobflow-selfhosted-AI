@@ -77,4 +77,26 @@ describe("séance d'entraînement", () => {
       expect((screen.getByRole("button", { name: "Commencer la séance" }) as HTMLButtonElement).disabled).toBe(false),
     );
   });
+
+  it("garde la séance et le dit si la connexion est perdue", async () => {
+    const fake = actions();
+    fake.feedback.mockRejectedValueOnce(new TypeError("Failed to fetch"));
+    render(<PracticeSession {...fake} />);
+    fireEvent.click(screen.getByRole("button", { name: "Commencer la séance" }));
+    await screen.findByText("Q1 ?");
+
+    fireEvent.change(screen.getByLabelText("Ta réponse"), { target: { value: "Ma réponse" } });
+    fireEvent.click(screen.getByRole("button", { name: "Envoyer ma réponse" }));
+
+    expect(await screen.findByText(/Connexion perdue/)).toBeDefined();
+    expect((screen.getByLabelText("Ta réponse") as HTMLTextAreaElement).value).toBe("Ma réponse");
+  });
+
+  it("place le curseur dans la zone de réponse à chaque question", async () => {
+    render(<PracticeSession {...actions()} />);
+    fireEvent.click(screen.getByRole("button", { name: "Commencer la séance" }));
+    await screen.findByText("Q1 ?");
+
+    expect(document.activeElement).toBe(screen.getByLabelText("Ta réponse"));
+  });
 });

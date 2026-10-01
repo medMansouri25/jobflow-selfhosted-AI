@@ -69,9 +69,14 @@ describe("entraînement : réponses", () => {
     expect(parseDebrief(JSON.stringify({ points: ["a", "b", "c"] }))).toEqual(["a", "b", "c"]);
   });
 
+  it("garde les 5 premières questions et les 3 premiers points quand l'assistant en donne trop", () => {
+    expect(parsePracticeQuestions(JSON.stringify({ questions: ["Q1", "Q2", "Q3", "Q4", "Q5", "Q6"] }))).toHaveLength(5);
+    expect(parseDebrief(JSON.stringify({ points: ["a", "b", "c", "d"] }))).toEqual(["a", "b", "c"]);
+  });
+
   it("refuse une réponse mal formée", () => {
     expect(parsePracticeQuestions(JSON.stringify({ questions: ["Q1"] }))).toBeNull();
     expect(parseFeedback("Bonne réponse !")).toBeNull();
-    expect(parseDebrief(JSON.stringify({ points: [] }))).toBeNull();
+    expect(parseDebrief(JSON.stringify({ points: ["a"] }))).toBeNull();
   });
 });

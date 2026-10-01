@@ -18,19 +18,23 @@ import { INTERVIEW_FORMAT_LABELS, INTERVIEW_TYPE_LABELS } from "@/modules/applic
 
 export const PRACTICE_QUESTIONS = 5;
 export const MAX_ANSWER = 3_000;
+/** Une question repasse par le navigateur : sa longueur est bornée avant de repartir chez l'assistant. */
+export const MAX_QUESTION = 1_500;
+const DEBRIEF_POINTS = 3;
 
 type InterviewKind = { type: InterviewType; format: InterviewFormat };
 export type Exchange = { question: string; answer: string };
 
-const text = z.string().trim().min(1).max(1_500);
+const text = z.string().trim().min(1).max(MAX_QUESTION);
 
-const questionsSchema = z.object({ questions: z.array(text).length(PRACTICE_QUESTIONS) });
+// Au moins le nombre voulu, le surplus est ignoré : un modèle trop généreux ne fait pas échouer la séance.
+const questionsSchema = z.object({ questions: z.array(text).min(PRACTICE_QUESTIONS).max(20) });
 const feedbackSchema = z.object({
   good: z.array(text).max(5),
   improve: z.array(text).max(5),
   betterAnswer: z.string().trim().min(1).max(4_000),
 });
-const debriefSchema = z.object({ points: z.array(text).min(1).max(5) });
+const debriefSchema = z.object({ points: z.array(text).min(DEBRIEF_POINTS).max(10) });
 
 export type Feedback = z.infer<typeof feedbackSchema>;
 
@@ -104,7 +108,7 @@ ${ANSWER_RULE}`,
 }
 
 export function parsePracticeQuestions(answer: string): string[] | null {
-  return parseAssistantJson(answer, questionsSchema)?.questions ?? null;
+  return parseAssistantJson(answer, questionsSchema)?.questions.slice(0, PRACTICE_QUESTIONS) ?? null;
 }
 
 export function parseFeedback(answer: string): Feedback | null {
@@ -112,5 +116,5 @@ export function parseFeedback(answer: string): Feedback | null {
 }
 
 export function parseDebrief(answer: string): string[] | null {
-  return parseAssistantJson(answer, debriefSchema)?.points ?? null;
+  return parseAssistantJson(answer, debriefSchema)?.points.slice(0, DEBRIEF_POINTS) ?? null;
 }
