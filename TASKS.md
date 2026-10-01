@@ -240,10 +240,10 @@ Feuille de route : `docs/roadmaps/phase-1-5-squelette-deploye/roadmap.md`.
 
 | # | Tâche | Branche |
 |---|---|---|
-| [ ] T2.1 | Rédiger SPEC-002 | `docs/spec-002-dashboard` |
-| [ ] T2.2 | Compteurs par statut | `feature/spec-002-counters` |
-| [ ] T2.3 | Candidatures récentes | `feature/spec-002-recent-applications` |
-| [ ] T2.4 | Statistiques basiques (taux de réponse, candidatures par semaine) | `feature/spec-002-stats` |
+| [x] T2.1 | Rédiger SPEC-002 | `docs/spec-002-dashboard` |
+| [x] T2.2 | Compteurs par statut (livré en SPEC-001 : FR-002-01, 02) | `feature/spec-002-counters` |
+| [x] T2.3 | Candidatures récentes (livré en SPEC-001 : FR-002-03) | `feature/spec-002-recent-applications` |
+| [ ] T2.4 | Statistiques : taux de réponse, taux d'entretien, candidatures par semaine (FR-002-04 à 06) | `feature/spec-002-stats` |
 
 ## Phase 3 — Entretiens et Contacts (SPEC-003)
 
