@@ -2,10 +2,10 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { renderToString } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
-import type { ApplicationFormState } from "@/modules/applications/form-state";
+import type { FormState } from "@/lib/form-state";
 import { ApplicationForm } from "@/modules/applications/components/application-form";
 
-const noop = async (state: ApplicationFormState) => state;
+const noop = async (state: FormState) => state;
 
 describe("formulaire de candidature", () => {
   it("affiche les champs obligatoires étiquetés", () => {
@@ -112,7 +112,7 @@ describe("formulaire de candidature", () => {
   });
 
   it("affiche l'erreur renvoyée par le serveur sous le champ et conserve la saisie", async () => {
-    const rejectingAction = async (): Promise<ApplicationFormState> => ({
+    const rejectingAction = async (): Promise<FormState> => ({
       status: "error",
       message: "Certains champs sont à corriger.",
       fieldErrors: { jobTitle: ["L'intitulé du poste est obligatoire"] },

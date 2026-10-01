@@ -1,13 +1,14 @@
 // Correspondance entre la saisie du formulaire et les colonnes d'une Candidature, dans les deux sens :
 // `toColumns` à l'enregistrement, `toFormValues` pour pré-remplir la modification (FR-001-02).
 
+import { utcToParisLocal } from "@/lib/dates";
 import type { CreateApplicationInput } from "@/modules/applications/schemas";
 
 /** Date sans heure (AAAA-MM-JJ) ↔ colonne `date`, stockée à minuit UTC. */
-function dateOnlyToColumn(value: string): Date {
+export function dateOnlyToColumn(value: string): Date {
   return new Date(`${value}T00:00:00Z`);
 }
-function columnToDateOnly(date: Date): string {
+export function columnToDateOnly(date: Date): string {
   return date.toISOString().slice(0, 10);
 }
 
@@ -66,5 +67,26 @@ export function toFormValues(application: EditableApplication): Record<string, s
     salaryPeriod: text(application.salaryPeriod),
     appliedAt: application.appliedAt ? columnToDateOnly(application.appliedAt) : "",
     notes: text(application.notes),
+  };
+}
+
+/** Entretien enregistré → valeurs du formulaire de modification (FR-003-02), heure de Paris. */
+export function toInterviewFormValues(interview: {
+  scheduledAt: Date;
+  type: string;
+  format: string;
+  location: string | null;
+  interviewer: string | null;
+  preparation: string | null;
+  debrief: string | null;
+}): Partial<Record<string, string>> {
+  return {
+    scheduledAt: utcToParisLocal(interview.scheduledAt),
+    type: interview.type,
+    format: interview.format,
+    location: interview.location ?? undefined,
+    interviewer: interview.interviewer ?? undefined,
+    preparation: interview.preparation ?? undefined,
+    debrief: interview.debrief ?? undefined,
   };
 }

@@ -18,7 +18,7 @@ import type {
   UpdateApplicationInput,
 } from "@/modules/applications/schemas";
 import { canTransition } from "@/modules/applications/domain/status";
-import { toColumns } from "@/modules/applications/form-values";
+import { columnToDateOnly, dateOnlyToColumn, toColumns } from "@/modules/applications/form-values";
 import { STATUS_LABELS } from "@/modules/applications/labels";
 import { findOrCreateCompany } from "@/modules/companies/service";
 
@@ -27,7 +27,7 @@ import { findOrCreateCompany } from "@/modules/companies/service";
  * la colonne uuid), inconnu ou appartenant à quelqu'un d'autre. Seul accès « par id » du service,
  * pour que le filtre par utilisateur ne puisse pas être oublié.
  */
-async function findOwnedApplication<Include extends Prisma.ApplicationInclude = Record<string, never>>(
+export async function findOwnedApplication<Include extends Prisma.ApplicationInclude = Record<string, never>>(
   client: Prisma.TransactionClient,
   userId: string,
   id: string,
@@ -258,6 +258,7 @@ export async function getApplication(userId: string, id: string) {
     company: true,
     statusChanges: { orderBy: { changedAt: "desc" } },
     attachments: { orderBy: { kind: "asc" } },
+    interviews: { orderBy: { scheduledAt: "asc" } },
   });
 }
 
@@ -327,4 +328,31 @@ export async function countApplicationsByStatus(
   ) as Record<ApplicationStatus, number>;
   for (const group of groups) counts[group.status] = group._count._all;
   return counts;
+}
+
+/**
+ * Chiffres bruts du tableau de bord (SPEC-002) : réponses = plus Postulée ; entretiens = passées
+ * par Entretien dans leur historique, même refusées ensuite (BR-002-02) ; dates de candidature
+ * (AAAA-MM-JJ) à partir de `appliedSince`, pour les Candidatures par semaine.
+ */
+export async function getApplicationStats(userId: string, appliedSince: string) {
+  const [total, responded, interviewed, recent] = await Promise.all([
+    db.application.count({ where: { userId } }),
+    db.application.count({ where: { userId, status: { not: "APPLIED" } } }),
+    db.application.count({
+      where: { userId, statusChanges: { some: { toStatus: "INTERVIEW" } } },
+    }),
+    db.application.findMany({
+      where: { userId, appliedAt: { gte: dateOnlyToColumn(appliedSince) } },
+      select: { appliedAt: true },
+    }),
+  ]);
+  return {
+    total,
+    responded,
+    interviewed,
+    appliedDates: recent.flatMap(({ appliedAt }) =>
+      appliedAt ? [columnToDateOnly(appliedAt)] : [],
+    ),
+  };
 }

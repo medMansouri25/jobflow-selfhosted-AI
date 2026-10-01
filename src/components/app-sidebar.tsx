@@ -5,7 +5,6 @@ import {
   Briefcase,
   Building2,
   CalendarDays,
-  FileText,
   LayoutDashboard,
   MessagesSquare,
   UserRound,
@@ -38,28 +37,53 @@ const MAIN_LINKS: NavLink[] = [
     icon: Briefcase,
     isActive: (pathname) => pathname.startsWith("/applications"),
   },
+  {
+    label: "Entretiens",
+    href: "/interviews",
+    icon: MessagesSquare,
+    isActive: (pathname) => pathname.startsWith("/interviews"),
+  },
+  {
+    label: "Agenda",
+    href: "/agenda",
+    icon: CalendarDays,
+    isActive: (pathname) => pathname.startsWith("/agenda"),
+  },
+  {
+    label: "Profil",
+    href: "/profile",
+    icon: UserRound,
+    isActive: (pathname) => pathname.startsWith("/profile"),
+  },
 ];
 
 // Pas encore construits : visibles pour donner la direction, mais sans lien.
 const UPCOMING_MAIN: UpcomingItem[] = [
   { label: "Entreprises", icon: Building2, phase: "P1" },
-  { label: "Entretiens", icon: MessagesSquare, phase: "P3" },
-  { label: "Agenda", icon: CalendarDays, phase: "P4" },
 ];
 
 const NEXT_PHASES: UpcomingItem[] = [
-  { label: "Documents", icon: FileText, phase: "P5" },
-  { label: "Profil", icon: UserRound, phase: "P6" },
   { label: "Assistant IA", icon: Bot, phase: "P7" },
 ];
 
+/** Menu latéral des grands écrans ; sur téléphone, le même contenu s'ouvre depuis `MobileNav`. */
 export function AppSidebar() {
+  return (
+    <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r bg-card lg:flex">
+      <SidebarContent />
+    </aside>
+  );
+}
+
+/** Logo, navigation et pied du menu. `onNavigate` : appelé au choix d'une page (ferme le menu sur téléphone). */
+export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
 
   return (
-    <aside className="sticky top-0 flex h-screen w-60 shrink-0 flex-col border-r bg-card">
+    <>
       <Link
         href="/"
+        onClick={onNavigate}
         aria-label="JobFlow AI — accueil"
         className="flex items-center gap-3 px-5 py-5"
       >
@@ -87,6 +111,7 @@ export function AppSidebar() {
               <li key={href}>
                 <Link
                   href={href}
+                  onClick={onNavigate}
                   aria-current={active ? "page" : undefined}
                   className={cn(
                     "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
@@ -130,7 +155,7 @@ export function AppSidebar() {
           <span className="text-xs text-muted-foreground">Privé · Tailscale</span>
         </span>
       </div>
-    </aside>
+    </>
   );
 }
 
