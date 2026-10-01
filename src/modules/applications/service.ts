@@ -27,7 +27,7 @@ import { findOrCreateCompany } from "@/modules/companies/service";
  * la colonne uuid), inconnu ou appartenant à quelqu'un d'autre. Seul accès « par id » du service,
  * pour que le filtre par utilisateur ne puisse pas être oublié.
  */
-async function findOwnedApplication<Include extends Prisma.ApplicationInclude = Record<string, never>>(
+export async function findOwnedApplication<Include extends Prisma.ApplicationInclude = Record<string, never>>(
   client: Prisma.TransactionClient,
   userId: string,
   id: string,
@@ -258,6 +258,7 @@ export async function getApplication(userId: string, id: string) {
     company: true,
     statusChanges: { orderBy: { changedAt: "desc" } },
     attachments: { orderBy: { kind: "asc" } },
+    interviews: { orderBy: { scheduledAt: "asc" } },
   });
 }
 

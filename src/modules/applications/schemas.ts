@@ -9,10 +9,10 @@ import {
 } from "@/modules/applications/domain/application";
 
 // Un champ de formulaire vide arrive sous forme de chaîne vide : on le traite comme absent.
-const emptyToUndefined = (value: unknown) =>
+export const emptyToUndefined = (value: unknown) =>
   typeof value === "string" && value.trim() === "" ? undefined : value;
 
-const optionalText = (max: number) =>
+export const optionalText = (max: number) =>
   z.preprocess(
     emptyToUndefined,
     z.string().trim().max(max, `${max} caractères maximum`).optional(),
@@ -59,7 +59,7 @@ const pdfAttachment = (label: string) =>
   );
 
 /** Champ obligatoire : vide ou absent → message nommant le champ (BR-001-02). */
-const required = <T extends z.ZodType<unknown, string>>(schema: T, label: string) =>
+export const required = <T extends z.ZodType<unknown, string>>(schema: T, label: string) =>
   z.preprocess(
     (value) => emptyToUndefined(value) ?? "",
     z.string().trim().min(1, `${label} est obligatoire`).pipe(schema),

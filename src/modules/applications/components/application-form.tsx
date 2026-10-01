@@ -1,21 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useId, useSyncExternalStore, type ReactNode } from "react";
+import { useActionState, useId, useSyncExternalStore } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { todayInParis } from "@/lib/dates";
-import { cn } from "@/lib/utils";
 import {
   APPLICATION_SOURCES,
   CONTRACT_TYPES,
@@ -28,6 +19,7 @@ import {
 } from "@/modules/applications/form-state";
 import type { AttachmentKind } from "@/modules/applications/domain/application";
 import { FormStateMessage } from "@/modules/applications/components/form-state-message";
+import { Field, SelectField } from "@/modules/applications/components/form-fields";
 import { formatFileSize } from "@/modules/applications/format";
 import { MAX_ATTACHMENT_LABEL } from "@/modules/applications/schemas";
 import {
@@ -310,84 +302,5 @@ function AttachmentField({
         {(props) => <Input {...props} name={field.name} type="file" accept="application/pdf" />}
       </Field>
     </div>
-  );
-}
-
-type ControlProps = {
-  id: string;
-  "aria-invalid": boolean;
-  "aria-describedby"?: string;
-};
-
-function Field({
-  label,
-  required,
-  hint,
-  error,
-  className,
-  children,
-}: {
-  label: string;
-  required?: boolean;
-  hint?: string;
-  error?: string;
-  className?: string;
-  children: (props: ControlProps) => ReactNode;
-}) {
-  const id = useId();
-  const hintId = `${id}-hint`;
-  const errorId = `${id}-error`;
-  const describedBy =
-    [hint && hintId, error && errorId].filter(Boolean).join(" ") || undefined;
-
-  return (
-    <div className={cn("flex flex-col gap-1.5", className)}>
-      <Label htmlFor={id} className="text-xs font-medium text-foreground/80">
-        {label}
-        {required && (
-          <span aria-hidden className="text-primary">
-            *
-          </span>
-        )}
-      </Label>
-      {children({ id, "aria-invalid": Boolean(error), "aria-describedby": describedBy })}
-      {hint && !error && (
-        <p id={hintId} className="text-xs text-muted-foreground">
-          {hint}
-        </p>
-      )}
-      {error && (
-        <p id={errorId} className="text-xs font-medium text-destructive">
-          {error}
-        </p>
-      )}
-    </div>
-  );
-}
-
-function SelectField({
-  name,
-  value,
-  options,
-  ...triggerProps
-}: ControlProps & {
-  name: string;
-  value?: string;
-  options: [value: string, label: string][];
-}) {
-  return (
-    // `key` : remonte la liste avec la valeur renvoyée par le serveur après une erreur.
-    <Select key={`${name}-${value ?? ""}`} name={name} defaultValue={value}>
-      <SelectTrigger {...triggerProps} className="w-full">
-        <SelectValue placeholder="—" />
-      </SelectTrigger>
-      <SelectContent>
-        {options.map(([optionValue, label]) => (
-          <SelectItem key={optionValue} value={optionValue}>
-            {label}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
   );
 }

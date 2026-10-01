@@ -45,6 +45,21 @@ enum SalaryPeriod {
   MONTHLY
 }
 
+/// Type d'un Entretien (SPEC-003).
+enum InterviewType {
+  HR
+  TECHNICAL
+  MANAGER
+  FINAL
+  OTHER
+}
+
+enum InterviewFormat {
+  ON_SITE
+  VIDEO
+  PHONE
+}
+
 enum AttachmentKind {
   CV
   COVER_LETTER
@@ -57,6 +72,7 @@ model User {
   companies    Company[]
   applications Application[]
   attachments  Attachment[]
+  interviews   Interview[]
 }
 
 /// Entreprise — nom unique par utilisateur, sans distinction de casse (BR-001-11).
@@ -98,6 +114,7 @@ model Application {
   updatedAt      DateTime                  @updatedAt @db.Timestamptz
   statusChanges  ApplicationStatusChange[]
   attachments    Attachment[]
+  interviews     Interview[]
 
   @@index([userId, status])
   @@index([userId, updatedAt])
@@ -131,4 +148,26 @@ model Attachment {
   createdAt     DateTime       @default(now()) @db.Timestamptz
 
   @@unique([applicationId, kind])
+}
+
+/// Entretien (rendez-vous) d'une Candidature (SPEC-003). L'heure est un instant UTC, saisie et
+/// affichée à l'heure de Paris ; l'Interlocuteur est du texte libre (pas encore de fiche Contact).
+model Interview {
+  id            String          @id @default(uuid()) @db.Uuid
+  userId        String          @db.Uuid
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  applicationId String          @db.Uuid
+  application   Application     @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  scheduledAt   DateTime        @db.Timestamptz
+  type          InterviewType
+  format        InterviewFormat
+  location      String?         @db.VarChar(500)
+  interviewer   String?         @db.VarChar(200)
+  preparation   String?
+  debrief       String?
+  createdAt     DateTime        @default(now()) @db.Timestamptz
+  updatedAt     DateTime        @updatedAt @db.Timestamptz
+
+  @@index([userId, scheduledAt])
+  @@index([applicationId, scheduledAt])
 }

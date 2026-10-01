@@ -37,6 +37,7 @@ function application(overrides: Partial<ApplicationDetailData> = {}): Applicatio
     createdAt: new Date("2026-09-27T14:21:35Z"),
     updatedAt: new Date("2026-09-27T14:21:35Z"),
     attachments: [],
+    interviews: [],
     statusChanges: [
       {
         id: "h1",
