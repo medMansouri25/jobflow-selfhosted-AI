@@ -38,14 +38,14 @@ JobFlow tourne seul sur la Pi. Si l'application s'arrête, si la sauvegarde de l
 
 | ID | Exigence |
 |---|---|
-| FR-012-01 | Toutes les 5 minutes, la Pi vérifie `/api/health` ; au premier échec, une alerte « JobFlow ne répond plus » ; au retour, « JobFlow répond de nouveau ». Pas de répétition tant que l'état ne change pas. |
+| FR-012-01 | Toutes les 5 minutes, la Pi vérifie `/api/health` ; au 2ᵉ échec de suite (10 min, pour ne rien déclencher pendant un déploiement), une alerte « JobFlow ne répond plus » ; au retour, « JobFlow répond de nouveau ». Pas de répétition tant que l'état ne change pas. |
 | FR-012-02 | Une sauvegarde nocturne en échec envoie une alerte ; une vérification quotidienne alerte si la dernière sauvegarde a plus de 26 h. |
 | FR-012-03 | Une vérification quotidienne alerte si la carte SD est remplie à plus de 85 %. |
 | FR-012-04 | Le PC alerte s'il n'arrive pas à joindre la Pi pour récupérer les sauvegardes. |
 | FR-012-05 | Les journaux des conteneurs de production sont limités (3 fichiers de 10 Mo par conteneur). |
 | FR-012-06 | Chaque page porte des en-têtes de sécurité : politique de contenu (CSP) limitant scripts, styles, images et connexions à JobFlow, interdiction d'être affichée dans un autre site, `nosniff`, politique de référent, permissions désactivées (caméra, micro, géolocalisation), HSTS. |
 | FR-012-07 | La CI échoue si une dépendance de production a une faille connue de gravité haute ou critique. |
-| FR-012-08 | Dependabot propose chaque mois une PR regroupant les mises à jour (npm, actions GitHub, images Docker) ; les alertes de sécurité restent immédiates. |
+| FR-012-08 | Dependabot propose chaque mois une PR regroupant les mises à jour mineures et correctifs (npm, actions GitHub, images Docker) ; une version majeure arrive dans sa propre PR ; les alertes de sécurité restent immédiates. |
 
 ## 5. Règles
 
