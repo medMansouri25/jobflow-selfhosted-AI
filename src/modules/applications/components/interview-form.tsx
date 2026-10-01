@@ -10,11 +10,10 @@ import { Field, SelectField } from "@/modules/applications/components/form-field
 import { FormStateMessage } from "@/modules/applications/components/form-state-message";
 import {
   initialApplicationFormState,
-  type ApplicationFormState,
+  type FormAction,
 } from "@/modules/applications/form-state";
 import { INTERVIEW_FORMAT_LABELS, INTERVIEW_TYPE_LABELS } from "@/modules/applications/labels";
 
-type FormAction = (state: ApplicationFormState, formData: FormData) => Promise<ApplicationFormState>;
 
 /** Formulaire d'un Entretien (SPEC-003 §6), à l'ajout comme à la modification. Heures de Paris. */
 export function InterviewForm({

@@ -27,6 +27,7 @@ export function utcToParisLocal(instant: Date): string {
  */
 export function parisLocalToUtc(local: string): Date {
   const asUtc = new Date(`${local}:00Z`);
+  if (Number.isNaN(asUtc.getTime())) return asUtc; // date impossible (mois 13, 25 h) : « Invalid Date »
   const offset = asUtc.getTime() - new Date(`${utcToParisLocal(asUtc)}:00Z`).getTime();
   const guess = new Date(asUtc.getTime() + offset);
   // Le décalage a pu changer entre les deux instants (passage à l'heure d'été / d'hiver) : on le recalcule.

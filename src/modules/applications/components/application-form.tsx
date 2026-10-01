@@ -15,7 +15,7 @@ import {
 } from "@/modules/applications/domain/application";
 import {
   initialApplicationFormState,
-  type ApplicationFormState,
+  type FormAction,
 } from "@/modules/applications/form-state";
 import type { AttachmentKind } from "@/modules/applications/domain/application";
 import { FormStateMessage } from "@/modules/applications/components/form-state-message";
@@ -31,10 +31,6 @@ import {
 
 const subscribeNever = () => () => {};
 
-type FormAction = (
-  state: ApplicationFormState,
-  formData: FormData,
-) => Promise<ApplicationFormState>;
 
 export function ApplicationForm({
   action,

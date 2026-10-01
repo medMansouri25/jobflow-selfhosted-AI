@@ -21,9 +21,11 @@ describe("fenêtres d'Entretien", () => {
   });
 
   it("FR-003-02 pré-remplit la modification", () => {
-    render(<EditInterviewDialog action={success} initialValues={{ interviewer: "Julie Martin" }} />);
+    render(
+      <EditInterviewDialog action={success} label="Entretien RH" initialValues={{ interviewer: "Julie Martin" }} />,
+    );
 
-    fireEvent.click(screen.getByRole("button", { name: "Modifier l'entretien" }));
+    fireEvent.click(screen.getByRole("button", { name: "Modifier : Entretien RH" }));
 
     expect((screen.getByLabelText(/Interlocuteur/) as HTMLInputElement).value).toBe("Julie Martin");
   });
@@ -31,7 +33,7 @@ describe("fenêtres d'Entretien", () => {
   it("FR-003-03 demande confirmation avant de supprimer, puis se ferme", async () => {
     render(<DeleteInterviewButton action={success} label="Entretien Technique du mer. 14 oct." />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Supprimer l'entretien" }));
+    fireEvent.click(screen.getByRole("button", { name: "Supprimer : Entretien Technique du mer. 14 oct." }));
     expect(screen.getByRole("alertdialog").textContent).toContain("Entretien Technique du mer. 14 oct.");
     fireEvent.click(screen.getByRole("button", { name: "Supprimer" }));
 

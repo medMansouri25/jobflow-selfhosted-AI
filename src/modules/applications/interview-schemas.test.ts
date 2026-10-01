@@ -32,7 +32,11 @@ describe("formulaire d'Entretien", () => {
     expect(interviewSchema.safeParse({ ...VALID, location: "x".repeat(501) }).success).toBe(false);
   });
 
-  it("refuse une date mal formée", () => {
-    expect(interviewSchema.safeParse({ ...VALID, scheduledAt: "14/10/2026 10:30" }).success).toBe(false);
+  it("refuse une date mal formée ou impossible, sans planter", () => {
+    for (const scheduledAt of ["14/10/2026 10:30", "2026-02-30T10:00", "2026-13-01T10:00", "2026-01-01T25:00"]) {
+      const result = interviewSchema.safeParse({ ...VALID, scheduledAt });
+      expect(result.success).toBe(false);
+      expect(z.flattenError(result.error!).fieldErrors.scheduledAt).toEqual(["Date et heure invalides"]);
+    }
   });
 });
