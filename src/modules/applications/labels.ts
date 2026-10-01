@@ -5,6 +5,8 @@ import type {
   AttachmentKind,
   ApplicationStatus,
   ContractType,
+  InterviewFormat,
+  InterviewType,
   SalaryPeriod,
 } from "@/modules/applications/domain/application";
 
@@ -63,3 +65,16 @@ export const LIST_SORT_LABELS: Record<ListSort, string> = {
   entreprise: "Entreprise (A → Z)",
 };
 
+export const INTERVIEW_TYPE_LABELS: Record<InterviewType, string> = {
+  HR: "RH",
+  TECHNICAL: "Technique",
+  MANAGER: "Manager",
+  FINAL: "Final",
+  OTHER: "Autre",
+};
+
+export const INTERVIEW_FORMAT_LABELS: Record<InterviewFormat, string> = {
+  ON_SITE: "Présentiel",
+  VIDEO: "Visio",
+  PHONE: "Téléphone",
+};

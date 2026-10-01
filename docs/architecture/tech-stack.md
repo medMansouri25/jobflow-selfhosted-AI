@@ -36,7 +36,6 @@ Monolithe modulaire : une application, un conteneur, une base (ADR `0004`).
 | `src/app/` | Routes et pages Next.js |
 | `src/app/api/health/route.ts` | Healthcheck (Docker, Caddy, supervision) |
 | `prisma/schema.prisma` | Modèle de données |
-| `prisma/seed.ts` | Création de l'utilisateur unique en dev (la migration `single_user` le fait aussi) |
 | `Dockerfile` · `docker/app/start.sh` | Image de production : `prisma migrate deploy`, puis `node server.js` (sortie `standalone`) |
 
 ## Environnement de développement

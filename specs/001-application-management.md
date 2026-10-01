@@ -131,7 +131,7 @@ Chaque entité porte un `userId`. En Phase 1, un seul utilisateur existe et tout
 | id | identifiant | oui | |
 | createdAt | horodatage | oui | |
 
-Un seul enregistrement, créé par le script d'initialisation de la base (seed).
+Un seul enregistrement, créé par la migration `single_user` (le script de seed a été supprimé le 2026-10-01).
 
 ### Company — Entreprise
 

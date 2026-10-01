@@ -23,8 +23,11 @@ RUN npx prisma generate && npm run build && mkdir -p public
 # CLI Prisma seule, pour `prisma migrate deploy` au démarrage (le serveur standalone ne l'embarque pas).
 FROM base AS migrate
 WORKDIR /opt/migrate
+COPY package.json /tmp/app-package.json
 COPY package-lock.json ./
+# Mêmes `overrides` que l'application : les dépendances corrigées de Prisma (SPEC-012) valent aussi ici.
 RUN npm init -y >/dev/null \
+  && node -e "const fs=require('fs');const p=require('./package.json');p.overrides=require('/tmp/app-package.json').overrides;fs.writeFileSync('package.json',JSON.stringify(p))" \
   && npm install --no-audit --no-fund \
     "prisma@$(node -p "require('./package-lock.json').packages['node_modules/prisma'].version")" \
     "dotenv@$(node -p "require('./package-lock.json').packages['node_modules/dotenv'].version")"
