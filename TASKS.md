@@ -286,7 +286,7 @@ Feuille de route : `docs/roadmaps/phase-1-5-squelette-deploye/roadmap.md`.
 | # | Tâche | Branche |
 |---|---|---|
 | [ ] T7.1 | ADR fournisseur d'IA (**Q7** : coût, confidentialité, API) | `docs/adr-ai-provider` |
-| [ ] T7.2 | Rédiger SPEC-007 | `docs/spec-007-ai-job-analysis` |
+| [x] T7.2 | Rédiger SPEC-007 (compétences techniques / savoir-être, sans note, décision du 2026-10-01) | `docs/spec-007-job-analysis` |
 | [ ] T7.3 | Client IA, protections contre l'injection de prompt, plafond de coût | `feature/spec-007-ai-client` |
 | [ ] T7.4 | Analyse d'une Annonce | `feature/spec-007-job-analysis` |
 
