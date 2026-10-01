@@ -328,3 +328,30 @@ export async function countApplicationsByStatus(
   for (const group of groups) counts[group.status] = group._count._all;
   return counts;
 }
+
+/**
+ * Chiffres bruts du tableau de bord (SPEC-002) : réponses = plus Postulée ; entretiens = passées
+ * par Entretien dans leur historique, même refusées ensuite (BR-002-02) ; dates de candidature
+ * (AAAA-MM-JJ) à partir de `appliedSince`, pour les Candidatures par semaine.
+ */
+export async function getApplicationStats(userId: string, appliedSince: string) {
+  const [total, responded, interviewed, recent] = await Promise.all([
+    db.application.count({ where: { userId } }),
+    db.application.count({ where: { userId, status: { not: "APPLIED" } } }),
+    db.application.count({
+      where: { userId, statusChanges: { some: { toStatus: "INTERVIEW" } } },
+    }),
+    db.application.findMany({
+      where: { userId, appliedAt: { gte: new Date(`${appliedSince}T00:00:00Z`) } },
+      select: { appliedAt: true },
+    }),
+  ]);
+  return {
+    total,
+    responded,
+    interviewed,
+    appliedDates: recent.flatMap(({ appliedAt }) =>
+      appliedAt ? [appliedAt.toISOString().slice(0, 10)] : [],
+    ),
+  };
+}

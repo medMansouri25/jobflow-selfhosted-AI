@@ -12,6 +12,7 @@ import {
   StatusBadge,
 } from "@/modules/applications/components/status-badge";
 import { STATUS_LABELS } from "@/modules/applications/labels";
+import { WEEKS_SHOWN, type WeekCount } from "@/modules/dashboard/domain/stats";
 
 export type RecentApplication = {
   id: string;
@@ -21,14 +22,24 @@ export type RecentApplication = {
   updatedAt: Date;
 };
 
+export type DashboardStats = {
+  responseRate: number | null;
+  interviewRate: number | null;
+  weeks: WeekCount[];
+};
+
 const dateFormat = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" });
+// Les semaines sont des jours AAAA-MM-JJ : formatées en UTC pour ne jamais changer de jour.
+const weekFormat = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", timeZone: "UTC" });
 
 export function Dashboard({
   counts,
   recent,
+  stats,
 }: {
   counts: Record<ApplicationStatus, number>;
   recent: RecentApplication[];
+  stats: DashboardStats;
 }) {
   const total = Object.values(counts).reduce((sum, n) => sum + n, 0);
 
@@ -45,11 +56,12 @@ export function Dashboard({
 
       <section
         aria-label="Indicateurs"
-        className="grid overflow-hidden rounded-lg border bg-card sm:grid-cols-2"
+        className="grid overflow-hidden rounded-lg border bg-card sm:grid-cols-2 lg:grid-cols-4"
       >
         <Kpi label="Candidatures" value={total} hint="Tous statuts confondus" highlight />
-        {/* TODO(SPEC-002) : taux de réponse et d'entretien, calculés depuis l'historique des statuts. */}
         <Kpi label="Entretiens" value={counts.INTERVIEW} hint="Candidatures au statut Entretien" />
+        <Kpi label="Taux de réponse" value={percent(stats.responseRate)} hint="Entretien ou refus reçu" />
+        <Kpi label="Taux d'entretien" value={percent(stats.interviewRate)} hint="Passées par Entretien, même refusées ensuite" />
       </section>
 
       <section aria-label="Répartition par statut" className="flex flex-col gap-3">
@@ -85,6 +97,8 @@ export function Dashboard({
           ))}
         </ul>
       </section>
+
+      <WeeklyChart weeks={stats.weeks} />
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Panel title="Prochains entretiens">
@@ -192,5 +206,56 @@ function Panel({
 function EmptyState({ children }: { children: ReactNode }) {
   return (
     <p className="px-5 py-10 text-center text-sm text-muted-foreground">{children}</p>
+  );
+}
+
+function percent(value: number | null): string {
+  return value === null ? "—" : `${value} %`;
+}
+
+function WeeklyChart({ weeks }: { weeks: WeekCount[] }) {
+  const max = Math.max(...weeks.map((week) => week.count));
+
+  return (
+    <section aria-label="Candidatures par semaine" className="flex flex-col gap-3">
+      <div className="flex items-baseline justify-between gap-2">
+        <h2 className="font-heading font-bold">Candidatures par semaine</h2>
+        <p className="text-xs text-muted-foreground">
+          {WEEKS_SHOWN} dernières semaines, d&apos;après la date de candidature
+        </p>
+      </div>
+      <div className="rounded-lg border bg-card p-5">
+        {max === 0 && (
+          <p className="pb-3 text-center text-sm text-muted-foreground">
+            Aucune candidature sur les {WEEKS_SHOWN} dernières semaines.
+          </p>
+        )}
+        <ul className="grid h-40 grid-cols-8 items-end gap-2">
+          {weeks.map((week) => {
+            const label = weekFormat.format(new Date(`${week.weekStart}T00:00:00Z`));
+            return (
+              <li
+                key={week.weekStart}
+                aria-label={`Semaine du ${label} : ${week.count} candidature${week.count > 1 ? "s" : ""}`}
+                className="flex h-full flex-col items-center justify-end gap-1"
+              >
+                <span aria-hidden className="text-xs font-semibold">
+                  {week.count > 0 ? week.count : ""}
+                </span>
+                <span aria-hidden className="flex w-full flex-1 items-end">
+                  <span
+                    className="w-full rounded-t-sm bg-primary"
+                    style={{ height: max > 0 ? `${(week.count / max) * 100}%` : 0 }}
+                  />
+                </span>
+                <span aria-hidden className="text-[11px] whitespace-nowrap text-muted-foreground">
+                  {label}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </section>
   );
 }
