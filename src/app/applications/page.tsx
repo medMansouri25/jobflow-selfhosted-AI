@@ -22,9 +22,9 @@ export default async function ApplicationsPage({ searchParams }: PageProps<"/app
   );
 
   return (
-    <main className="flex flex-col gap-6 px-8 py-8">
+    <main className="flex flex-col gap-6 px-4 py-6 sm:px-8 sm:py-8">
       <div className="flex flex-wrap items-end justify-between gap-2">
-        <h1 className="font-heading text-4xl font-extrabold tracking-tight">Candidatures</h1>
+        <h1 className="font-heading text-3xl font-extrabold tracking-tight sm:text-4xl">Candidatures</h1>
         <p className="text-sm text-muted-foreground">{total} candidature(s)</p>
       </div>
       <ApplicationFilters filters={filters} />

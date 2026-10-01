@@ -46,8 +46,32 @@ describe("menu latéral", () => {
   it("affiche les fonctionnalités à venir sans lien, avec leur phase", () => {
     render(<AppSidebar />);
 
-    expect(screen.queryByRole("link", { name: /Entretiens/ })).toBeNull();
-    expect(screen.getByText("Entretiens")).toBeDefined();
-    expect(screen.getByText("P3")).toBeDefined();
+    expect(screen.queryByRole("link", { name: /Assistant IA/ })).toBeNull();
+    expect(screen.getByText("Assistant IA")).toBeDefined();
+    expect(screen.getByText("P7")).toBeDefined();
+  });
+
+  it("FR-006-01 mène au profil", () => {
+    pathname.current = "/profile";
+    render(<AppSidebar />);
+
+    const link = screen.getByRole("link", { name: "Profil" });
+    expect([link.getAttribute("href"), link.getAttribute("aria-current")]).toEqual(["/profile", "page"]);
+  });
+
+  it("FR-004-01 mène à l'agenda", () => {
+    pathname.current = "/agenda";
+    render(<AppSidebar />);
+
+    const link = screen.getByRole("link", { name: "Agenda" });
+    expect([link.getAttribute("href"), link.getAttribute("aria-current")]).toEqual(["/agenda", "page"]);
+  });
+
+  it("FR-003-07 mène à la page des entretiens", () => {
+    pathname.current = "/interviews";
+    render(<AppSidebar />);
+
+    const link = screen.getByRole("link", { name: "Entretiens" });
+    expect([link.getAttribute("href"), link.getAttribute("aria-current")]).toEqual(["/interviews", "page"]);
   });
 });
