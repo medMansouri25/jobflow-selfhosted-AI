@@ -287,9 +287,9 @@ Feuille de route : `docs/roadmaps/phase-1-5-squelette-deploye/roadmap.md`.
 | # | Tâche | Branche |
 |---|---|---|
 | [x] T7.1 | ADR fournisseur d'IA (**Q7**) — ADR 0008 : Gemini gratuit derrière un adaptateur, livré avec SPEC-008 | `docs/spec-008-cover-letter` |
-| [ ] T7.2 | Rédiger SPEC-007 | `docs/spec-007-ai-job-analysis` |
-| [ ] T7.3 | ~~Client IA~~ — livré avec SPEC-008 (adaptateur, délimitation de l'Annonce ; pas de plafond de coût : offre gratuite) | `feature/spec-008-cover-letter` |
-| [ ] T7.4 | Analyse d'une Annonce | `feature/spec-007-job-analysis` |
+| [x] T7.2 | Rédiger SPEC-007 (compétences techniques / savoir-être, sans note, décision du 2026-10-01) | `docs/spec-007-job-analysis` |
+| [x] T7.3 | ~~Client IA~~ — livré avec SPEC-008 (adaptateur, délimitation de l'Annonce ; pas de plafond de coût : offre gratuite) | `feature/spec-008-cover-letter` |
+| [x] T7.4 | Analyse d'une Annonce | `feature/spec-007-job-analysis` |
 
 ## Phase 8 — IA : brouillon de lettre (SPEC-008)
 
