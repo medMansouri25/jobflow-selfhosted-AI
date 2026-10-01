@@ -22,3 +22,8 @@ Chaque nuit à 3 h 30, la Pi sauvegarde la base (7 gardées) ; le PC récupère 
 - [x] Mission 1: Pi — `deploy/backup.sh` + crontab 3 h 30 ; rotation vérifiée (10 fichiers → 7)
 - [x] Mission 2: PC — `deploy/pull-backups.ps1` + tâche planifiée (ouverture de session, 9 h, rattrapage) ; 2 copiées puis 0
 - [x] Mission 3: Restauration — essai sur base jetable avec données de test (comptes identiques) et procédure jouée sur la production ; `docs/runbooks/backups.md`
+
+## Review (2026-10-01)
+- Corrigé : `mkdir -p -m 700 ~/jobflow-backups` dans la procédure d'installation (sans le dossier, la redirection du journal de cron échoue et la sauvegarde ne tourne jamais, sans alerte).
+- Corrigé : `pull-backups.ps1` ne confond plus « aucune sauvegarde sur la Pi » avec « Pi injoignable ».
+- Ouvert : chaque `./deploy.sh` fait une sauvegarde qui compte dans les 7 gardées ; plusieurs déploiements le même jour peuvent faire sortir des sauvegardes nocturnes.

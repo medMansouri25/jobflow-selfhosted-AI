@@ -7,7 +7,7 @@ New-Item -ItemType Directory -Force $destination | Out-Null
 $journal = Join-Path $destination 'recuperation.log'
 
 try {
-    $distantes = ssh -o BatchMode=yes -o ConnectTimeout=15 mohammed@jobflow 'ls -1 ~/jobflow-backups/*.dump 2>/dev/null'
+    $distantes = ssh -o BatchMode=yes -o ConnectTimeout=15 mohammed@jobflow 'ls -1 ~/jobflow-backups/*.dump 2>/dev/null || true'
     if ($LASTEXITCODE -ne 0) { throw "Pi injoignable (code $LASTEXITCODE)" }
 
     $copiees = 0

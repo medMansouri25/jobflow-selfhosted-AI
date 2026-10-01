@@ -17,6 +17,7 @@ Sur la Pi :
 
 ```bash
 chmod 700 ~/jobflow-prod/backup.sh
+mkdir -p -m 700 ~/jobflow-backups   # sans ce dossier, la redirection du journal échoue et cron ne lance jamais la sauvegarde
 (crontab -l 2>/dev/null; echo '30 3 * * * $HOME/jobflow-prod/backup.sh >> $HOME/jobflow-backups/backup.log 2>&1') | crontab -
 ```
 
