@@ -8,8 +8,7 @@ updates:
       interval: monthly
     open-pull-requests-limit: 3
     groups:
-      # Mineures et correctifs ensemble ; une version majeure (ex. Next 17) arrive dans sa propre PR,
-      # pour ne pas bloquer les correctifs du mois si elle casse la CI.
+      # Mineures et correctifs ensemble, en une seule PR par mois.
       dependances:
         patterns: ["*"]
         update-types: ["minor", "patch"]
